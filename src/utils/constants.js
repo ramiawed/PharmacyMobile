@@ -1,4 +1,4 @@
-export const baseUrl = 'http://0afc-178-52-162-204.ngrok.io';
+export const baseUrl = 'http://f842-46-213-94-24.ngrok.io';
 
 export const UserTypeConstants = {
   COMPANY: 'company',
