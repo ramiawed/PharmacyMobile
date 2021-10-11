@@ -81,7 +81,7 @@ const CompaniesScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Image source={require('../../assets/applogo.png')} style={StyleSheet.absoluteFillObject} blurRadius={10} />
+      {/* <Image source={require('../../assets/applogo.png')} style={StyleSheet.absoluteFillObject} blurRadius={10} /> */}
       <SearchBar
         value={searchName}
         textChangedHandler={setSearchName}

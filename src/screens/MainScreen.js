@@ -59,11 +59,8 @@ function MyTabBar({ state, descriptors, navigation }) {
         flexDirection: 'row',
         backgroundColor: '#566092',
         height: 60,
-        // borderRadius: 50,
         justifyContent: 'center',
         alignItems: 'center',
-        // marginHorizontal: 10,
-        // bottom: Platform.OS === 'ios' ? 20 : 10,
       }}
     >
       {state.routes.map((route, index) => {
