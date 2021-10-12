@@ -39,7 +39,6 @@ const ItemFavoriteRow = ({ favorite }) => {
   };
 
   const goToItemScreen = (id) => {
-    console.log('go to item screen');
     Toast.show({
       text1: 'Hello',
       text2: 'This is some something',

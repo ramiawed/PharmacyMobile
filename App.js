@@ -45,9 +45,6 @@ const App = () => {
     if (cachedUsername && cachedPassword) {
       setUsername(cachedUsername);
       setPassword(cachedPassword);
-      console.log(cachedPassword);
-      console.log(cachedUsername);
-      console.log('cached');
     }
 
     return Promise.resolve(true);

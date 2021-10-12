@@ -29,7 +29,6 @@ const MainScreen = () => {
     dispatch(statisticsSignin({ token }));
 
     return () => {
-      console.log('leave main screen');
       dispatch(resetCompanyItems());
       dispatch(resetCompanies());
       dispatch(resetFavorites());

@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   cartWarehouse: [],
@@ -6,7 +6,7 @@ const initialState = {
 };
 
 export const cartSlice = createSlice({
-  name: "cartSlice",
+  name: 'cartSlice',
 
   initialState,
 
@@ -28,19 +28,13 @@ export const cartSlice = createSlice({
 
       // check if the item is already in the cart
       const findItem = state.cartItems.find(
-        (item) =>
-          item.item._id === itemId &&
-          item.warehouse.warehouse._id === warehouseId
+        (item) => item.item._id === itemId && item.warehouse.warehouse._id === warehouseId,
       );
 
       // if the item is already in the cart, replace the item
       if (findItem) {
         const filteredArray = state.cartItems.filter(
-          (item) =>
-            !(
-              item.item._id === itemId &&
-              item.warehouse.warehouse._id === warehouseId
-            )
+          (item) => !(item.item._id === itemId && item.warehouse.warehouse._id === warehouseId),
         );
 
         state.cartItems = [...filteredArray, action.payload];
@@ -61,18 +55,13 @@ export const cartSlice = createSlice({
 
       // check if the item is in the cart
       const findItem = state.cartItems.find(
-        (item) =>
-          item.item._id === itemId &&
-          item.warehouse.warehouse._id === warehouseId
+        (item) => item.item._id === itemId && item.warehouse.warehouse._id === warehouseId,
       );
 
       // if the item is in the cart, add one to its quantity
       if (findItem) {
         state.cartItems = state.cartItems.map((item) => {
-          if (
-            item.item._id === itemId &&
-            item.warehouse.warehouse._id === warehouseId
-          ) {
+          if (item.item._id === itemId && item.warehouse.warehouse._id === warehouseId) {
             return { ...item, qty: item.qty + 1 };
           } else {
             return item;
@@ -92,19 +81,14 @@ export const cartSlice = createSlice({
 
       // check if the item is in the cart
       const findItem = state.cartItems.find(
-        (item) =>
-          item.item._id === itemId &&
-          item.warehouse.warehouse._id === warehouseId
+        (item) => item.item._id === itemId && item.warehouse.warehouse._id === warehouseId,
       );
 
       // if the item is in the cart, mins one from its quantity
       // if the quantity is zero don't do anything
       if (findItem) {
         state.cartItems = state.cartItems.map((item) => {
-          if (
-            item.item._id === itemId &&
-            item.warehouse.warehouse._id === warehouseId
-          ) {
+          if (item.item._id === itemId && item.warehouse.warehouse._id === warehouseId) {
             return { ...item, qty: item.qty - 1 };
           } else {
             return item;
@@ -123,42 +107,24 @@ export const cartSlice = createSlice({
       } = action.payload;
 
       state.cartItems = state.cartItems.filter(
-        (item) =>
-          !(
-            item.item._id === itemId &&
-            item.warehouse.warehouse._id === warehouseId
-          )
+        (item) => !(item.item._id === itemId && item.warehouse.warehouse._id === warehouseId),
       );
 
-      const findItemByWarehouse = state.cartItems.find(
-        (item) => item.warehouse.warehouse._id === warehouseId
-      );
+      const findItemByWarehouse = state.cartItems.find((item) => item.warehouse.warehouse._id === warehouseId);
 
       if (!findItemByWarehouse) {
-        state.cartWarehouse = state.cartWarehouse.filter(
-          (w) => w !== warehouseName
-        );
+        state.cartWarehouse = state.cartWarehouse.filter((w) => w !== warehouseName);
       }
     },
     resetCartItems: (state, action) => {
-      console.log(action.payload);
-      state.cartWarehouse = state.cartWarehouse.filter(
-        (w) => w !== action.payload
-      );
-      state.cartItems = state.cartItems.filter(
-        (item) => item.warehouse.warehouse.name !== action.payload
-      );
+      state.cartWarehouse = state.cartWarehouse.filter((w) => w !== action.payload);
+      state.cartItems = state.cartItems.filter((item) => item.warehouse.warehouse.name !== action.payload);
     },
   },
 });
 
-export const {
-  addItemToCart,
-  removeItemFromCart,
-  resetCartItems,
-  increaseItemQty,
-  decreaseItemQty,
-} = cartSlice.actions;
+export const { addItemToCart, removeItemFromCart, resetCartItems, increaseItemQty, decreaseItemQty } =
+  cartSlice.actions;
 
 export const selectCartItems = (state) => state.cart.cartItems;
 

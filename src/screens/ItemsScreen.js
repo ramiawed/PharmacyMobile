@@ -45,7 +45,6 @@ const ItemsScreen = ({ route, navigation }) => {
 
   // search handler
   const handleSearch = (p) => {
-    console.log(p);
     const queryString = {};
 
     queryString.companyId = companyId;
