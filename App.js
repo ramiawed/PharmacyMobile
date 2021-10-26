@@ -26,6 +26,8 @@ import { authSign, selectToken, selectUser } from './src/redux/auth/authSlice';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { statisticsSignin } from './src/redux/statistics/statisticsSlice';
 import { Colors } from './src/utils/constants';
+import MainScreen1 from './src/screens/DrawerScreen';
+import DrawerScreen from './src/screens/DrawerScreen';
 
 const Stack = createStackNavigator();
 
@@ -77,7 +79,7 @@ const App = () => {
         }}
       >
         {user ? (
-          <Stack.Screen name="Main" component={MainScreen} />
+          <Stack.Screen name="Drawer" component={DrawerScreen} />
         ) : (
           <>
             <Stack.Screen name="SignIn" component={SigninScreen} />

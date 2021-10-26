@@ -17,6 +17,7 @@ import { resetCompanyItems } from '../redux/companyItems/companyItemsSlices';
 import { resetCompanies } from '../redux/company/companySlice';
 import { statisticsSignin } from '../redux/statistics/statisticsSlice';
 import ItemStack from './ItemStack';
+import { Header } from 'react-native/Libraries/NewAppScreen';
 
 const MainTab = createBottomTabNavigator();
 
@@ -38,15 +39,13 @@ const MainScreen = () => {
 
   return (
     <MainTab.Navigator tabBar={(props) => <MyTabBar {...props} />} initialRouteName="Home">
+      <MainTab.Screen name="Cart" component={CartScreen} options={{ title: i18n.t('cart'), headerShown: false }} />
+      <MainTab.Screen name="Home" component={HomeScreen} options={{ title: i18n.t('main'), headerShown: false }} />
       <MainTab.Screen
-        name="Medicines"
-        component={ItemStack}
-        options={{ title: i18n.t('medicines'), headerShown: false }}
+        name="Favorite"
+        component={FavoriteScreen}
+        options={{ title: i18n.t('favorites'), headerShown: false }}
       />
-      <MainTab.Screen name="Cart" component={CartScreen} options={{ title: i18n.t('cart') }} />
-      <MainTab.Screen name="Home" component={HomeScreen} options={{ title: i18n.t('main') }} />
-      <MainTab.Screen name="Favorite" component={FavoriteScreen} options={{ title: i18n.t('favorites') }} />
-      <MainTab.Screen name="Profile" component={ProfileScreen} options={{ title: i18n.t('nav-profile') }} />
     </MainTab.Navigator>
   );
 };
