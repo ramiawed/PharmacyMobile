@@ -11,6 +11,7 @@ import warehouseItemsSlices from '../redux/warehouseItems/warehouseItemsSlices';
 import cartSlice from '../redux/cart/cartSlice';
 import statisticsSlice from '../redux/statistics/statisticsSlice';
 import onlineSlice from '../redux/online/onlineSlice';
+import medicinesSlice from '../redux/medicines/medicinesSlices';
 
 export default configureStore({
   reducer: {
@@ -25,6 +26,7 @@ export default configureStore({
     cart: cartSlice,
     statistics: statisticsSlice,
     online: onlineSlice,
+    medicines: medicinesSlice,
   },
 });
 

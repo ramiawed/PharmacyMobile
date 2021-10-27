@@ -7,6 +7,7 @@ const HomeScreen = () => {
     <View>
       <Text style={{ writingDirection: 'rtl' }}>{i18n.t('home')}</Text>
       <TextInput style={{ writingDirection: 'rtl' }} />
+      {/* <ProfileImage /> */}
     </View>
   );
 };

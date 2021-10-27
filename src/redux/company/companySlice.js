@@ -13,7 +13,6 @@ const initialState = {
   pageState: {
     searchName: '',
     searchCity: '',
-    displayType: 'list',
     page: 1,
   },
 };

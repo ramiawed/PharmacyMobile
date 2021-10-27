@@ -2,6 +2,13 @@
     "companies-screen": "الشركات",
     "profile-screen": "الملف الشخصي",
     "warehouses-screen": "المستودعات",
+    "search-by-medicine-name": "البحث من خلال اسم الدواء",
+    "search-by-item-name": "البحث من خلال اسم الدواء",
+    "search-by-company-name": "البحث من خلال اسم الشركة",
+    "no-companies": "لا يوجد شركات",
+    "no-warehouses": "لا يوجد مستودعات",
+    "no-medicines": "لا يوجد ادوية",
+    "loading": "تحميل البيانات",
     "signup-sentence": "إذا لم يكن لديك حساب، قم بإنشاء حساب خاص",
     "signin-sentence": "إذا كان لديك حساب خاص، قم بتسجيل الدخول",
     "signup": "حساب جديد",
@@ -210,9 +217,7 @@
     "total-price": "السعر الإجمالي",
     "total-invoice-price": "القيمة الإجمالية",
     "delete-cart-row": "حذف السطر",
-    "no-companies": "لا يوجد شركات",
-    "no-warehouses": "لا يوجد مستودعات",
-    "no-medicines": "لا يوجد ادوية ضمن هذه الشركة",
+    
     "medicines-screen": "الأدوية",
     "medicines-in-warehouse": "الأدوية الموجودة ضمن مستودع:",
     "medicines-in-company": "الأدوية الموجودة ضمن شركة:",
@@ -285,8 +290,6 @@
     "timeout": "انتهاء المهلة الزمنية للعملية، تم إلغاء العملية",
     "network failed": "يوجد خطأ بالسيرفر، اعد المحاولة بعد دقائق",
     "main": "الرئيسية",
-    "please-try-again": "الرجاء المحاولة لاحقا",
-    "search-by-item-name": "البحث من خلال اسم الدواء",
-    "search-by-company-name": "البحث من خلال اسم الشركة",
-    "loading": "تحميل البيانات"
+    "please-try-again": "الرجاء المحاولة لاحقا"
+    
 }

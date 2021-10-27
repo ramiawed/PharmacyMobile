@@ -9,9 +9,9 @@ import { selectToken, selectUser } from '../redux/auth/authSlice';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { cancelOperation, getCompanies, resetCompanies, selectCompanies } from '../redux/company/companySlice';
 import { getFavorites } from '../redux/favorites/favoritesSlice';
-import CompanyCard from '../components/CompanyCard';
 
-// Components
+// components
+import PartnerCard from '../components/PartnerCard';
 import SearchBar from '../components/SearchBar';
 
 // constatns
@@ -28,7 +28,7 @@ const CompaniesScreen = ({ navigation }) => {
 
   const token = useSelector(selectToken);
   const user = useSelector(selectUser);
-  const { companies, status, count, error } = useSelector(selectCompanies);
+  const { companies, status, count } = useSelector(selectCompanies);
 
   const [searchName, setSearchName] = useState('');
   const [refreshing, setRefreshing] = useState(false);
@@ -131,7 +131,7 @@ const CompaniesScreen = ({ navigation }) => {
           onEndReached={handleMoreResult}
           onEndReachedThreshold={0.1}
           renderItem={({ item, index }) => {
-            return <CompanyCard company={item} navigation={navigation} />;
+            return <PartnerCard partner={item} navigation={navigation} type="company" />;
           }}
         />
       )}

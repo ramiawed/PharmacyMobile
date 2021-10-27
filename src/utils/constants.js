@@ -1,4 +1,4 @@
-export const baseUrl = 'http://78db-46-213-185-41.ngrok.io';
+export const baseUrl = 'http://7a03-46-213-215-1.ngrok.io';
 
 export const UserTypeConstants = {
   COMPANY: 'company',
@@ -23,6 +23,7 @@ export const Colors = {
   SUCCEEDED_COLOR: '#2aa70b',
   FAILED_COLOR: '#ff787e',
   YELLOW_COLOR: '#e9b93f',
+  WHITE_COLOR: '#FFF',
 };
 
 export const OrderOptions = {

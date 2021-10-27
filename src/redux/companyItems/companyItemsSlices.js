@@ -113,11 +113,11 @@ export const companyItemsSlice = createSlice({
       state.addToWarehouseError = '';
     },
     resetRemoveFromWarehouseStatus: (state) => {
-      state.RemoveFromWarehouseStatus = 'idle';
-      state.RemoveFromWarehouseError = '';
+      state.removeFromWarehouseStatus = 'idle';
+      state.removeFromWarehouseError = '';
     },
     resetRemoveFromWarehouseError: (state) => {
-      state.RemoveFromWarehouseError = '';
+      state.removeFromWarehouseError = '';
     },
     resetCompanyItems: (state) => {
       state.status = 'idle';
@@ -126,8 +126,8 @@ export const companyItemsSlice = createSlice({
       state.error = '';
       state.addToWarehouseStatus = 'idle';
       state.addToWarehouseError = '';
-      state.RemoveFromWarehouseStatus = 'idle';
-      state.RemoveFromWarehouseError = '';
+      state.removeFromWarehouseStatus = 'idle';
+      state.removeFromWarehouseError = '';
       state.selectedPage = 1;
     },
     setSelectedCompany: (state, action) => {

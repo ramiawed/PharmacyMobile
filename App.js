@@ -2,14 +2,18 @@ import 'react-native-gesture-handler';
 
 import React, { useEffect, useState } from 'react';
 import { I18nManager } from 'react-native';
+import './src/i18n/index';
 
 // Navigation Stuff
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
 
 // redux stuff
+import { unwrapResult } from '@reduxjs/toolkit';
 import { Provider, useDispatch, useSelector } from 'react-redux';
 import store from './src/app/store';
+import { authSign, selectToken, selectUser } from './src/redux/auth/authSlice';
+import { statisticsSignin } from './src/redux/statistics/statisticsSlice';
 
 // libraries
 import AppLoading from 'expo-app-loading';
@@ -19,15 +23,10 @@ import Toast from 'react-native-toast-message';
 // components
 import SigninScreen from './src/screens/SigninScreen';
 import SignupScreen from './src/screens/SignupScreen';
-import MainScreen from './src/screens/MainScreen';
-
-import './src/i18n/index';
-import { authSign, selectToken, selectUser } from './src/redux/auth/authSlice';
-import { unwrapResult } from '@reduxjs/toolkit';
-import { statisticsSignin } from './src/redux/statistics/statisticsSlice';
-import { Colors } from './src/utils/constants';
-import MainScreen1 from './src/screens/DrawerScreen';
 import DrawerScreen from './src/screens/DrawerScreen';
+
+// constants
+import { Colors } from './src/utils/constants';
 
 const Stack = createStackNavigator();
 

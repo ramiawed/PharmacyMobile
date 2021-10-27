@@ -18,12 +18,12 @@ import { statisticsCompanySelected, statisticsUserFavorites } from '../redux/sta
 import { Colors, baseUrl, UserTypeConstants } from '../utils/constants';
 import { selectUserData } from '../redux/auth/authSlice';
 import { unwrapResult } from '@reduxjs/toolkit';
-import { setSelectedCompany } from '../redux/companyItems/companyItemsSlices';
+import { resetMedicines } from '../redux/medicines/medicinesSlices';
 
 const SPACING = 20;
 const AVATAR_SIZE = 70;
 
-const CompanyCard = ({ company, navigation }) => {
+const PartnerCard = ({ partner, navigation, type }) => {
   const dispatch = useDispatch();
 
   const { token, user } = useSelector(selectUserData);
@@ -33,15 +33,9 @@ const CompanyCard = ({ company, navigation }) => {
 
   // method to handle add company to user's favorite
   const addCompanyToFavorite = () => {
-    // check the internet connection
-    // if (!isOnline) {
-    //   dispatch(changeOnlineMsg());
-    //   return;
-    // }
-
     setChangeFavoriteLoading(true);
 
-    dispatch(addFavorite({ obj: { favoriteId: company._id }, token }))
+    dispatch(addFavorite({ obj: { favoriteId: partner._id }, token }))
       .then(unwrapResult)
       .then(() => {
         setChangeFavoriteLoading(false);
@@ -54,8 +48,6 @@ const CompanyCard = ({ company, navigation }) => {
 
   // method to handle remove company from user's favorite
   const removeCompanyFromFavorite = (id) => {
-    // check the internet connection
-
     setChangeFavoriteLoading(true);
 
     dispatch(removeFavorite({ obj: { favoriteId: id }, token }))
@@ -69,10 +61,10 @@ const CompanyCard = ({ company, navigation }) => {
   const dispatchCompanySelectedHandler = () => {
     // if the user type is pharmacy or normal, change the selectedCount
     // and selectedDates for this company
-    if (user.type === UserTypeConstants.PHARMACY || user.type === UserTypeConstants.NORMAL) {
+    if (type === 'company' && (user.type === UserTypeConstants.PHARMACY || user.type === UserTypeConstants.NORMAL)) {
       dispatch(
         statisticsCompanySelected({
-          obj: { companyId: company._id },
+          obj: { companyId: partner._id },
           token,
         }),
       );
@@ -84,7 +76,11 @@ const CompanyCard = ({ company, navigation }) => {
       onPress={() => {
         dispatchCompanySelectedHandler();
         // dispatch(setSelectedCompany(company._id));
-        navigation.navigate('Items', { companyId: company._id });
+        dispatch(resetMedicines());
+        navigation.navigate('Medicines', {
+          companyId: type === 'company' ? partner._id : null,
+          warehouseId: type === 'warehouse' ? partner._id : null,
+        });
       }}
     >
       <Animated.View
@@ -92,14 +88,12 @@ const CompanyCard = ({ company, navigation }) => {
           ...styles.animatedView,
           flex: 1,
           marginHorizontal: 4,
-          // opacity,
-          // transform: [{ scale }],
         }}
       >
         <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-          {company.logo_url && company.logo_url.length !== 0 ? (
+          {partner.logo_url && partner.logo_url.length !== 0 ? (
             <Image
-              source={{ uri: `${baseUrl}/${company.logo_url}` }}
+              source={{ uri: `${baseUrl}/${partner.logo_url}` }}
               style={{ width: AVATAR_SIZE, height: AVATAR_SIZE, borderRadius: AVATAR_SIZE }}
             />
           ) : (
@@ -111,26 +105,26 @@ const CompanyCard = ({ company, navigation }) => {
         </View>
 
         <View>
-          <Text style={styles.title}>{company.name}</Text>
+          <Text style={styles.title}>{partner.name}</Text>
         </View>
 
         <TouchableWithoutFeedback onPress={() => {}}>
           <View style={styles.favoriteIcon}>
             {changeFavoriteLoading ? (
               <ActivityIndicator size="small" color={Colors.YELLOW_COLOR} />
-            ) : favorites && favorites.map((favorite) => favorite._id).includes(company?._id) ? (
+            ) : favorites && favorites.map((favorite) => favorite._id).includes(partner?._id) ? (
               <AntDesign
                 name="star"
                 size={24}
                 color={Colors.YELLOW_COLOR}
-                onPress={() => removeCompanyFromFavorite(company._id)}
+                onPress={() => removeCompanyFromFavorite(partner._id)}
               />
             ) : (
               <AntDesign
                 name="staro"
                 size={24}
                 color={Colors.YELLOW_COLOR}
-                onPress={() => addCompanyToFavorite(company._id)}
+                onPress={() => addCompanyToFavorite(partner._id)}
               />
             )}
           </View>
@@ -194,4 +188,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CompanyCard;
+export default PartnerCard;
