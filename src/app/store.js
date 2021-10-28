@@ -5,13 +5,15 @@ import usersSlice from '../redux/users/usersSlice';
 import companiesSlice from '../redux/company/companySlice';
 import favoritesSlice from '../redux/favorites/favoritesSlice';
 import warehousesSlice from '../redux/warehouse/warehousesSlice';
-import itemsSlice from '../redux/items/itemsSlices';
-import companyItemsSlice from '../redux/companyItems/companyItemsSlices';
-import warehouseItemsSlices from '../redux/warehouseItems/warehouseItemsSlices';
 import cartSlice from '../redux/cart/cartSlice';
 import statisticsSlice from '../redux/statistics/statisticsSlice';
-import onlineSlice from '../redux/online/onlineSlice';
 import medicinesSlice from '../redux/medicines/medicinesSlices';
+import companiesSectionOneSlice from '../redux/advertisements/companiesSectionOneSlice';
+import companiesSectionTwoSlice from '../redux/advertisements/companiesSectionTwoSlice';
+import itemsSectionOneSlice from '../redux/advertisements/itemsSectionOneSlice';
+import itemsSectionTwoSlice from '../redux/advertisements/itemsSectionTwoSlice';
+import itemsSectionThreeSlice from '../redux/advertisements/itemsSectionThreeSlice';
+import settingsSlice from '../redux/settings/settingsSlice';
 
 export default configureStore({
   reducer: {
@@ -20,13 +22,15 @@ export default configureStore({
     companies: companiesSlice,
     warehouses: warehousesSlice,
     favorites: favoritesSlice,
-    items: itemsSlice,
-    companyItems: companyItemsSlice,
-    warehouseItems: warehouseItemsSlices,
     cart: cartSlice,
     statistics: statisticsSlice,
-    online: onlineSlice,
     medicines: medicinesSlice,
+    companiesSectionOne: companiesSectionOneSlice,
+    companiesSectionTwo: companiesSectionTwoSlice,
+    itemsSectionOne: itemsSectionOneSlice,
+    itemsSectionTwo: itemsSectionTwoSlice,
+    itemsSectionThree: itemsSectionThreeSlice,
+    settings: settingsSlice,
   },
 });
 

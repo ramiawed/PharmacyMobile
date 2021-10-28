@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-const MedicineScreen = () => {
+const MedicineScreen = ({ route }) => {
+  const { medicineId } = route.params;
+
   return (
     <View>
-      <Text>Medicine Screen</Text>
+      <Text>Medicine Screen: {medicineId}</Text>
     </View>
   );
 };

@@ -9,7 +9,7 @@ const SPACING = 20;
 const AVATAR_SIZE = 70;
 const ITEM_SIZE = AVATAR_SIZE + SPACING * 3;
 
-const ItemCard = ({ item, index }) => {
+const ItemCard = ({ item, index, navigation }) => {
   const scrollY = React.useRef(new Animated.Value(0)).current;
 
   const inputRange = [-1, 0, ITEM_SIZE * index, ITEM_SIZE * (index + 20)];
@@ -29,7 +29,12 @@ const ItemCard = ({ item, index }) => {
   return (
     <TouchableWithoutFeedback
       onPress={() => {
-        console.log('press');
+        navigation.navigate('Medicines', {
+          screen: 'Medicine',
+          params: {
+            medicineId: item._id,
+          },
+        });
       }}
     >
       <Animated.View

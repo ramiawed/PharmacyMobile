@@ -27,6 +27,7 @@ import DrawerScreen from './src/screens/DrawerScreen';
 
 // constants
 import { Colors } from './src/utils/constants';
+import { getAllSettings } from './src/redux/settings/settingsSlice';
 
 const Stack = createStackNavigator();
 

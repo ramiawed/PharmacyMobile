@@ -1,42 +1,24 @@
-import React, { useEffect } from 'react';
+import React from 'react';
+import i18n from '../i18n/index';
+
 import { View, Text, TouchableOpacity, Platform } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
+// Screens
 import HomeScreen from './HomeScreen';
 import CartScreen from './CartScreen';
-import ProfileScreen from './ProfileScreens';
 import FavoriteScreen from './FavoriteScreen';
 
+// icons
 import { Ionicons } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
-import i18n from '../i18n/index';
+
+// constants
 import { Colors } from '../utils/constants';
-import { useDispatch, useSelector } from 'react-redux';
-import { selectUserData, signOut } from '../redux/auth/authSlice';
-import { getFavorites, resetFavorites } from '../redux/favorites/favoritesSlice';
-import { resetCompanyItems } from '../redux/companyItems/companyItemsSlices';
-import { resetCompanies } from '../redux/company/companySlice';
-import { statisticsSignin } from '../redux/statistics/statisticsSlice';
-import ItemStack from './ItemStack';
-import { Header } from 'react-native/Libraries/NewAppScreen';
 
 const MainTab = createBottomTabNavigator();
 
 const MainScreen = () => {
-  const { token } = useSelector(selectUserData);
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(getFavorites({ token }));
-    dispatch(statisticsSignin({ token }));
-
-    return () => {
-      dispatch(resetCompanyItems());
-      dispatch(resetCompanies());
-      dispatch(resetFavorites());
-      dispatch(signOut());
-    };
-  }, []);
-
   return (
     <MainTab.Navigator tabBar={(props) => <MyTabBar {...props} />} initialRouteName="Home">
       <MainTab.Screen name="Cart" component={CartScreen} options={{ title: i18n.t('cart'), headerShown: false }} />

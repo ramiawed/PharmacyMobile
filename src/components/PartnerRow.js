@@ -19,13 +19,17 @@ import { Colors, baseUrl, UserTypeConstants } from '../utils/constants';
 import { selectUserData } from '../redux/auth/authSlice';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { resetMedicines } from '../redux/medicines/medicinesSlices';
+import { useNavigation } from '@react-navigation/core';
+import { selectSettings } from '../redux/settings/settingsSlice';
 
-const SPACING = 20;
-const AVATAR_SIZE = 70;
-
-const PartnerCard = ({ partner, navigation, type }) => {
+const PartnerCard = ({ partner, type }) => {
   const dispatch = useDispatch();
+  const navigation = useNavigation();
 
+  // selectors
+  const {
+    settings: { showWarehouseItem },
+  } = useSelector(selectSettings);
   const { token, user } = useSelector(selectUserData);
   const favorites = useSelector(selectFavoritesPartners);
 
@@ -58,6 +62,30 @@ const PartnerCard = ({ partner, navigation, type }) => {
       .catch(() => setChangeFavoriteLoading(false));
   };
 
+  const handlePartnerRowPress = () => {
+    dispatchCompanySelectedHandler();
+
+    if (type === 'company') {
+      navigation.navigate('Medicines', {
+        screen: 'AllMedicines',
+        params: {
+          companyId: partner._id,
+          warehouseId: null,
+        },
+      });
+    }
+
+    if (type === 'warehouse' && showWarehouseItem) {
+      navigation.navigate('Medicines', {
+        screen: 'AllMedicines',
+        params: {
+          companyId: null,
+          warehouseId: partner._id,
+        },
+      });
+    }
+  };
+
   const dispatchCompanySelectedHandler = () => {
     // if the user type is pharmacy or normal, change the selectedCount
     // and selectedDates for this company
@@ -72,41 +100,8 @@ const PartnerCard = ({ partner, navigation, type }) => {
   };
 
   return (
-    <TouchableWithoutFeedback
-      onPress={() => {
-        dispatchCompanySelectedHandler();
-        // dispatch(setSelectedCompany(company._id));
-        dispatch(resetMedicines());
-        navigation.navigate('Medicines', {
-          screen: 'AllMedicines',
-          params: {
-            companyId: type === 'company' ? partner._id : null,
-            warehouseId: type === 'warehouse' ? partner._id : null,
-          },
-        });
-      }}
-    >
-      <Animated.View
-        style={{
-          ...styles.animatedView,
-          flex: 1,
-          marginHorizontal: 4,
-        }}
-      >
-        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-          {partner.logo_url && partner.logo_url.length !== 0 ? (
-            <Image
-              source={{ uri: `${baseUrl}/${partner.logo_url}` }}
-              style={{ width: AVATAR_SIZE, height: AVATAR_SIZE, borderRadius: AVATAR_SIZE }}
-            />
-          ) : (
-            <Image
-              source={{ uri: `${baseUrl}/Adacard 201627116290082.png` }}
-              style={{ width: AVATAR_SIZE, height: AVATAR_SIZE, borderRadius: AVATAR_SIZE }}
-            />
-          )}
-        </View>
-
+    <TouchableWithoutFeedback onPress={handlePartnerRowPress}>
+      <View style={styles.container}>
         <View>
           <Text style={styles.title}>{partner.name}</Text>
         </View>
@@ -132,7 +127,7 @@ const PartnerCard = ({ partner, navigation, type }) => {
             )}
           </View>
         </TouchableWithoutFeedback>
-      </Animated.View>
+      </View>
     </TouchableWithoutFeedback>
   );
 };
@@ -141,54 +136,21 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-  },
-  animatedView: {
-    padding: SPACING,
-    marginBottom: SPACING,
-    backgroundColor: 'rgba(255,255,255, 1)',
-    borderRadius: 12,
-    shadowColor: Colors.SECONDARY_COLOR,
-    shadowOffset: {
-      width: 0,
-      height: 7,
-    },
-    shadowOpacity: 0.43,
-    shadowRadius: 9.51,
-
-    elevation: 25,
-  },
-  searchInput: {
-    borderWidth: 1,
-    borderColor: Colors.SECONDARY_COLOR,
-    backgroundColor: Colors.MAIN_COLOR,
-    borderRadius: 6,
-    margin: SPACING,
-    marginBottom: 10,
-    marginTop: Platform.OS === 'ios' ? SPACING * 2 : SPACING,
-    padding: Platform.OS === 'ios' ? 10 : 5,
-    writingDirection: 'rtl',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 10,
+    borderBottomWidth: 1,
+    borderColor: 'rgba(0, 0, 0, .1)',
   },
 
   title: {
-    fontSize: 20,
+    flex: 1,
+    fontSize: 16,
     fontWeight: '700',
-    color: Colors.MAIN_COLOR,
+    color: Colors.SECONDARY_COLOR,
     textAlign: 'center',
   },
-
-  noContent: {
-    fontSize: 18,
-    fontWeight: '500',
-  },
-  favoriteIcon: {
-    position: 'absolute',
-    top: 0,
-    end: 0,
-    width: 48,
-    height: 48,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  favoriteIcon: {},
 });
 
 export default PartnerCard;

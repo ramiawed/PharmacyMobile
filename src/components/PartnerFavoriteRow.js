@@ -15,22 +15,23 @@ import { Colors } from '../utils/constants';
 
 // icons
 import { AntDesign } from '@expo/vector-icons';
-import { setSelectedCompany } from '../redux/companyItems/companyItemsSlices';
+import { selectSettings } from '../redux/settings/settingsSlice';
 
 const PartnerFavoriteRow = ({ type, favorite }) => {
   const navigation = useNavigation();
-  const token = useSelector(selectToken);
   const dispatch = useDispatch();
+
+  // selector
+  const token = useSelector(selectToken);
+  const {
+    settings: { showWarehouseItem },
+  } = useSelector(selectSettings);
+
+  // own state
   const [loading, setLoading] = useState(false);
 
   // method to handle remove company from user's favorite
   const removeCompanyFromFavorite = (id) => {
-    // check the internet connection
-    // if (!checkConnection()) {
-    //   setConnectionError("no-internet-connection");
-    //   return;
-    // }
-
     if (type === 'company' || type === 'warehouse') {
       setLoading(true);
       dispatch(removeFavorite({ obj: { favoriteId: id }, token }));
@@ -38,12 +39,23 @@ const PartnerFavoriteRow = ({ type, favorite }) => {
   };
 
   const goToCompanyItems = (id) => {
+    console.log(type, showWarehouseItem);
     if (type === 'company') {
-      // dispatch(setSelectedCompany(id));
       navigation.navigate('Medicines', {
-        screen: 'Items',
+        screen: 'AllMedicines',
         params: {
           companyId: id,
+          warehouseId: null,
+        },
+      });
+    }
+
+    if (type === 'warehouse' && showWarehouseItem) {
+      navigation.navigate('Medicines', {
+        screen: 'AllMedicines',
+        params: {
+          companyId: null,
+          warehouseId: id,
         },
       });
     }

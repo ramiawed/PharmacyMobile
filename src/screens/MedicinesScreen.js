@@ -84,6 +84,8 @@ const MedicinesScreen = ({ navigation, route }) => {
   };
 
   useEffect(() => {
+    console.log(companyId);
+    console.log(warehouseId);
     dispatch(resetMedicines());
     handleSearch(1);
 
@@ -148,7 +150,7 @@ const MedicinesScreen = ({ navigation, route }) => {
           onEndReached={handleMoreResult}
           onEndReachedThreshold={0.1}
           renderItem={({ item, index }) => {
-            return <ItemCard item={item} index={index} />;
+            return <ItemCard item={item} index={index} navigation={navigation} />;
           }}
         />
       )}
