@@ -11,6 +11,8 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
+import { useNavigation } from '@react-navigation/native';
+
 import { AntDesign } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { addFavorite, removeFavorite, selectFavoritesPartners } from '../redux/favorites/favoritesSlice';
@@ -23,8 +25,9 @@ import { resetMedicines } from '../redux/medicines/medicinesSlices';
 const SPACING = 20;
 const AVATAR_SIZE = 70;
 
-const PartnerCard = ({ partner, navigation, type }) => {
+const PartnerCard = ({ partner, type, advertisement }) => {
   const dispatch = useDispatch();
+  const navigation = useNavigation();
 
   const { token, user } = useSelector(selectUserData);
   const favorites = useSelector(selectFavoritesPartners);
@@ -97,12 +100,12 @@ const PartnerCard = ({ partner, navigation, type }) => {
           {partner.logo_url && partner.logo_url.length !== 0 ? (
             <Image
               source={{ uri: `${baseUrl}/${partner.logo_url}` }}
-              style={{ width: AVATAR_SIZE, height: AVATAR_SIZE, borderRadius: AVATAR_SIZE }}
+              style={advertisement ? styles.logoLarge : styles.logo}
             />
           ) : (
             <Image
               source={{ uri: `${baseUrl}/Adacard 201627116290082.png` }}
-              style={{ width: AVATAR_SIZE, height: AVATAR_SIZE, borderRadius: AVATAR_SIZE }}
+              style={advertisement ? styles.logoLarge : styles.logo}
             />
           )}
         </View>
@@ -138,10 +141,6 @@ const PartnerCard = ({ partner, navigation, type }) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
   animatedView: {
     padding: SPACING,
     marginBottom: SPACING,
@@ -157,17 +156,6 @@ const styles = StyleSheet.create({
 
     elevation: 25,
   },
-  searchInput: {
-    borderWidth: 1,
-    borderColor: Colors.SECONDARY_COLOR,
-    backgroundColor: Colors.MAIN_COLOR,
-    borderRadius: 6,
-    margin: SPACING,
-    marginBottom: 10,
-    marginTop: Platform.OS === 'ios' ? SPACING * 2 : SPACING,
-    padding: Platform.OS === 'ios' ? 10 : 5,
-    writingDirection: 'rtl',
-  },
 
   title: {
     fontSize: 20,
@@ -176,10 +164,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 
-  noContent: {
-    fontSize: 18,
-    fontWeight: '500',
-  },
   favoriteIcon: {
     position: 'absolute',
     top: 0,
@@ -188,6 +172,16 @@ const styles = StyleSheet.create({
     height: 48,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  logo: {
+    width: 70,
+    height: 70,
+    borderRadius: 70,
+  },
+  logoLarge: {
+    width: 130,
+    height: 130,
+    borderRadius: 130,
   },
 });
 

@@ -39,12 +39,11 @@ const ItemFavoriteRow = ({ favorite }) => {
   };
 
   const goToItemScreen = (id) => {
-    Toast.show({
-      text1: 'Hello',
-      text2: 'This is some something',
-      type: 'info',
-      position: 'bottom',
-      bottomOffset: 70,
+    navigation.navigate('Medicines', {
+      screen: 'Medicine',
+      params: {
+        medicineId: id,
+      },
     });
   };
 

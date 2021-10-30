@@ -22,7 +22,7 @@ import { resetMedicines } from '../redux/medicines/medicinesSlices';
 import { useNavigation } from '@react-navigation/core';
 import { selectSettings } from '../redux/settings/settingsSlice';
 
-const PartnerCard = ({ partner, type }) => {
+const PartnerRow = ({ partner, type }) => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
 
@@ -153,4 +153,4 @@ const styles = StyleSheet.create({
   favoriteIcon: {},
 });
 
-export default PartnerCard;
+export default PartnerRow;

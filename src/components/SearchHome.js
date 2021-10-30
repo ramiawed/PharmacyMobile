@@ -9,12 +9,14 @@ import { baseUrl, Colors } from '../utils/constants';
 
 // icons
 import { AntDesign } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 
 // redux stuff
 import { useSelector } from 'react-redux';
 import { selectToken } from '../redux/auth/authSlice';
 import { ScrollView } from 'react-native-gesture-handler';
 import PartnerRow from './PartnerRow';
+import ItemRow from './ItemRow';
 
 let CancelToken;
 let source;
@@ -119,8 +121,14 @@ const SearchHome = () => {
   }, [option]);
 
   return (
-    <View style={{ ...styles.container, height: (windowHeight - 140) / 2 }}>
-      {/* <Text style={styles.appName}>{i18n.t('app-name')}</Text> */}
+    <View
+      style={{
+        ...styles.container,
+        justifyContent: showResult ? 'flex-start' : 'center',
+        height: (windowHeight - 140) / 2,
+      }}
+    >
+      {/*  */}
 
       <View style={styles.options}>
         <View>
@@ -176,20 +184,24 @@ const SearchHome = () => {
           </TouchableOpacity>
         )}
       </View>
-      {showResult && (
+      {showResult ? (
         <View style={styles.searchResult}>
           {loading ? (
             <ActivityIndicator size="large" color={Colors.SECONDARY_COLOR} />
           ) : data.length > 0 ? (
             <ScrollView>
-              {data.map((d, index) => (
-                <PartnerRow key={index} partner={d} type={option === 'companies' ? 'company' : 'warehouse'} />
-              ))}
+              {option === 'medicines'
+                ? data.map((d, index) => <ItemRow key={index} item={d} />)
+                : data.map((d, index) => (
+                    <PartnerRow key={index} partner={d} type={option === 'companies' ? 'company' : 'warehouse'} />
+                  ))}
             </ScrollView>
           ) : (
             <Text style={styles.noContent}>{i18n.t('no-data-found')}</Text>
           )}
         </View>
+      ) : (
+        <></>
       )}
     </View>
   );
@@ -197,23 +209,17 @@ const SearchHome = () => {
 
 const styles = StyleSheet.create({
   container: {
-    // backgroundColor: Colors.SECONDARY_COLOR,
     alignItems: 'center',
     justifyContent: 'flex-start',
     paddingTop: 10,
   },
-  appName: {
-    fontSize: 64,
-    fontWeight: 'bold',
-    marginVertical: 10,
-    color: '#3BBF6B',
-    textShadowColor: Colors.WHITE_COLOR,
-    textShadowOffset: {
-      width: 1,
-      height: 1,
-    },
-    textShadowRadius: 4,
+  alignStart: {
+    justifyContent: 'flex-start',
   },
+  alignCenter: {
+    justifyContent: 'center',
+  },
+
   options: {
     flexDirection: 'row',
     marginBottom: 20,

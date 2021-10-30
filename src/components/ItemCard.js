@@ -4,12 +4,14 @@ import React, { memo } from 'react';
 import { View, Text, StyleSheet, Image, TouchableWithoutFeedback, Platform, Animated } from 'react-native';
 
 import { baseUrl, Colors } from '../utils/constants';
+import { useNavigation } from '@react-navigation/core';
 
 const SPACING = 20;
 const AVATAR_SIZE = 70;
 const ITEM_SIZE = AVATAR_SIZE + SPACING * 3;
 
-const ItemCard = ({ item, index, navigation }) => {
+const ItemCard = ({ item, index, advertisement }) => {
+  const navigation = useNavigation();
   const scrollY = React.useRef(new Animated.Value(0)).current;
 
   const inputRange = [-1, 0, ITEM_SIZE * index, ITEM_SIZE * (index + 20)];
@@ -42,6 +44,7 @@ const ItemCard = ({ item, index, navigation }) => {
           ...styles.animatedView,
           opacity,
           transform: [{ scale }],
+          marginEnd: advertisement ? 10 : 0,
         }}
       >
         <View style={{ alignItems: 'center', justifyContent: 'center' }}>
