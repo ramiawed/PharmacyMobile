@@ -89,7 +89,7 @@ const PartnerRow = ({ partner, type }) => {
   const dispatchCompanySelectedHandler = () => {
     // if the user type is pharmacy or normal, change the selectedCount
     // and selectedDates for this company
-    if (type === 'company' && (user.type === UserTypeConstants.PHARMACY || user.type === UserTypeConstants.NORMAL)) {
+    if (type === 'company' && (user.type === UserTypeConstants.PHARMACY || user.type === UserTypeConstants.GUEST)) {
       dispatch(
         statisticsCompanySelected({
           obj: { companyId: partner._id },

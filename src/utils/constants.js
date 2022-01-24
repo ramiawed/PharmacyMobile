@@ -3,7 +3,6 @@ export const baseUrl = 'http://74cb-178-52-135-190.ngrok.io';
 export const UserTypeConstants = {
   COMPANY: 'company',
   WAREHOUSE: 'warehouse',
-  NORMAL: 'normal',
   ADMIN: 'admin',
   GUEST: 'normal',
   PHARMACY: 'pharmacy',
