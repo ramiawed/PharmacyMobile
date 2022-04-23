@@ -1,4 +1,5 @@
-import { configureStore } from '@reduxjs/toolkit';
+import { combineReducers, configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
+import { persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
 
 import authSlice from '../redux/auth/authSlice';
 import usersSlice from '../redux/users/usersSlice';
@@ -14,35 +15,59 @@ import itemsSectionOneSlice from '../redux/advertisements/itemsSectionOneSlice';
 import itemsSectionTwoSlice from '../redux/advertisements/itemsSectionTwoSlice';
 import itemsSectionThreeSlice from '../redux/advertisements/itemsSectionThreeSlice';
 import settingsSlice from '../redux/settings/settingsSlice';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default configureStore({
-  reducer: {
-    auth: authSlice,
-    users: usersSlice,
-    companies: companiesSlice,
-    warehouses: warehousesSlice,
-    favorites: favoritesSlice,
-    cart: cartSlice,
-    statistics: statisticsSlice,
-    medicines: medicinesSlice,
-    companiesSectionOne: companiesSectionOneSlice,
-    companiesSectionTwo: companiesSectionTwoSlice,
-    itemsSectionOne: itemsSectionOneSlice,
-    itemsSectionTwo: itemsSectionTwoSlice,
-    itemsSectionThree: itemsSectionThreeSlice,
-    settings: settingsSlice,
-  },
+// const configureStore({
+//   reducer: {
+//     auth: authSlice,
+//     users: usersSlice,
+//     companies: companiesSlice,
+//     warehouses: warehousesSlice,
+//     favorites: favoritesSlice,
+//     cart: cartSlice,
+//     statistics: statisticsSlice,
+//     medicines: medicinesSlice,
+//     companiesSectionOne: companiesSectionOneSlice,
+//     companiesSectionTwo: companiesSectionTwoSlice,
+//     itemsSectionOne: itemsSectionOneSlice,
+//     itemsSectionTwo: itemsSectionTwoSlice,
+//     itemsSectionThree: itemsSectionThreeSlice,
+//     settings: settingsSlice,
+//   },
+// });
+
+const rootReducer = combineReducers({
+  auth: authSlice,
+  users: usersSlice,
+  companies: companiesSlice,
+  warehouses: warehousesSlice,
+  favorites: favoritesSlice,
+  cart: cartSlice,
+  statistics: statisticsSlice,
+  medicines: medicinesSlice,
+  companiesSectionOne: companiesSectionOneSlice,
+  companiesSectionTwo: companiesSectionTwoSlice,
+  itemsSectionOne: itemsSectionOneSlice,
+  itemsSectionTwo: itemsSectionTwoSlice,
+  itemsSectionThree: itemsSectionThreeSlice,
+  settings: settingsSlice,
 });
 
-// const persistConfig = {
-//   key: 'root',
-//   storage,
-//   whitelist: ['auth', 'cart'],
-//   blacklist: [],
-// };
+const persistConfig = {
+  key: 'root',
+  version: 1,
+  storage: AsyncStorage,
+  whitelist: ['auth', 'settings'],
+};
 
-// const persistedReducer = persistReducer(persistConfig, reducers);
+const persistedReducer = persistReducer(persistConfig, rootReducer);
 
-// export default configureStore({
-//   reducer: persistedReducer,
-// });
+export default configureStore({
+  reducer: persistedReducer,
+  middleware: getDefaultMiddleware({
+    serializableCheck: {
+      ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+    },
+    immutableCheck: false,
+  }),
+});

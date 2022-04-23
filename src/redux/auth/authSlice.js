@@ -1,9 +1,9 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { baseUrl } from '../../utils/constants';
+import { BASEURL } from '../../utils/constants';
 
-let CancelToken;
-let source;
+let CancelToken = null;
+let source = null;
 
 const initialState = {
   status: 'idle',
@@ -26,27 +26,32 @@ export const cancelOperation = () => {
   }
 };
 
+const resetCancelAndSource = () => {
+  CancelToken = null;
+  source = null;
+};
+
 export const authSign = createAsyncThunk('auth/signin', async ({ username, password }, { rejectWithValue }) => {
   try {
     CancelToken = axios.CancelToken;
     source = CancelToken.source();
 
-    console.log(username, password);
-
     const response = await axios.post(
-      `${baseUrl}/api/v1/users/signin`,
+      `${BASEURL}/users/signin`,
       {
         username,
         password,
       },
       {
-        timeout: 10000,
         cancelToken: source.token,
       },
     );
 
+    resetCancelAndSource();
+
     return response.data;
   } catch (err) {
+    resetCancelAndSource();
     if (err.code === 'ECONNABORTED' && err.message.startsWith('timeout')) {
       return rejectWithValue('timeout');
     }
@@ -62,53 +67,58 @@ export const authSign = createAsyncThunk('auth/signin', async ({ username, passw
   }
 });
 
-// export const authSignup = createAsyncThunk(
-//   "auth/signup",
-//   async ({ obj, token }, { rejectWithValue }) => {
-//     try {
-//       CancelToken = axios.CancelToken;
-//       source = CancelToken.source();
+export const authSignWithToken = createAsyncThunk('auth/authSignWithToken', async ({ token }, { rejectWithValue }) => {
+  try {
+    CancelToken = axios.CancelToken;
+    source = CancelToken.source();
 
-//       const response = await axios.post(
-//         "http://localhost:8000/api/v1/users/signup",
-//         obj,
-//         {
-//           timeout: 10000,
-//           cancelToken: source.token,
-//           headers: {
-//             Authorization: `Bearer ${token}`,
-//           },
-//         }
-//       );
+    const response = await axios.post(
+      `${BASEURL}/users/signinwithtoken`,
+      {
+        token,
+      },
+      {
+        cancelToken: source.token,
+      },
+    );
 
-//       return response.data;
-//     } catch (err) {
-//       if (err.code === "ECONNABORTED" && err.message.startsWith("timeout")) {
-//         return rejectWithValue("timeout");
-//       }
-//       if (axios.isCancel(err)) {
-//         return rejectWithValue("cancel");
-//       }
-//       return rejectWithValue(err.response.data);
-//     }
-//   }
-// );
+    resetCancelAndSource();
+
+    return response.data;
+  } catch (err) {
+    resetCancelAndSource();
+    if (err.code === 'ECONNABORTED' && err.message.startsWith('timeout')) {
+      return rejectWithValue('timeout');
+    }
+    if (axios.isCancel(err)) {
+      return rejectWithValue('cancel');
+    }
+
+    if (!err.response) {
+      return rejectWithValue('network failed');
+    }
+
+    return rejectWithValue(err.response.data);
+  }
+});
 
 export const updateUserInfo = createAsyncThunk('auth/updateUser', async ({ obj, token }, { rejectWithValue }) => {
   try {
     CancelToken = axios.CancelToken;
     source = CancelToken.source();
 
-    const response = await axios.post('http://localhost:8000/api/v1/users/updateMe', obj, {
-      timeout: 10000,
+    const response = await axios.post(`${BASEURL}/users/updateMe`, obj, {
       cancelToken: source.token,
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
 
+    resetCancelAndSource();
     return response.data;
   } catch (err) {
+    console.log(err);
+    resetCancelAndSource();
     // timeout finished
     if (err.code === 'ECONNABORTED' && err.message.startsWith('timeout')) {
       return rejectWithValue('timeout');
@@ -136,16 +146,17 @@ export const changeMyPassword = createAsyncThunk(
       CancelToken = axios.CancelToken;
       source = CancelToken.source();
 
-      const response = await axios.post('http://localhost:8000/api/v1/users/changeMyPassword', obj, {
-        timeout: 10000,
+      const response = await axios.post(`${BASEURL}/users/changeMyPassword`, obj, {
         cancelToken: source.token,
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
+      resetCancelAndSource();
       return response.data;
     } catch (err) {
+      resetCancelAndSource();
       if (err.code === 'ECONNABORTED' && err.message.startsWith('timeout')) {
         return rejectWithValue('timeout');
       }
@@ -165,16 +176,17 @@ export const deleteMe = createAsyncThunk('auth/deleteMe', async ({ obj, token },
     CancelToken = axios.CancelToken;
     source = CancelToken.source();
 
-    const response = await axios.post('http://localhost:8000/api/v1/users/deleteMe', obj, {
-      timeout: 10000,
+    const response = await axios.post(`${BASEURL}/users/deleteMe`, obj, {
       cancelToken: source.token,
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
 
+    resetCancelAndSource();
     return response.data;
   } catch (err) {
+    resetCancelAndSource();
     if (err.code === 'ECONNABORTED' && err.message.startsWith('timeout')) {
       return rejectWithValue('timeout');
     }
@@ -189,30 +201,31 @@ export const deleteMe = createAsyncThunk('auth/deleteMe', async ({ obj, token },
 });
 
 export const changeLogo = createAsyncThunk('auth/changeLogo', async ({ data, token }, { rejectWithValue }) => {
-  try {
-    CancelToken = axios.CancelToken;
-    source = CancelToken.source();
-
-    const response = await axios.post('http://localhost:8000/api/v1/users/upload', data, {
-      timeout: 10000,
-      cancelToken: source.token,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    return response.data;
-  } catch (err) {
-    if (err.code === 'ECONNABORTED' && err.message.startsWith('timeout')) {
-      return rejectWithValue('timeout');
-    }
-    if (axios.isCancel(err)) {
-      return rejectWithValue('cancel');
-    }
-    if (!err.response) {
-      return rejectWithValue('network failed');
-    }
-    return rejectWithValue(err.response.data);
-  }
+  // try {
+  //   CancelToken = axios.CancelToken;
+  //   source = CancelToken.source();
+  //   const response = await axios.post(`${BASEURL}/users/upload`, data, {
+  //     cancelToken: source.token,
+  //     headers: {
+  //       "Content-Type": "multipart/form-data",
+  //       Authorization: `Bearer ${token}`,
+  //     },
+  //   });
+  //   resetCancelAndSource();
+  //   return response.data;
+  // } catch (err) {
+  //   resetCancelAndSource();
+  //   if (err.code === "ECONNABORTED" && err.message.startsWith("timeout")) {
+  //     return rejectWithValue("timeout");
+  //   }
+  //   if (axios.isCancel(err)) {
+  //     return rejectWithValue("cancel");
+  //   }
+  //   if (!err.response) {
+  //     return rejectWithValue("network failed");
+  //   }
+  //   return rejectWithValue(err.response.data);
+  // }
 });
 
 export const authSlice = createSlice({
@@ -270,6 +283,26 @@ export const authSlice = createSlice({
     resetChangeLogoError: (state) => {
       state.changeLogoError = '';
     },
+    changeLogoURL: (state, action) => {
+      state.user = {
+        ...state.user,
+        logo_url: action.payload,
+      };
+    },
+    authSliceSignOut: (state) => {
+      state.status = 'idle';
+      state.updateStatus = 'idle';
+      state.changeLogoStatus = 'idle';
+      state.changePasswordStatus = 'idle';
+      state.deleteStatus = 'idle';
+      state.user = null;
+      state.token = '';
+      state.error = '';
+      state.updateError = '';
+      state.passwordError = '';
+      state.deleteError = '';
+      state.changeLogoError = '';
+    },
   },
   extraReducers: {
     // use sign in lifecycle
@@ -288,13 +321,45 @@ export const authSlice = createSlice({
       state.token = '';
       state.user = null;
 
-      if (payload === 'timeout') {
-        state.error = 'timeout-msg';
-      } else if (payload === 'cancel') {
-        state.error = 'cancel-operation-msg';
-      } else if (payload === 'network failed') {
-        state.error = 'network failed';
-      } else state.error = payload.message;
+      try {
+        if (payload === 'timeout') {
+          state.error = 'general-error';
+        } else if (payload === 'cancel') {
+          state.error = 'general-error';
+        } else if (payload === 'network failed') {
+          state.error = 'general-error';
+        } else state.error = payload.message;
+      } catch (err) {
+        state.error = 'general-error';
+      }
+    },
+
+    [authSignWithToken.pending]: (state, action) => {
+      state.status = 'loading';
+      state.error = '';
+    },
+    [authSignWithToken.fulfilled]: (state, action) => {
+      state.status = 'succeeded';
+      state.token = action.payload.token;
+      state.user = action.payload.data.user;
+      state.error = '';
+    },
+    [authSignWithToken.rejected]: (state, { error, meta, payload }) => {
+      state.status = 'failed';
+      state.token = '';
+      state.user = null;
+
+      try {
+        if (payload === 'timeout') {
+          state.error = 'general-error';
+        } else if (payload === 'cancel') {
+          state.error = 'general-error';
+        } else if (payload === 'network failed') {
+          state.error = 'general-error';
+        } else state.error = payload.message;
+      } catch (err) {
+        state.error = 'general-error';
+      }
     },
 
     // user update info lifecycle
@@ -307,13 +372,18 @@ export const authSlice = createSlice({
     },
     [updateUserInfo.rejected]: (state, { payload }) => {
       state.updateStatus = 'failed';
-      if (payload === 'timeout') {
-        state.updateError = 'timeout';
-      } else if (payload === 'cancel') {
-        state.updateError = 'cancel';
-      } else if (payload === 'network failed') {
-        state.updateError = 'network failed';
-      } else state.updateError = payload.message;
+
+      try {
+        if (payload === 'timeout') {
+          state.error = 'general-error';
+        } else if (payload === 'cancel') {
+          state.error = 'general-error';
+        } else if (payload === 'network failed') {
+          state.error = 'general-error';
+        } else state.error = payload.message;
+      } catch (err) {
+        state.error = 'general-error';
+      }
     },
 
     // change password lifecycle
@@ -323,17 +393,22 @@ export const authSlice = createSlice({
     },
     [changeMyPassword.fulfilled]: (state, action) => {
       state.changePasswordStatus = 'succeeded';
-      state.user = action.payload.data.user;
+      // state.user = action.payload.data.user;
     },
     [changeMyPassword.rejected]: (state, { error, meta, payload }) => {
       state.changePasswordStatus = 'failed';
-      if (payload === 'timeout') {
-        state.passwordError = payload;
-      } else if (payload === 'cancel') {
-        state.passwordError = 'cancel-operation-msg';
-      } else if (payload === 'network failed') {
-        state.passwordError = 'network failed';
-      } else state.passwordError = payload.message;
+
+      try {
+        if (payload === 'timeout') {
+          state.error = 'general-error';
+        } else if (payload === 'cancel') {
+          state.error = 'general-error';
+        } else if (payload === 'network failed') {
+          state.error = 'general-error';
+        } else state.error = payload.message;
+      } catch (err) {
+        state.error = 'general-error';
+      }
     },
 
     // delete me lifecycle
@@ -347,33 +422,43 @@ export const authSlice = createSlice({
     },
     [deleteMe.rejected]: (state, { payload }) => {
       state.deleteStatus = 'failed';
-      if (payload === 'timeout') {
-        state.deleteError = 'timeout-msg';
-      } else if (payload === 'cancel') {
-        state.deleteError = 'cancel-operation-msg';
-      } else if (payload === 'network failed') {
-        state.deleteError = 'network failed';
-      } else state.deleteError = payload.message;
+
+      try {
+        if (payload === 'timeout') {
+          state.error = 'general-error';
+        } else if (payload === 'cancel') {
+          state.error = 'general-error';
+        } else if (payload === 'network failed') {
+          state.error = 'general-error';
+        } else state.error = payload.message;
+      } catch (err) {
+        state.error = 'general-error';
+      }
     },
 
-    // change the logo of a user lifecycle
-    [changeLogo.pending]: (state) => {
-      state.changeLogoStatus = 'loading';
-    },
-    [changeLogo.fulfilled]: (state, action) => {
-      state.changeLogoStatus = 'succeeded';
-      state.user = action.payload.data.user;
-    },
-    [changeLogo.rejected]: (state, { payload }) => {
-      state.changeLogoStatus = 'failed';
-      if (payload === 'timeout') {
-        state.changeLogoError = 'timeout-msg';
-      } else if (payload === 'cancel') {
-        state.changeLogoError = 'cancel-operation-msg';
-      } else if (payload === 'network failed') {
-        state.changeLogoError = 'network failed';
-      } else state.changeLogoError = payload.message;
-    },
+    // // change the logo of a user lifecycle
+    // [changeLogo.pending]: (state) => {
+    //   state.changeLogoStatus = "loading";
+    // },
+    // [changeLogo.fulfilled]: (state, action) => {
+    //   state.changeLogoStatus = "succeeded";
+    //   state.user = action.payload.data.user;
+    // },
+    // [changeLogo.rejected]: (state, { payload }) => {
+    //   state.changeLogoStatus = "failed";
+
+    //   try {
+    //     if (payload === "timeout") {
+    //       state.error = "general-error";
+    //     } else if (payload === "cancel") {
+    //       state.error = "general-error";
+    //     } else if (payload === "network failed") {
+    //       state.error = "general-error";
+    //     } else state.error = payload.message;
+    //   } catch (err) {
+    //     state.error = "general-error";
+    //   }
+    // },
   },
 });
 
@@ -389,6 +474,8 @@ export const {
   resetChangeLogoError,
   resetUpdateStatus,
   resetUpdateError,
+  authSliceSignOut,
+  changeLogoURL,
 } = authSlice.actions;
 
 export const selectToken = (state) => state.auth.token;

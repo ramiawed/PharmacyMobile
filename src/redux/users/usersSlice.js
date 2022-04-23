@@ -2,140 +2,167 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 // import axios from "../../api/pharmacy";
 import axios from "axios";
 
-let CancelToken;
-let source;
+import {
+  BASEURL,
+  CitiesName,
+  GuestJob,
+  ShowWarehouseItems,
+  UserActiveState,
+  UserApprovedState,
+  UserTypeConstants,
+} from "../../utils/constants";
+
+let CancelToken = null;
+let source = null;
 
 const initialState = {
   status: "idle",
   users: null,
   error: "",
   count: 0,
+  refresh: true,
+  pageState: {
+    searchName: "",
+    searchCity: CitiesName.ALL,
+    searchAddressDetails: "",
+    searchEmployeeName: "",
+    searchCertificateName: "",
+    searchCompanyName: "",
+    searchJobTitle: "",
+    approved: UserApprovedState.ALL,
+    active: UserActiveState.ALL,
+    userType: UserTypeConstants.ALL,
+    searchJob: GuestJob.NONE,
+    showItems: ShowWarehouseItems.ALL,
+    orderBy: {},
+    page: 1,
+  },
   // field holds the activation or deleting status
-  activationDeleteStatus: "idle",
+  // activationDeleteStatus: "idle",
   // field holds the activation or deleting message
-  activationDeleteStatusMsg: "",
+  // activationDeleteStatusMsg: "",
   resetUserPasswordStatus: "idle",
   resetUserPasswordError: "",
 };
 
 export const cancelOperation = () => {
-  source.cancel("operation canceled by user");
+  if (source) {
+    source.cancel("operation canceled by user");
+  }
+};
+
+const resetCancelAndSource = () => {
+  CancelToken = null;
+  source = null;
 };
 
 // get the users
 export const getUsers = createAsyncThunk(
   "users/get",
-  async ({ queryString, token }, { rejectWithValue }) => {
+  async ({ token }, { rejectWithValue, getState }) => {
+    const {
+      users: { pageState },
+    } = getState();
+
     try {
       CancelToken = axios.CancelToken;
       source = CancelToken.source();
 
-      let buildUrl = `/users?page=${queryString.page}&limit=9`;
+      let buildUrl = `/users?page=${pageState.page}&limit=15&details=all`;
 
-      if (queryString.name) {
-        buildUrl = buildUrl + `&name=${queryString.name}`;
+      if (pageState.searchName.trim() !== "") {
+        buildUrl = buildUrl + `&name=${pageState.searchName}`;
       }
 
-      if (queryString.type) {
-        buildUrl = buildUrl + `&type=${queryString.type}`;
+      if (pageState.searchCity.trim() !== CitiesName.ALL) {
+        buildUrl = buildUrl + `&city=${pageState.searchCity}`;
       }
 
-      if (queryString.city) {
-        buildUrl = buildUrl + `&city=${queryString.city}`;
+      if (pageState.searchAddressDetails.trim() !== "") {
+        buildUrl =
+          buildUrl + `&addressDetails=${pageState.searchAddressDetails}`;
       }
 
-      if (queryString.district) {
-        buildUrl = buildUrl + `&district=${queryString.district}`;
+      if (pageState.searchEmployeeName.trim() !== "") {
+        buildUrl = buildUrl + `&employeeName=${pageState.searchEmployeeName}`;
       }
 
-      if (queryString.street) {
-        buildUrl = buildUrl + `&street=${queryString.street}`;
+      if (pageState.userType !== UserTypeConstants.ALL) {
+        buildUrl = buildUrl + `&type=${pageState.userType}`;
       }
 
-      if (queryString.employeeName) {
-        buildUrl = buildUrl + `&employeeName=${queryString.employeeName}`;
+      if (pageState.searchCertificateName.trim() !== "") {
+        buildUrl =
+          buildUrl + `&certificateName=${pageState.searchCertificateName}`;
       }
 
-      if (queryString.certificateName) {
-        buildUrl = buildUrl + `&certificateName=${queryString.certificateName}`;
+      if (pageState.searchCompanyName.trim() !== "") {
+        buildUrl = buildUrl + `&companyName=${pageState.searchCompanyName}`;
       }
 
-      if (queryString.companyName) {
-        buildUrl = buildUrl + `&companyName=${queryString.companyName}`;
+      if (pageState.searchJobTitle.trim() !== "") {
+        buildUrl = buildUrl + `&jobTitle=${pageState.searchJobTitle}`;
       }
 
-      if (queryString.jobTitle) {
-        buildUrl = buildUrl + `&jobTitle=${queryString.jobTitle}`;
+      if (pageState.searchJob !== GuestJob.NONE) {
+        buildUrl = buildUrl + `&job=${pageState.searchJob}`;
       }
 
-      if (queryString.job) {
-        buildUrl = buildUrl + `&job=${queryString.job}`;
+      if (pageState.approved === UserApprovedState.APPROVED) {
+        buildUrl = buildUrl + `&isApproved=${true}`;
       }
 
-      if (queryString.approve !== undefined) {
-        buildUrl = buildUrl + `&isApproved=${queryString.approve}`;
+      if (pageState.approved === UserApprovedState.NOT_APPROVED) {
+        buildUrl = buildUrl + `&isApproved=${false}`;
       }
 
-      if (queryString.active !== undefined) {
-        buildUrl = buildUrl + `&isActive=${queryString.active}`;
+      if (pageState.showItems.trim() === ShowWarehouseItems.SHOW) {
+        buildUrl = buildUrl + `&allowShowingMedicines=${true}`;
       }
 
-      if (queryString.sort) {
-        buildUrl = buildUrl + `&sort=${queryString.sort.replace(/,/g, " ")}`;
+      if (pageState.showItems.trim() === ShowWarehouseItems.DONT_SHOW) {
+        buildUrl = buildUrl + `&allowShowingMedicines=${false}`;
       }
 
-      const response = await axios.get(
-        `http://localhost:8000/api/v1${buildUrl}`,
-        {
-          timeout: 10000,
-          cancelToken: source.token,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+      if (pageState.active === UserActiveState.ACTIVE) {
+        buildUrl = buildUrl + `&isActive=${true}`;
+      }
+
+      if (pageState.active === UserActiveState.INACTIVE) {
+        buildUrl = buildUrl + `&isActive=${false}`;
+      }
+
+      let sortArray = [];
+      let sort;
+      Object.keys(pageState.orderBy).forEach((key) => {
+        if (pageState.orderBy[key] === 1) {
+          sortArray.push(`${key}`);
+        } else {
+          sortArray.push(`-${key}`);
         }
-      );
+      });
 
-      return response.data;
-    } catch (err) {
-      if (err.code === "ECONNABORTED" && err.message.startsWith("timeout")) {
-        return rejectWithValue("timeout");
-      }
-      if (axios.isCancel(err)) {
-        return rejectWithValue("cancel");
+      if (sortArray.length > 0) {
+        sort = sortArray.join(",");
       }
 
-      if (!err.response) {
-        return rejectWithValue("network failed");
+      if (sort) {
+        buildUrl = buildUrl + `&sort=${sort.replace(/,/g, " ")}`;
       }
 
-      return rejectWithValue(err.response.data);
-    }
-  }
-);
-
-// change the approve state for a specific user
-export const userApproveChange = createAsyncThunk(
-  "users/approve",
-  async ({ status, userId, token }, { rejectWithValue }) => {
-    try {
-      CancelToken = axios.CancelToken;
-      source = CancelToken.source();
-
-      const response = await axios.post(
-        `http://localhost:8000/api/v1/users/approve/${userId}`,
-        {
-          action: status,
+      const response = await axios.get(`${BASEURL}${buildUrl}`, {
+        // timeout: 10000,
+        cancelToken: source.token,
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-        {
-          timeout: 10000,
-          cancelToken: source.token,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      });
+
+      resetCancelAndSource();
+
       return response.data;
     } catch (err) {
+      resetCancelAndSource();
       if (err.code === "ECONNABORTED" && err.message.startsWith("timeout")) {
         return rejectWithValue("timeout");
       }
@@ -152,19 +179,18 @@ export const userApproveChange = createAsyncThunk(
   }
 );
 
-// delete a user
-export const deleteUser = createAsyncThunk(
-  "users/delete",
-  async ({ userId, token }, { rejectWithValue }) => {
+export const updateUser = createAsyncThunk(
+  "users/update",
+  async ({ body, userId, token }, { rejectWithValue }) => {
     try {
       CancelToken = axios.CancelToken;
       source = CancelToken.source();
 
       const response = await axios.post(
-        `http://localhost:8000/api/v1/users/delete/${userId}`,
-        {},
+        `${BASEURL}/users/update/${userId}`,
+        body,
         {
-          timeout: 10000,
+          // timeout: 10000,
           cancelToken: source.token,
           headers: {
             Authorization: `Bearer ${token}`,
@@ -172,46 +198,12 @@ export const deleteUser = createAsyncThunk(
         }
       );
 
-      return response.data;
-    } catch (err) {
-      if (err.code === "ECONNABORTED" && err.message.startsWith("timeout")) {
-        return rejectWithValue("timeout");
-      }
-      if (axios.isCancel(err)) {
-        return rejectWithValue("cancel");
-      }
-
-      if (!err.response) {
-        return rejectWithValue("network failed");
-      }
-
-      return rejectWithValue(err.response.data);
-    }
-  }
-);
-
-// undo delete a user
-export const undoDeleteUser = createAsyncThunk(
-  "users/undoDelete",
-  async ({ userId, token }, { rejectWithValue }) => {
-    try {
-      CancelToken = axios.CancelToken;
-      source = CancelToken.source();
-
-      const response = await axios.post(
-        `http://localhost:8000/api/v1/users/reactivate/${userId}`,
-        {},
-        {
-          timeout: 10000,
-          cancelToken: source.token,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      resetCancelAndSource();
 
       return response.data;
     } catch (err) {
+      resetCancelAndSource();
+
       if (err.code === "ECONNABORTED" && err.message.startsWith("timeout")) {
         return rejectWithValue("timeout");
       }
@@ -239,14 +231,14 @@ export const resetUserPassword = createAsyncThunk(
       source = CancelToken.source();
 
       const response = await axios.post(
-        `http://localhost:8000/api/v1/users/resetUserPassword`,
+        `${BASEURL}/users/resetUserPassword`,
         {
           userId,
           newPassword,
           newPasswordConfirm,
         },
         {
-          timeout: 10000,
+          // timeout: 10000,
           cancelToken: source.token,
           headers: {
             Authorization: `Bearer ${token}`,
@@ -254,8 +246,12 @@ export const resetUserPassword = createAsyncThunk(
         }
       );
 
+      resetCancelAndSource();
+
       return response.data;
     } catch (err) {
+      resetCancelAndSource();
+
       if (err.code === "ECONNABORTED" && err.message.startsWith("timeout")) {
         return rejectWithValue("timeout");
       }
@@ -300,6 +296,155 @@ export const usersSlice = createSlice({
     resetUserChangePasswordError: (state) => {
       state.resetUserPasswordError = "";
     },
+    setSearchName: (state, action) => {
+      state.pageState = {
+        ...state.pageState,
+        searchName: action.payload,
+      };
+    },
+
+    setSearchCity: (state, action) => {
+      state.pageState = {
+        ...state.pageState,
+        searchCity: action.payload,
+      };
+    },
+
+    setSearchAddressDetails: (state, action) => {
+      state.pageState = {
+        ...state.pageState,
+        searchAddressDetails: action.payload,
+      };
+    },
+
+    setSearchEmployeeName: (state, action) => {
+      state.pageState = {
+        ...state.pageState,
+        searchEmployeeName: action.payload,
+      };
+    },
+
+    setSearchCertificateName: (state, action) => {
+      state.pageState = {
+        ...state.pageState,
+        searchCertificateName: action.payload,
+      };
+    },
+
+    setSearchCompanyName: (state, action) => {
+      state.pageState = {
+        ...state.pageState,
+        searchCompanyName: action.payload,
+      };
+    },
+
+    setSearchJobTitle: (state, action) => {
+      state.pageState = {
+        ...state.pageState,
+        searchJobTitle: action.payload,
+      };
+    },
+
+    setUserApproved: (state, action) => {
+      state.pageState = {
+        ...state.pageState,
+        approved: action.payload,
+      };
+    },
+
+    setUserActive: (state, action) => {
+      state.pageState = {
+        ...state.pageState,
+        active: action.payload,
+      };
+    },
+
+    setUserType: (state, action) => {
+      state.pageState = {
+        ...state.pageState,
+        userType: action.payload,
+      };
+    },
+
+    setShowItems: (state, action) => {
+      state.pageState = {
+        ...state.pageState,
+        showItems: action.payload,
+      };
+    },
+
+    setSearchJob: (state, action) => {
+      state.pageState = {
+        ...state.pageState,
+        searchJob: action.payload,
+      };
+    },
+
+    setPage: (state, action) => {
+      state.pageState = {
+        ...state.pageState,
+        page: action.payload,
+      };
+    },
+
+    setRefresh: (state, action) => {
+      state.refresh = action.payload;
+    },
+
+    setOrderBy: (state, action) => {
+      state.pageState = {
+        ...state.pageState,
+        orderBy: action.payload,
+      };
+    },
+
+    resetPageState: (state) => {
+      state.pageState = {
+        searchName: "",
+        searchCity: CitiesName.ALL,
+        searchAddressDetails: "",
+        searchEmployeeName: "",
+        searchCertificateName: "",
+        searchCompanyName: "",
+        searchJobTitle: "",
+        approved: UserApprovedState.ALL,
+        active: UserActiveState.ALL,
+        userType: UserTypeConstants.ALL,
+        searchJob: GuestJob.NONE,
+        showItems: ShowWarehouseItems.ALL,
+        orderBy: {},
+        page: 1,
+      };
+    },
+
+    usersSliceSignOut: (state) => {
+      state.status = "idle";
+      state.users = null;
+      state.error = "";
+      state.count = 0;
+      state.refresh = true;
+      state.activationDeleteStatus = "idle";
+      state.activationDeleteStatusMsg = "";
+      state.resetUserPasswordStatus = "idle";
+      state.resetUserPasswordError = "";
+
+      state.pageState = {
+        searchName: "",
+        searchCity: CitiesName.ALL,
+        searchAddressDetails: "",
+        searchEmployeeName: "",
+        searchCertificateName: "",
+        searchCompanyName: "",
+        searchJobTitle: "",
+        approved: UserApprovedState.ALL,
+        active: UserActiveState.ALL,
+        userType: UserTypeConstants.ALL,
+        searchJob: GuestJob.NONE,
+        showItems: ShowWarehouseItems.ALL,
+        orderBy: {},
+        page: 1,
+      };
+    },
   },
   extraReducers: {
     [getUsers.pending]: (state) => {
@@ -310,6 +455,7 @@ export const usersSlice = createSlice({
       state.users = action.payload.data.users;
       state.count = action.payload.count;
       state.error = "";
+      state.refresh = false;
     },
     [getUsers.rejected]: (state, { payload }) => {
       state.status = "failed";
@@ -322,86 +468,33 @@ export const usersSlice = createSlice({
         state.error = "network failed";
       } else state.error = payload.message;
     },
-    [userApproveChange.pending]: (state) => {
-      state.activationDeleteStatus = "loading";
-      state.activationDeleteStatusMsg = "";
-    },
-    [userApproveChange.fulfilled]: (state, action) => {
-      state.activationDeleteStatus = "succeeded";
-      const newUsers = state.users.map((user) => {
-        if (user._id === action.payload.data.user._id) {
-          return action.payload.data.user;
-        } else return user;
-      });
 
-      state.users = newUsers;
-      if (action.payload.status === "activation success") {
-        state.activationDeleteStatusMsg = "user-approved-success";
-      } else {
-        state.activationDeleteStatusMsg = "user-disapproved-success";
-      }
+    [updateUser.pending]: (state, action) => {
+      state.status = "loading";
+      state.error = "";
     },
-    [userApproveChange.rejected]: (state, { payload }) => {
-      state.activationDeleteStatus = "failed";
-
-      if (payload === "timeout") {
-        state.activationDeleteStatusMsg = "timeout-msg";
-      } else if (payload === "cancel") {
-        state.activationDeleteStatusMsg = "cancel-operation-msg";
-      } else if (payload === "network failed") {
-        state.activationDeleteStatusMsg = "network failed";
-      } else state.activationDeleteStatusMsg = payload.message;
-    },
-    [deleteUser.pending]: (state) => {
-      state.activationDeleteStatus = "loading";
-      state.activationDeleteStatusMsg = "";
-    },
-    [deleteUser.fulfilled]: (state, action) => {
-      state.activationDeleteStatus = "succeeded";
+    [updateUser.fulfilled]: (state, action) => {
+      state.status = "succeeded";
       const newUsers = state.users.map((user) => {
         if (user._id === action.payload.data.user._id) {
           return action.payload.data.user;
         } else return user;
       });
       state.users = newUsers;
-      state.activationDeleteStatusMsg = "user-delete-success";
+      state.error = "";
     },
-    [deleteUser.rejected]: (state, { payload }) => {
-      state.activationDeleteStatus = "failed";
+    [updateUser.rejected]: (state, { payload }) => {
+      state.status = "failed";
 
       if (payload === "timeout") {
-        state.activationDeleteStatusMsg = "timeout-msg";
+        state.error = "timeout-msg";
       } else if (payload === "cancel") {
-        state.activationDeleteStatusMsg = "cancel-operation-msg";
+        state.error = "cancel-operation-msg";
       } else if (payload === "network failed") {
-        state.activationDeleteStatusMsg = "network failed";
-      } else state.activationDeleteStatusMsg = payload.message;
+        state.error = "network failed";
+      } else state.error = payload.message;
     },
-    [undoDeleteUser.pending]: (state, action) => {
-      state.activationDeleteStatus = "loading";
-      state.activationDeleteStatusMsg = "";
-    },
-    [undoDeleteUser.fulfilled]: (state, action) => {
-      state.activationDeleteStatus = "succeeded";
-      const newUsers = state.users.map((user) => {
-        if (user._id === action.payload.data.user._id) {
-          return action.payload.data.user;
-        } else return user;
-      });
-      state.users = newUsers;
-      state.activationDeleteStatusMsg = "user-undo-delete-success";
-    },
-    [undoDeleteUser.rejected]: (state, { payload }) => {
-      state.activationDeleteStatus = "failed";
 
-      if (payload === "timeout") {
-        state.activationDeleteStatusMsg = "timeout-msg";
-      } else if (payload === "cancel") {
-        state.activationDeleteStatusMsg = "cancel-operation-msg";
-      } else if (payload === "network failed") {
-        state.activationDeleteStatusMsg = "network failed";
-      } else state.activationDeleteStatusMsg = payload.message;
-    },
     [resetUserPassword.pending]: (state) => {
       state.resetUserPasswordStatus = "loading";
     },
@@ -435,6 +528,23 @@ export const {
   resetUserChangePasswordStatus,
   resetUserChangePasswordError,
   resetError,
+  resetPageState,
+  usersSliceSignOut,
+  setSearchName,
+  setSearchCity,
+  setSearchAddressDetails,
+  setSearchEmployeeName,
+  setSearchCertificateName,
+  setSearchCompanyName,
+  setSearchJobTitle,
+  setUserApproved,
+  setUserActive,
+  setUserType,
+  setSearchJob,
+  setShowItems,
+  setPage,
+  setRefresh,
+  setOrderBy,
 } = usersSlice.actions;
 
 export default usersSlice.reducer;

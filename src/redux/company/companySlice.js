@@ -1,81 +1,87 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
-import { baseUrl } from '../../utils/constants';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
+import { BASEURL, CitiesName } from "../../utils/constants";
 
-let CancelToken;
-let source;
+let CancelToken = null;
+let source = null;
 
 const initialState = {
-  status: 'idle',
+  status: "idle",
   companies: [],
   count: 0,
-  error: '',
+  error: "",
   pageState: {
-    searchName: '',
-    searchCity: '',
+    searchName: "",
+    searchCity: CitiesName.ALL,
+    displayType: "list",
+    showFavorites: false,
     page: 1,
   },
 };
 
 export const cancelOperation = () => {
-  if (source) {
-    source.cancel('operation canceled by user');
+  if (source !== null) {
+    source.cancel("operation canceled by user");
   }
 };
 
+const resetCancelAndSource = () => {
+  CancelToken = null;
+  source = null;
+};
+
 export const getCompanies = createAsyncThunk(
-  'companies/getCompanies',
-  async ({ queryString, token }, { rejectWithValue }) => {
+  "companies/getCompanies",
+  async ({ token }, { rejectWithValue, getState }) => {
+    const {
+      companies: { pageState },
+    } = getState();
+
     try {
       CancelToken = axios.CancelToken;
-      source = CancelToken.source;
+      source = CancelToken.source();
+      let buildUrl = `${BASEURL}/users?type=company&isActive=true&isApproved=true&page=${pageState.page}&limit=15&details=some`;
 
-      let buildUrl = `${baseUrl}/api/v1/users?type=company&page=${queryString.page}&limit=20`;
-
-      if (queryString.name) {
-        buildUrl = buildUrl + `&name=${queryString.name}`;
+      if (pageState.searchName.trim() !== "") {
+        buildUrl = buildUrl + `&name=${pageState.searchName.trim()}`;
       }
 
-      if (queryString.city) {
-        buildUrl = buildUrl + `&city=${queryString.city}`;
-      }
-
-      if (queryString.approve !== undefined) {
-        buildUrl = buildUrl + `&isApproved=${queryString.approve}`;
-      }
-
-      if (queryString.active !== undefined) {
-        buildUrl = buildUrl + `&isActive=${queryString.active}`;
+      if (pageState.searchCity !== CitiesName.ALL) {
+        buildUrl = buildUrl + `&city=${pageState.searchCity}`;
       }
 
       const response = await axios.get(buildUrl, {
-        timeout: 10000,
+        // timeout: 10000,
         cancelToken: source.token,
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
+      resetCancelAndSource();
+
       return response.data;
     } catch (err) {
-      if (err.code === 'ECONNABORTED' && err.message.startsWith('timeout')) {
-        return rejectWithValue('timeout');
+      if (err.code === "ECONNABORTED" && err.message.startsWith("timeout")) {
+        return rejectWithValue("timeout");
       }
 
       if (axios.isCancel(err)) {
-        return rejectWithValue('cancel');
+        return rejectWithValue("cancel");
       }
 
       if (!err.response) {
-        return rejectWithValue('network failed');
+        return rejectWithValue("network failed");
       }
+
+      resetCancelAndSource();
       return rejectWithValue(err.response.data);
     }
-  },
+  }
 );
 
 export const companiesSlice = createSlice({
-  name: 'companies',
+  name: "companies",
   initialState,
   reducers: {
     changeSearchName: (state, action) => {
@@ -84,93 +90,114 @@ export const companiesSlice = createSlice({
         searchName: action.payload,
       };
     },
-    resetSearchName: (state) => {
-      state.pageState = {
-        ...state.pageState,
-        searchName: '',
-      };
-    },
+
     changeSearchCity: (state, action) => {
       state.pageState = {
         ...state.pageState,
         searchCity: action.payload,
       };
     },
-    resetSearchCity: (state) => {
-      state.pageState = {
-        ...state.pageState,
-        searchCity: '',
-      };
-    },
+
     changeDisplayType: (state, action) => {
       state.pageState = {
         ...state.pageState,
         displayType: action.payload,
       };
     },
-    resetDisplayType: (state) => {
-      state.pageState = {
-        ...state.pageState,
-        displayType: 'list',
-      };
-    },
+
     changePage: (state, action) => {
       state.pageState = {
         ...state.pageState,
         page: action.payload,
       };
     },
-    resetPage: (state) => {
+
+    changeShowFavorites: (state, action) => {
+      state.pageState = {
+        ...state.pageState,
+        showFavorites: action.payload,
+      };
+    },
+
+    resetCompaniesPageState: (state) => {
+      state.pageState = {
+        searchName: "",
+        searchCity: CitiesName.ALL,
+        displayType: "list",
+        page: 1,
+      };
+    },
+    resetCompaniesArray: (state) => {
+      state.companies = [];
+      state.count = 0;
       state.pageState = {
         ...state.pageState,
         page: 1,
       };
     },
-    resetCompaniesPageState: (state) => {
-      state.pageState = {
-        searchName: '',
-        searchCity: '',
-        displayType: 'list',
-        page: 1,
-      };
-    },
+
     resetError: (state) => {
       state.error = null;
     },
+
     resetStatus: (state) => {
-      state.status = 'idle';
+      state.status = "idle";
       state.error = null;
     },
+
     resetCompanies: (state) => {
-      state.status = 'idle';
+      state.status = "idle";
       state.companies = [];
       state.count = 0;
       state.error = null;
+      state.pageState = {
+        ...state.pageState,
+        page: 1,
+      };
     },
+
     resetCount: (state) => {
       state.count = 0;
+    },
+
+    companySliceSignOut: (state) => {
+      state.status = "idle";
+      state.companies = [];
+      state.count = 0;
+      state.error = "";
+      state.pageState = {
+        searchName: "",
+        searchCity: CitiesName.ALL,
+        displayType: "list",
+        showFavorites: false,
+        page: 1,
+      };
     },
   },
   extraReducers: {
     [getCompanies.pending]: (state) => {
-      state.status = 'loading';
+      state.status = "loading";
       state.error = null;
     },
     [getCompanies.fulfilled]: (state, action) => {
-      state.status = 'success';
+      state.status = "success";
       state.companies = [...state.companies, ...action.payload.data.users];
       state.count = action.payload.count;
       state.error = null;
+      state.pageState = {
+        ...state.pageState,
+        page: Math.ceil(state.companies.length / 15) + 1,
+      };
     },
     [getCompanies.rejected]: (state, { payload }) => {
-      state.status = 'failed';
+      state.status = "failed";
 
-      if (payload === 'timeout') {
-        state.error = 'timeout';
-      } else if (payload === 'cancel') {
-        state.error = 'cancel-operation-msg';
-      } else if (payload === 'network failed') {
-        state.error = 'network failed';
+      if (payload === "timeout") {
+        state.error = "timeout";
+      } else if (payload === "cancel") {
+        state.error = "cancel-operation-msg";
+      } else if (payload === "network failed") {
+        state.error = "network failed";
       } else state.error = payload.message;
     },
   },
@@ -188,10 +215,9 @@ export const {
   changeSearchCity,
   changeDisplayType,
   changePage,
-  resetSearchName,
-  resetSearchCity,
-  resetDisplayType,
-  resetPage,
+  companySliceSignOut,
+  changeShowFavorites,
+  resetCompaniesArray,
 } = companiesSlice.actions;
 
 export default companiesSlice.reducer;

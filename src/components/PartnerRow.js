@@ -15,7 +15,7 @@ import { AntDesign } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { addFavorite, removeFavorite, selectFavoritesPartners } from '../redux/favorites/favoritesSlice';
 import { statisticsCompanySelected, statisticsUserFavorites } from '../redux/statistics/statisticsSlice';
-import { Colors, baseUrl, UserTypeConstants } from '../utils/constants';
+import { Colors, BASEURL, UserTypeConstants } from '../utils/constants';
 import { selectUserData } from '../redux/auth/authSlice';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { resetMedicines } from '../redux/medicines/medicinesSlices';

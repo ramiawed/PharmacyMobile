@@ -12,11 +12,11 @@ if (Platform.OS === 'android') {
 }
 
 function CollapseSection({ header, favorites, type }) {
-  const [open, setopen] = useState(false);
+  const [open, setOpen] = useState(false);
 
   const onPress = () => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    setopen(!open);
+    setOpen(!open);
   };
 
   return (

@@ -1,74 +1,89 @@
 import i18n from '../i18n/index';
 
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, Animated, RefreshControl, ActivityIndicator } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Animated,
+  RefreshControl,
+  ActivityIndicator,
+  TextInput,
+  Image,
+} from 'react-native';
 
 // redux stuff
-import { useDispatch, useSelector } from 'react-redux';
-import { selectToken, selectUser } from '../redux/auth/authSlice';
 import { unwrapResult } from '@reduxjs/toolkit';
-import { cancelOperation, getCompanies, resetCompanies, selectCompanies } from '../redux/company/companySlice';
-import { getFavorites } from '../redux/favorites/favoritesSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectUserData } from '../redux/auth/authSlice';
+import {
+  cancelOperation,
+  changeSearchName,
+  getCompanies,
+  selectCompanies,
+  resetCompaniesArray,
+} from '../redux/company/companySlice';
 
 // components
 import PartnerCard from '../components/PartnerCard';
-import SearchBar from '../components/SearchBar';
+import SearchContainer from '../components/SearchContainer';
 
-// constatns
+// constants
 import { Colors } from '../utils/constants';
 
 const SPACING = 20;
-const AVATAR_SIZE = 70;
-const ITEM_SIZE = AVATAR_SIZE + SPACING * 3;
+
+let timer;
 
 const CompaniesScreen = ({ navigation }) => {
   const scrollY = React.useRef(new Animated.Value(0)).current;
 
   const dispatch = useDispatch();
 
-  const token = useSelector(selectToken);
-  const user = useSelector(selectUser);
+  const { token } = useSelector(selectUserData);
   const { companies, status, count } = useSelector(selectCompanies);
 
-  const [searchName, setSearchName] = useState('');
   const [refreshing, setRefreshing] = useState(false);
-  const [page, setPage] = useState(1);
 
   // search handler
-  const handleSearch = (p) => {
-    const queryString = {};
-
-    queryString.page = p;
-
-    // company approve and active must be true
-    queryString.approve = true;
-    queryString.active = true;
-
-    if (searchName.trim().length > 0) {
-      queryString.name = searchName;
-    }
-
-    dispatch(getCompanies({ queryString, token }))
+  const handleSearch = () => {
+    dispatch(getCompanies({ token }))
       .then(unwrapResult)
       .then(() => {
         setRefreshing(false);
-        setPage(p + 1);
       });
+  };
+
+  const onSearchSubmit = () => {
+    dispatch(resetCompaniesArray());
+    handleSearch();
   };
 
   const onRefreshing = () => {
     setRefreshing(true);
-    dispatch(resetCompanies());
-    dispatch(getFavorites({ token }));
-    handleSearch(1);
+    onSearchSubmit();
   };
 
   const handleMoreResult = () => {
-    if (companies.length < count) handleSearch(page);
+    if (companies.length < count) handleSearch();
+  };
+
+  const keyUpHandler = (event) => {
+    if (event.keyCode === 13) return;
+    cancelOperation();
+
+    if (timer) {
+      clearTimeout(timer);
+    }
+
+    timer = setTimeout(() => {
+      onSearchSubmit();
+    }, 500);
   };
 
   useEffect(() => {
-    handleSearch(1);
+    handleSearch();
 
     const unsubscribe = navigation.addListener('blur', () => {
       if (refreshing && status === 'loading') {
@@ -81,32 +96,31 @@ const CompaniesScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      {/* <Image source={require('../../assets/applogo.png')} style={StyleSheet.absoluteFillObject} blurRadius={10} /> */}
-      <SearchBar
-        value={searchName}
-        textChangedHandler={setSearchName}
-        clearText={() => {
-          setSearchName('');
-        }}
-        onSubmit={() => {
-          dispatch(resetCompanies());
-          handleSearch(1);
-        }}
-        placeholder="search-by-company-name"
-      />
+      <SearchContainer>
+        <TextInput
+          style={styles.searchCompaniesName}
+          placeholder={i18n.t('search-by-company-name')}
+          onChangeText={(val) => {
+            dispatch(changeSearchName(val));
+          }}
+          onSubmitEditing={onSearchSubmit}
+          onKeyPress={keyUpHandler}
+        />
+      </SearchContainer>
 
-      {companies?.length === 0 && status !== 'loading' && searchName !== '' && (
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      {companies?.length === 0 && status !== 'loading' && (
+        <View
+          style={{
+            height: '100%',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
           <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefreshing} />}>
-            <Text style={styles.noContent}>{i18n.t('no-companies')}</Text>
-          </ScrollView>
-        </View>
-      )}
-
-      {companies?.length === 0 && status !== 'loading' && searchName === '' && (
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefreshing} />}>
-            <Text style={styles.noContent}>{i18n.t('no-companies')}</Text>
+            <View style={styles.noContentContainer}>
+              <Image source={require('../../assets/no-content.jpeg')} style={styles.noContentImage} />
+              <Text style={styles.noContent}>{i18n.t('no-companies')}</Text>
+            </View>
           </ScrollView>
         </View>
       )}
@@ -118,7 +132,6 @@ const CompaniesScreen = ({ navigation }) => {
           keyExtractor={(item) => item._id}
           contentContainerStyle={{
             padding: SPACING,
-            // paddingTop: StatusBar.currentHeight || 42,
           }}
           refreshControl={
             <RefreshControl
@@ -130,8 +143,8 @@ const CompaniesScreen = ({ navigation }) => {
           numColumns={2}
           onEndReached={handleMoreResult}
           onEndReachedThreshold={0.1}
-          renderItem={({ item, index }) => {
-            return <PartnerCard partner={item} navigation={navigation} type="company" />;
+          renderItem={({ item }) => {
+            return <PartnerCard partner={item} type="company" />;
           }}
         />
       )}
@@ -139,16 +152,7 @@ const CompaniesScreen = ({ navigation }) => {
       {status === 'loading' && (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
           <ActivityIndicator size="large" color={Colors.SECONDARY_COLOR} />
-          <Text
-            style={{
-              fontSize: 18,
-              fontWeight: '700',
-              color: Colors.SECONDARY_COLOR,
-              marginTop: 20,
-            }}
-          >
-            {i18n.t('loading')}
-          </Text>
+          <Text style={styles.loadingText}>{i18n.t('loading-data')}</Text>
         </View>
       )}
     </View>
@@ -160,11 +164,33 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
+  searchCompaniesName: {
+    backgroundColor: Colors.WHITE_COLOR,
+    borderRadius: 6,
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+  },
+  noContentContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   noContent: {
     paddingTop: 25,
     fontSize: 18,
     fontWeight: '500',
     color: Colors.SECONDARY_COLOR,
+  },
+  noContentImage: {
+    width: 200,
+    height: 200,
+    resizeMode: 'contain',
+  },
+  loadingText: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: Colors.SECONDARY_COLOR,
+    marginTop: 20,
   },
 });
 

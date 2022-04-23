@@ -3,7 +3,7 @@ import React, { memo } from 'react';
 
 import { View, Text, StyleSheet, Image, TouchableWithoutFeedback, Platform, Animated } from 'react-native';
 
-import { baseUrl, Colors } from '../utils/constants';
+import { BASEURL, Colors } from '../utils/constants';
 import { useNavigation } from '@react-navigation/core';
 
 const SPACING = 20;

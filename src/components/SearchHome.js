@@ -5,7 +5,7 @@ import axios from 'axios';
 import { StyleSheet, View, Dimensions, Text, TouchableOpacity, TextInput, ActivityIndicator } from 'react-native';
 
 // constants
-import { baseUrl, Colors } from '../utils/constants';
+import { BASEURL, Colors } from '../utils/constants';
 
 // icons
 import { AntDesign } from '@expo/vector-icons';
@@ -42,7 +42,7 @@ const SearchHome = () => {
     setShowResult(true);
     setLoading(true);
 
-    let buildUrl = `${baseUrl}`;
+    let buildUrl = `${BASEURL}`;
 
     if (option === 'medicines') {
       buildUrl = buildUrl + `/api/v1/items?page=1&limit=25&isActive=true&itemName=${searchName}`;

@@ -22,7 +22,7 @@ const MainScreen = () => {
   return (
     <MainTab.Navigator tabBar={(props) => <MyTabBar {...props} />} initialRouteName="Home">
       <MainTab.Screen name="Cart" component={CartScreen} options={{ title: i18n.t('cart'), headerShown: false }} />
-      <MainTab.Screen name="Home" component={HomeScreen} options={{ title: i18n.t('main'), headerShown: false }} />
+      <MainTab.Screen name="Home" component={HomeScreen} options={{ title: i18n.t('home'), headerShown: false }} />
       <MainTab.Screen
         name="Favorite"
         component={FavoriteScreen}
@@ -37,7 +37,7 @@ function MyTabBar({ state, descriptors, navigation }) {
     <View
       style={{
         flexDirection: 'row',
-        backgroundColor: '#566092',
+        backgroundColor: Colors.MAIN_COLOR,
         height: 60,
         justifyContent: 'center',
         alignItems: 'center',
@@ -83,7 +83,7 @@ function MyTabBar({ state, descriptors, navigation }) {
             onLongPress={onLongPress}
             style={{ flex: 1, alignItems: 'center' }}
           >
-            {label === i18n.t('main') && (
+            {label === i18n.t('home') && (
               <Ionicons name="home" size={24} color={isFocused ? Colors.FAILED_COLOR : '#fff'} />
             )}
             {label === i18n.t('favorites') && (

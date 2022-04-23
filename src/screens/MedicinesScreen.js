@@ -1,128 +1,160 @@
 import i18n from '../i18n/index';
 
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, Animated, RefreshControl, ActivityIndicator } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Animated,
+  RefreshControl,
+  ActivityIndicator,
+  TextInput,
+} from 'react-native';
+
+import { FlatList } from 'react-native-gesture-handler';
 
 // redux stuff
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectToken, selectUser } from '../redux/auth/authSlice';
-import { getFavorites } from '../redux/favorites/favoritesSlice';
+import { selectUserData } from '../redux/auth/authSlice';
+import { selectFavoritesItems } from '../redux/favorites/favoritesSlice';
 import {
   getMedicines,
-  resetMedicines,
   selectMedicines,
   cancelOperation,
-  setSelectedPage,
+  setCity,
+  resetMedicinesArray,
+  setSearchName,
+  setSearchCompanyName,
+  setSearchWarehouseName,
 } from '../redux/medicines/medicinesSlices';
 
 // components
 import ItemCard from '../components/ItemCard';
-
-import SearchBar from '../components/SearchBar';
+import SearchContainer from '../components/SearchContainer';
 
 // constatns
-import { Colors } from '../utils/constants';
+import { Colors, UserTypeConstants } from '../utils/constants';
+import SwipeableRow from '../components/SwipeableRow';
 
 const SPACING = 20;
-const AVATAR_SIZE = 70;
-const ITEM_SIZE = AVATAR_SIZE + SPACING * 3;
 
-const MedicinesScreen = ({ navigation, route }) => {
-  const scrollY = React.useRef(new Animated.Value(0)).current;
-  const { companyId, warehouseId } = route.params;
+let timer;
 
+const MedicinesScreen = ({ navigation }) => {
   const dispatch = useDispatch();
+  const isFocused = useIsFocused();
 
-  const token = useSelector(selectToken);
-  const user = useSelector(selectUser);
-  const { medicines, status, count, selectedPage } = useSelector(selectMedicines);
+  // selectors
+  const { token, user } = useSelector(selectUserData);
+  const { medicines, status, pageState } = useSelector(selectMedicines);
+  const favoritesItems = useSelector(selectFavoritesItems);
 
-  const [searchName, setSearchName] = useState('');
+  // own state
+  const [showFavorites, setShowFavorites] = useState(false);
+  const scrollY = React.useRef(new Animated.Value(0)).current;
   const [refreshing, setRefreshing] = useState(false);
-  // const [page, setPage] = useState(medicines.length === 0 ? 1 : Math.ceil(medicines.length / 9) + 1);
 
   // search handler
-  const handleSearch = (p) => {
-    const queryString = {};
-
-    queryString.page = p;
-
-    if (searchName.trim().length !== 0) {
-      queryString.name = searchName;
+  const handleSearch = () => {
+    if (user.type === UserTypeConstants.PHARMACY) {
+      dispatch(setCity(user.city));
+    } else {
+      dispatch(setCity(''));
     }
 
-    if (companyId) {
-      queryString.companyId = companyId;
-    }
-
-    if (warehouseId) {
-      queryString.warehouseId = warehouseId;
-    }
-
-    if (status !== 'loading') {
-      dispatch(getMedicines({ queryString, token }))
-        .then(unwrapResult)
-        .then(() => {
-          setRefreshing(false);
-          dispatch(setSelectedPage(p + 1));
-        })
-        .catch((err) => {
-          setRefreshing(false);
-        });
-    }
+    dispatch(getMedicines({ token }))
+      .then(unwrapResult)
+      .then(() => {
+        setRefreshing(false);
+      });
   };
 
   const onRefreshing = () => {
     setRefreshing(true);
-    dispatch(resetMedicines());
-    handleSearch(1);
+    onSearchSubmit();
+  };
+
+  const onSearchSubmit = () => {
+    dispatch(resetMedicinesArray());
+    handleSearch();
   };
 
   const handleMoreResult = () => {
-    if (medicines.length < count) handleSearch(selectedPage);
+    handleSearch();
+  };
+
+  const keyUpHandler = (event) => {
+    if (event.keyCode === 13) return;
+    cancelOperation();
+
+    if (timer) {
+      clearTimeout(timer);
+    }
+
+    timer = setTimeout(() => {
+      onSearchSubmit();
+    }, 200);
   };
 
   useEffect(() => {
-    console.log(companyId);
-    console.log(warehouseId);
-    dispatch(resetMedicines());
-    handleSearch(1);
+    let unsubscribe;
+    if (isFocused) {
+      dispatch(resetMedicinesArray());
+      handleSearch();
 
-    const unsubscribe = navigation.addListener('blur', () => {
-      if (refreshing && status === 'loading') {
-        cancelOperation();
-      }
-    });
+      unsubscribe = navigation.addListener('blur', () => {
+        if (refreshing && status === 'loading') {
+          cancelOperation();
+        }
+      });
+    }
 
     return unsubscribe;
-  }, [companyId, warehouseId]);
+  }, [isFocused]);
 
-  return (
+  return user ? (
     <View style={styles.container}>
-      {/* <Image source={require('../../assets/applogo.png')} style={StyleSheet.absoluteFillObject} blurRadius={10} /> */}
-      <SearchBar
-        value={searchName}
-        textChangedHandler={setSearchName}
-        clearText={() => {
-          setSearchName('');
-        }}
-        onSubmit={() => {
-          dispatch(resetMedicines());
-          handleSearch(1);
-        }}
-        placeholder="search-by-medicine-name"
-      />
+      <SearchContainer>
+        <TextInput
+          style={styles.searchTextInput}
+          placeholder={i18n.t('search-by-name-composition-barcode')}
+          onChangeText={(val) => {
+            dispatch(setSearchName(val));
+          }}
+          onSubmitEditing={onSearchSubmit}
+          onKeyPress={keyUpHandler}
+          value={pageState.searchName}
+        />
 
-      {medicines?.length === 0 && status !== 'loading' && searchName !== '' && (
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefreshing} />}>
-            <Text style={styles.noContent}>{i18n.t('no-medicines')}</Text>
-          </ScrollView>
-        </View>
-      )}
+        <TextInput
+          style={styles.searchTextInput}
+          placeholder={i18n.t('search-by-company-name')}
+          onChangeText={(val) => {
+            dispatch(setSearchCompanyName(val));
+          }}
+          onSubmitEditing={onSearchSubmit}
+          onKeyPress={keyUpHandler}
+          value={pageState.searchCompanyName}
+        />
 
-      {medicines?.length === 0 && status !== 'loading' && searchName === '' && (
+        {(user?.type === UserTypeConstants.ADMIN || user?.type === UserTypeConstants.PHARMACY) && (
+          <TextInput
+            style={styles.searchTextInput}
+            placeholder={i18n.t('search-by-warehouse-name')}
+            onChangeText={(val) => {
+              dispatch(setSearchWarehouseName(val));
+            }}
+            onSubmitEditing={onSearchSubmit}
+            onKeyPress={keyUpHandler}
+            value={pageState.searchWarehouseName}
+          />
+        )}
+      </SearchContainer>
+
+      {medicines?.length === 0 && status !== 'loading' && (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
           <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefreshing} />}>
             <Text style={styles.noContent}>{i18n.t('no-medicines')}</Text>
@@ -131,14 +163,14 @@ const MedicinesScreen = ({ navigation, route }) => {
       )}
 
       {medicines?.length > 0 && (
-        <Animated.FlatList
+        <FlatList
           data={medicines}
-          onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: true })}
           keyExtractor={(item) => item._id}
-          contentContainerStyle={{
-            padding: SPACING,
-            // paddingTop: StatusBar.currentHeight || 42,
-          }}
+          contentContainerStyle={
+            {
+              // padding: 10,
+            }
+          }
           refreshControl={
             <RefreshControl
               //refresh control used for the Pull to Refresh
@@ -149,9 +181,7 @@ const MedicinesScreen = ({ navigation, route }) => {
           numColumns={1}
           onEndReached={handleMoreResult}
           onEndReachedThreshold={0.1}
-          renderItem={({ item, index }) => {
-            return <ItemCard item={item} index={index} navigation={navigation} />;
-          }}
+          renderItem={({ item, index }) => <ItemCard item={item} index={index} navigation={navigation} />}
         />
       )}
 
@@ -171,7 +201,7 @@ const MedicinesScreen = ({ navigation, route }) => {
         </View>
       )}
     </View>
-  );
+  ) : null;
 };
 
 const styles = StyleSheet.create({
@@ -179,7 +209,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
-
+  searchTextInput: {
+    backgroundColor: Colors.WHITE_COLOR,
+    borderRadius: 6,
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+  },
   noContent: {
     paddingTop: 25,
     fontSize: 18,

@@ -2,6 +2,7 @@ import i18n from '../i18n/index';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 
 // redux stuff
 import { unwrapResult } from '@reduxjs/toolkit';
@@ -18,7 +19,6 @@ import { Colors } from '../utils/constants';
 // icons
 import { AntDesign } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
-import { getFavorites } from '../redux/favorites/favoritesSlice';
 
 const SigninScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -77,6 +77,16 @@ const SigninScreen = ({ navigation }) => {
       });
   };
 
+  const goToSignUpHandler = () => {
+    setPreSignError({
+      username: '',
+      password: '',
+    });
+    setGlobalError('');
+    dispatch(resetError());
+    navigation.navigate('SignUp');
+  };
+
   const storeUsernamePassword = async () => {
     try {
       await AsyncStorage.setItem('@username', username);
@@ -86,62 +96,76 @@ const SigninScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.topView}>
-        <Text style={styles.appName}>فارما لينك</Text>
-
-        <Image style={styles.logo} source={require('../../assets/applogo.png')} />
-      </View>
-      <View style={styles.bottomView}>
-        <Input
-          value={username}
-          onTextChange={(text) => {
-            setUsername(text);
-            setPreSignError({});
-            setGlobalError('');
-            dispatch(resetError());
-          }}
-          placeholder={i18n.t('enter-username')}
-          icon={<AntDesign name="user" size={24} color={Colors.SECONDARY_COLOR} />}
-          border={1}
-          error={preSignError?.username}
+      <LinearGradient
+        // Background Linear Gradient
+        colors={[Colors.MAIN_COLOR, Colors.WHITE_COLOR]}
+        style={styles.background}
+      />
+      <View style={styles.signInView}>
+        <LinearGradient
+          // Background Linear Gradient
+          colors={[Colors.WHITE_COLOR, Colors.MAIN_COLOR]}
+          style={styles.background}
         />
-        <Input
-          value={password}
-          onTextChange={(text) => {
-            setPassword(text);
-            setPreSignError({});
-            setGlobalError('');
-            dispatch(resetError());
-          }}
-          placeholder={i18n.t('enter-password')}
-          password={true}
-          icon={<FontAwesome name="lock" size={24} color={Colors.SECONDARY_COLOR} />}
-          border={1}
-          error={preSignError?.password}
-        />
+        {/* <Text style={styles.appName}>فارما لينك</Text> */}
 
-        {error ? <Text style={{ color: Colors.FAILED_COLOR }}>{i18n.t(error)}</Text> : null}
-        {globalError.length > 0 ? <Text style={{ color: Colors.FAILED_COLOR }}>{i18n.t(globalError)}</Text> : null}
+        <Image style={styles.logo} source={require('../../assets/logo.png')} />
+        <View style={styles.inputDiv}>
+          <Text style={[styles.signInLabel, styles.bigFont]}>{i18n.t('sign-in')}</Text>
 
-        <TouchableOpacity style={styles.button} onPress={signinHanlder}>
-          {status === 'loading' ? (
-            <ActivityIndicator size="small" color="#fff" />
-          ) : (
-            <Text style={styles.buttonText}>{i18n.t('signin')}</Text>
-          )}
-        </TouchableOpacity>
-
-        <View style={styles.signupView}>
-          <Text style={styles.signupSentences}>{i18n.t('signup-sentence')}</Text>
-          <Text
-            style={styles.signupBtn}
-            onPress={() => {
-              navigation.navigate('SignUp');
+          <Input
+            value={username}
+            onTextChange={(text) => {
+              setUsername(text);
+              setPreSignError({
+                ...preSignError,
+                username: '',
+              });
+              setGlobalError('');
+              dispatch(resetError());
             }}
-          >
-            {i18n.t('signup')}
-          </Text>
+            placeholder={i18n.t('enter-username')}
+            icon={<AntDesign name="user" size={24} color={Colors.MAIN_COLOR} />}
+            border={1}
+            error={preSignError?.username}
+            label={i18n.t('user-username')}
+          />
+          <Input
+            value={password}
+            onTextChange={(text) => {
+              setPassword(text);
+              setPreSignError({
+                ...preSignError,
+                password: '',
+              });
+              setGlobalError('');
+              dispatch(resetError());
+            }}
+            placeholder={i18n.t('enter-password')}
+            password={true}
+            icon={<FontAwesome name="lock" size={24} color={Colors.MAIN_COLOR} />}
+            border={1}
+            error={preSignError?.password}
+            label={i18n.t('user-password')}
+          />
+
+          {error ? <Text style={{ color: Colors.FAILED_COLOR }}>{i18n.t(error)}</Text> : null}
+          {globalError.length > 0 ? <Text style={{ color: Colors.FAILED_COLOR }}>{i18n.t(globalError)}</Text> : null}
+
+          <TouchableOpacity style={styles.button} onPress={signinHanlder}>
+            {status === 'loading' ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <Text style={styles.buttonText}>{i18n.t('sign-in')}</Text>
+            )}
+          </TouchableOpacity>
         </View>
+      </View>
+      <View style={styles.signupView}>
+        <Text style={styles.signupSentences}>{i18n.t('sign-up-sentence')}</Text>
+        <Text style={styles.signupBtn} onPress={goToSignUpHandler}>
+          {i18n.t('sign-up')}
+        </Text>
       </View>
     </View>
   );
@@ -150,38 +174,46 @@ const SigninScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.MAIN_COLOR,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  topView: {
-    flex: 2,
-    alignItems: 'center',
-    justifyContent: 'center',
+  background: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
   },
-  bottomView: {
-    flex: 1,
+  signInView: {
+    borderRadius: 15,
+    width: '80%',
+    minHeight: '80%',
     alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#fff',
-    width: '100%',
-    padding: 20,
-    borderTopLeftRadius: 25,
-    borderTopRightRadius: 25,
-    minHeight: 100,
+    justifyContent: 'flex-start',
+    overflow: 'hidden',
   },
   appName: {
     fontSize: 32,
     color: '#fff',
   },
-  signinLabel: {
+  signInLabel: {
     fontSize: 16,
-    color: '#fff',
+    color: Colors.MAIN_COLOR,
+    fontWeight: 'bold',
     marginVertical: 10,
   },
+  bigFont: {
+    fontSize: 24,
+    paddingBottom: 12,
+  },
+  inputDiv: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   logo: {
-    width: 300,
-    height: 300,
+    width: 150,
+    height: 100,
   },
   button: {
     backgroundColor: Colors.FAILED_COLOR,
@@ -195,13 +227,16 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   signupView: {
+    position: 'absolute',
+    top: 25,
+    end: 0,
     marginTop: 10,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
   },
   signupSentences: {
-    color: Colors.SECONDARY_COLOR,
+    color: Colors.WHITE_COLOR,
   },
   signupBtn: {
     color: Colors.FAILED_COLOR,

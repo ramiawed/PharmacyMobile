@@ -1,41 +1,44 @@
 import React, { useState } from 'react';
-
-import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  TouchableWithoutFeedback,
-  Platform,
-  Animated,
-  ActivityIndicator,
-} from 'react-native';
-
+import { View, Text, StyleSheet, Image, TouchableWithoutFeedback, Animated, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
+// icons
 import { AntDesign } from '@expo/vector-icons';
+
+// redux stuff
+import { unwrapResult } from '@reduxjs/toolkit';
+import { resetMedicines, setSearchCompanyName, setSearchWarehouseName } from '../redux/medicines/medicinesSlices';
 import { useDispatch, useSelector } from 'react-redux';
 import { addFavorite, removeFavorite, selectFavoritesPartners } from '../redux/favorites/favoritesSlice';
-import { statisticsCompanySelected, statisticsUserFavorites } from '../redux/statistics/statisticsSlice';
-import { Colors, baseUrl, UserTypeConstants } from '../utils/constants';
+import { addStatistics, statisticsCompanySelected, statisticsUserFavorites } from '../redux/statistics/statisticsSlice';
 import { selectUserData } from '../redux/auth/authSlice';
-import { unwrapResult } from '@reduxjs/toolkit';
-import { resetMedicines } from '../redux/medicines/medicinesSlices';
+import { setSelectedWarehouse } from '../redux/warehouse/warehousesSlice';
+import { selectSettings } from '../redux/settings/settingsSlice';
+
+// constants
+import { Colors, UserTypeConstants, SERVER_URL } from '../utils/constants';
 
 const SPACING = 20;
-const AVATAR_SIZE = 70;
 
-const PartnerCard = ({ partner, type, advertisement }) => {
+const PartnerCard = ({ partner, advertisement }) => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
 
   const { token, user } = useSelector(selectUserData);
   const favorites = useSelector(selectFavoritesPartners);
+  const {
+    settings: { showWarehouseItem },
+  } = useSelector(selectSettings);
 
   const [changeFavoriteLoading, setChangeFavoriteLoading] = useState(false);
 
+  const allowShowingWarehouseMedicines =
+    user?.type === UserTypeConstants.ADMIN ||
+    partner.type === UserTypeConstants.COMPANY ||
+    (partner.type === UserTypeConstants.WAREHOUSE && showWarehouseItem && partner.allowShowingMedicines);
+
   // method to handle add company to user's favorite
-  const addCompanyToFavorite = () => {
+  const addPartnerToFavorites = () => {
     setChangeFavoriteLoading(true);
 
     dispatch(addFavorite({ obj: { favoriteId: partner._id }, token }))
@@ -50,7 +53,7 @@ const PartnerCard = ({ partner, type, advertisement }) => {
   };
 
   // method to handle remove company from user's favorite
-  const removeCompanyFromFavorite = (id) => {
+  const removePartnerFromFavorites = (id) => {
     setChangeFavoriteLoading(true);
 
     dispatch(removeFavorite({ obj: { favoriteId: id }, token }))
@@ -61,34 +64,46 @@ const PartnerCard = ({ partner, type, advertisement }) => {
       .catch(() => setChangeFavoriteLoading(false));
   };
 
-  const dispatchCompanySelectedHandler = () => {
-    // if the user type is pharmacy or normal, change the selectedCount
-    // and selectedDates for this company
-    if (type === 'company' && (user.type === UserTypeConstants.PHARMACY || user.type === UserTypeConstants.GUEST)) {
-      dispatch(
-        statisticsCompanySelected({
-          obj: { companyId: partner._id },
-          token,
-        }),
-      );
+  const dispatchPartnerSelected = () => {
+    if (partner.type === UserTypeConstants.WAREHOUSE && user.type === UserTypeConstants.WAREHOUSE) {
+      return;
     }
+    if (allowShowingWarehouseMedicines) {
+      // if the partner type is pharmacy or normal, change the selectedCount
+      // and selectedDates for this company
+      if (user.type === UserTypeConstants.PHARMACY || user.type === UserTypeConstants.GUEST) {
+        dispatch(
+          addStatistics({
+            obj: {
+              sourceUser: user._id,
+              targetUser: partner._id,
+              action: 'choose-company',
+            },
+            token,
+          }),
+        );
+      }
+    }
+    dispatch(resetMedicines());
+
+    if (partner.type === UserTypeConstants.COMPANY) {
+      dispatch(setSearchCompanyName(partner.name));
+    }
+
+    if (partner.type === UserTypeConstants.WAREHOUSE) {
+      dispatch(setSearchWarehouseName(partner.name));
+    }
+
+    if (partner.type === UserTypeConstants.WAREHOUSE && user.type === UserTypeConstants.PHARMACY) {
+      dispatch(setSelectedWarehouse(partner._id));
+    } else {
+      dispatch(setSelectedWarehouse(null));
+    }
+    navigation.navigate('Medicines');
   };
 
   return (
-    <TouchableWithoutFeedback
-      onPress={() => {
-        dispatchCompanySelectedHandler();
-        // dispatch(setSelectedCompany(company._id));
-        dispatch(resetMedicines());
-        navigation.navigate('Medicines', {
-          screen: 'AllMedicines',
-          params: {
-            companyId: type === 'company' ? partner._id : null,
-            warehouseId: type === 'warehouse' ? partner._id : null,
-          },
-        });
-      }}
-    >
+    <TouchableWithoutFeedback onPress={dispatchPartnerSelected}>
       <Animated.View
         style={{
           ...styles.animatedView,
@@ -99,14 +114,11 @@ const PartnerCard = ({ partner, type, advertisement }) => {
         <View style={{ alignItems: 'center', justifyContent: 'center' }}>
           {partner.logo_url && partner.logo_url.length !== 0 ? (
             <Image
-              source={{ uri: `${baseUrl}/${partner.logo_url}` }}
+              source={{ uri: `${SERVER_URL}/profiles/${partner.logo_url}` }}
               style={advertisement ? styles.logoLarge : styles.logo}
             />
           ) : (
-            <Image
-              source={{ uri: `${baseUrl}/Adacard 201627116290082.png` }}
-              style={advertisement ? styles.logoLarge : styles.logo}
-            />
+            <Image source={require('../../assets/logo.png')} style={advertisement ? styles.logoLarge : styles.logo} />
           )}
         </View>
 
@@ -123,14 +135,14 @@ const PartnerCard = ({ partner, type, advertisement }) => {
                 name="star"
                 size={24}
                 color={Colors.YELLOW_COLOR}
-                onPress={() => removeCompanyFromFavorite(partner._id)}
+                onPress={() => removePartnerFromFavorites(partner._id)}
               />
             ) : (
               <AntDesign
                 name="staro"
                 size={24}
                 color={Colors.YELLOW_COLOR}
-                onPress={() => addCompanyToFavorite(partner._id)}
+                onPress={() => addPartnerToFavorites(partner._id)}
               />
             )}
           </View>
@@ -155,15 +167,16 @@ const styles = StyleSheet.create({
     shadowRadius: 9.51,
 
     elevation: 25,
-  },
 
+    minHeight: 200,
+    justifyContent: 'space-around',
+  },
   title: {
     fontSize: 20,
     fontWeight: '700',
     color: Colors.MAIN_COLOR,
     textAlign: 'center',
   },
-
   favoriteIcon: {
     position: 'absolute',
     top: 0,
@@ -174,14 +187,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   logo: {
-    width: 70,
-    height: 70,
-    borderRadius: 70,
+    width: 120,
+    height: 100,
+    borderRadius: 12,
+    resizeMode: 'contain',
   },
   logoLarge: {
     width: 130,
     height: 130,
-    borderRadius: 130,
+    borderRadius: 12,
+    resizeMode: 'contain',
   },
 });
 
