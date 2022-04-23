@@ -36,6 +36,12 @@ export default class SwipeableRow extends Component {
               this.props.addItemToWarehouse();
             }
           }
+
+          if (this.props.user.type === UserTypeConstants.PHARMACY) {
+            if (this.props.canAddToCart) {
+              this.props.addToCart(this.props.item);
+            }
+          }
         }}
       >
         {this.props.user.type === UserTypeConstants.PHARMACY && (

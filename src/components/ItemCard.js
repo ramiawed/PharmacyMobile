@@ -61,7 +61,7 @@ const checkOffer = (item, user) => {
   return result;
 };
 
-const ItemCard = ({ item, advertisement }) => {
+const ItemCard = ({ item, advertisement, addToCart }) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const { user, token } = useSelector(selectUserData);
@@ -70,6 +70,7 @@ const ItemCard = ({ item, advertisement }) => {
   const [expanded, setExpanded] = useState(false);
   const [changeFavoriteLoading, setChangeFavoriteLoading] = useState(false);
   const [changeAddToWarehouseLoading, setChangeAddToWarehouseLoading] = useState(false);
+  const [showAddToCartModal, setShowAddToCartModal] = useState(false);
 
   const canAddToCart = user?.type === UserTypeConstants.PHARMACY && checkItemExistsInWarehouse(item, user);
   const isInWarehouse = item.warehouses.map((w) => w.warehouse._id).includes(user._id);
@@ -169,6 +170,10 @@ const ItemCard = ({ item, advertisement }) => {
     }
   };
 
+  const addToCartHandler = (item) => {
+    addToCart(item);
+  };
+
   return user ? (
     <SwipeableRow
       user={user}
@@ -179,6 +184,8 @@ const ItemCard = ({ item, advertisement }) => {
       canAddToCart={canAddToCart}
       isInWarehouse={isInWarehouse}
       isFavorite={isFavorite}
+      addToCart={() => addToCartHandler(item)}
+      item={item}
     >
       <View style={styles.container}>
         <View style={styles.header}>
@@ -218,7 +225,13 @@ const ItemCard = ({ item, advertisement }) => {
           </TouchableWithoutFeedback>
 
           {canAddToCart && (
-            <Ionicons name="cart" size={24} color={Colors.SUCCEEDED_COLOR} style={{ paddingHorizontal: 2 }} />
+            <Ionicons
+              name="cart"
+              size={24}
+              color={Colors.SUCCEEDED_COLOR}
+              style={{ paddingHorizontal: 2 }}
+              onPress={() => addToCart(item)}
+            />
           )}
 
           {changeAddToWarehouseLoading ? (

@@ -234,8 +234,8 @@ const ProfileScreen = () => {
           <ExpandedView title={i18n.t('additional-info')}>
             <UserInfoRow
               label={i18n.t('user-job')}
-              value={userObj.guestDetails?.job}
-              editable={true}
+              value={i18n.t(userObj.guestDetails?.job)}
+              // editable={true}
               action={() => actionHandler('user-job', 'guestDetails.job')}
             />
             <UserInfoRow

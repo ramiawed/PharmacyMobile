@@ -99,7 +99,9 @@ const PartnerCard = ({ partner, advertisement }) => {
     } else {
       dispatch(setSelectedWarehouse(null));
     }
-    navigation.navigate('Medicines');
+    navigation.navigate('Medicines', {
+      screen: 'AllMedicines',
+    });
   };
 
   return (

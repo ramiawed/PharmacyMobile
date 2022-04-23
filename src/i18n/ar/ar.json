@@ -504,5 +504,6 @@
   "medicines-screen": "المنتجات",
   "companies-screen": "الشركات",
   "warehouses-screen": "المستودعات",
-  "profile-screen": "الملف الشخصي"
+  "profile-screen": "الملف الشخصي",
+  "empty-value": "لا يوجد"
 }

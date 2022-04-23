@@ -38,6 +38,7 @@ import SearchContainer from '../components/SearchContainer';
 // constatns
 import { Colors, UserTypeConstants } from '../utils/constants';
 import SwipeableRow from '../components/SwipeableRow';
+import AddToCartModal from '../components/AddToCartModal';
 
 const SPACING = 20;
 
@@ -53,6 +54,8 @@ const MedicinesScreen = ({ navigation }) => {
   const favoritesItems = useSelector(selectFavoritesItems);
 
   // own state
+  const [showAddToCartModal, setShowAddToCartModal] = useState(false);
+  const [itemToAddToCart, setItemToAddToCart] = useState(null);
   const [showFavorites, setShowFavorites] = useState(false);
   const scrollY = React.useRef(new Animated.Value(0)).current;
   const [refreshing, setRefreshing] = useState(false);
@@ -97,6 +100,11 @@ const MedicinesScreen = ({ navigation }) => {
     timer = setTimeout(() => {
       onSearchSubmit();
     }, 200);
+  };
+
+  const setTheItemToAddToCartHandler = (item) => {
+    setItemToAddToCart(item);
+    setShowAddToCartModal(true);
   };
 
   useEffect(() => {
@@ -166,11 +174,6 @@ const MedicinesScreen = ({ navigation }) => {
         <FlatList
           data={medicines}
           keyExtractor={(item) => item._id}
-          contentContainerStyle={
-            {
-              // padding: 10,
-            }
-          }
           refreshControl={
             <RefreshControl
               //refresh control used for the Pull to Refresh
@@ -181,7 +184,16 @@ const MedicinesScreen = ({ navigation }) => {
           numColumns={1}
           onEndReached={handleMoreResult}
           onEndReachedThreshold={0.1}
-          renderItem={({ item, index }) => <ItemCard item={item} index={index} navigation={navigation} />}
+          renderItem={({ item, index }) => (
+            <ItemCard
+              item={item}
+              index={index}
+              navigation={navigation}
+              addToCart={() => {
+                setTheItemToAddToCartHandler(item);
+              }}
+            />
+          )}
         />
       )}
 
@@ -199,6 +211,16 @@ const MedicinesScreen = ({ navigation }) => {
             {i18n.t('loading')}
           </Text>
         </View>
+      )}
+
+      {showAddToCartModal && (
+        <AddToCartModal
+          item={itemToAddToCart}
+          close={() => {
+            setShowAddToCartModal(false);
+            setItemToAddToCart(null);
+          }}
+        />
       )}
     </View>
   ) : null;
