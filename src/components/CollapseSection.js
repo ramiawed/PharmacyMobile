@@ -50,14 +50,14 @@ const styles = StyleSheet.create({
   item: {
     marginHorizontal: 10,
     borderWidth: 1,
-    borderColor: Colors.SECONDARY_COLOR,
+    borderColor: Colors.MAIN_COLOR,
     borderRadius: 6,
     overflow: 'hidden',
     marginBottom: 10,
   },
   headerContainer: {
-    backgroundColor: Colors.SECONDARY_COLOR,
-    paddingVertical: 10,
+    backgroundColor: Colors.MAIN_COLOR,
+    paddingVertical: 5,
     paddingHorizontal: 10,
 
     justifyContent: 'center',
@@ -65,23 +65,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   headerText: {
-    color: '#fff',
+    color: Colors.WHITE_COLOR,
     fontWeight: '900',
     fontSize: 18,
     flex: 1,
   },
   badge: {
-    width: 32,
-    height: 32,
-    backgroundColor: '#fff',
+    width: 24,
+    height: 24,
+    backgroundColor: Colors.WHITE_COLOR,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 16,
+    borderRadius: 6,
   },
   badgeText: {
-    color: Colors.SECONDARY_COLOR,
-    fontWeight: '700',
-    fontSize: 16,
+    color: Colors.MAIN_COLOR,
+    fontSize: 10,
   },
 });
 

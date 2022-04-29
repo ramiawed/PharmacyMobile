@@ -18,7 +18,7 @@ import {
 import CollapseSection from '../components/CollapseSection';
 
 // constants
-import { UserTypeConstants } from '../utils/constants';
+import { Colors, UserTypeConstants } from '../utils/constants';
 
 const FavoriteScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -62,20 +62,22 @@ const FavoriteScreen = ({ navigation }) => {
   });
 
   return (
-    <View style={styles.container}>
-      <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
-        <CollapseSection header="companies" favorites={favoritesCompanies} type="company" />
-        <CollapseSection header="warehouses" favorites={favoritesWarehouses} type="warehouse" />
-        <CollapseSection header="nav-items" favorites={favoritesItems} type="item" />
-      </ScrollView>
-    </View>
+    <>
+      <View style={styles.container}>
+        <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
+          <CollapseSection header="companies" favorites={favoritesCompanies} type="company" />
+          <CollapseSection header="warehouses" favorites={favoritesWarehouses} type="warehouse" />
+          <CollapseSection header="nav-items" favorites={favoritesItems} type="item" />
+        </ScrollView>
+      </View>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.WHITE_COLOR,
     paddingTop: 20,
   },
 });

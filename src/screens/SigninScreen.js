@@ -1,14 +1,14 @@
 import i18n from '../i18n/index';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 // redux stuff
 import { unwrapResult } from '@reduxjs/toolkit';
-import { authSign, resetError, selectToken, selectUserData } from '../redux/auth/authSlice';
-import { statisticsSignin } from '../redux/statistics/statisticsSlice';
+import { authSign, resetError, selectUserData } from '../redux/auth/authSlice';
+import { addStatistics } from '../redux/statistics/statisticsSlice';
 import { useDispatch, useSelector } from 'react-redux';
+import { getFavorites } from '../redux/favorites/favoritesSlice';
 
 // components
 import Input from '../components/Input';
@@ -19,6 +19,7 @@ import { Colors } from '../utils/constants';
 // icons
 import { AntDesign } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
+import { getAllSettings } from '../redux/settings/settingsSlice';
 
 const SigninScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -69,12 +70,20 @@ const SigninScreen = ({ navigation }) => {
     dispatch(authSign({ username, password }))
       .then(unwrapResult)
       .then((result) => {
-        storeUsernamePassword();
-        dispatch(statisticsSignin({ token }));
+        // storeUsernamePassword();
+        // dispatch(statisticsSignin({ token }));
+        dispatch(
+          addStatistics({
+            obj: {
+              targetUser: result.data.user._id,
+              action: 'user-sign-in',
+            },
+          }),
+        );
+        dispatch(getAllSettings({ token: result.token }));
+        dispatch(getFavorites({ token: result.token }));
       })
-      .catch((err) => {
-        // setGlobalError('please-try-again');
-      });
+      .catch((err) => {});
   };
 
   const goToSignUpHandler = () => {
@@ -85,13 +94,6 @@ const SigninScreen = ({ navigation }) => {
     setGlobalError('');
     dispatch(resetError());
     navigation.navigate('SignUp');
-  };
-
-  const storeUsernamePassword = async () => {
-    try {
-      await AsyncStorage.setItem('@username', username);
-      await AsyncStorage.setItem('@password', password);
-    } catch (err) {}
   };
 
   return (

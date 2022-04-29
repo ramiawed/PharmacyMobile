@@ -35,6 +35,7 @@ import { PersistGate } from 'redux-persist/integration/react';
 
 import store from './src/app/store';
 import SplashScreen from './src/screens/SplashScreen';
+import { getFavorites } from './src/redux/favorites/favoritesSlice';
 let persistor = persistStore(store);
 
 const Stack = createStackNavigator();
@@ -91,6 +92,7 @@ const App = () => {
               }),
             );
             dispatch(getAllSettings({ token: result.token }));
+            dispatch(getFavorites({ token: result.token }));
             setShowSplashScreen(false);
           })
           .catch(() => {

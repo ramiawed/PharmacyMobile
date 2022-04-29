@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 
 // redux stuff
-import { selectToken } from '../redux/auth/authSlice';
+import { selectToken, selectUserData } from '../redux/auth/authSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { removeFavorite } from '../redux/favorites/favoritesSlice';
 
@@ -11,24 +11,31 @@ import { removeFavorite } from '../redux/favorites/favoritesSlice';
 import { useNavigation } from '@react-navigation/native';
 
 // constants
-import { Colors } from '../utils/constants';
+import { Colors, UserTypeConstants } from '../utils/constants';
 
 // icons
 import { AntDesign } from '@expo/vector-icons';
 import { selectSettings } from '../redux/settings/settingsSlice';
+import { addStatistics } from '../redux/statistics/statisticsSlice';
+import { resetMedicines, setSearchCompanyId, setSearchWarehouseId } from '../redux/medicines/medicinesSlices';
+import { setSelectedWarehouse } from '../redux/warehouse/warehousesSlice';
 
 const PartnerFavoriteRow = ({ type, favorite }) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
   // selector
-  const token = useSelector(selectToken);
+  const { token, user } = useSelector(selectUserData);
   const {
     settings: { showWarehouseItem },
   } = useSelector(selectSettings);
 
   // own state
   const [loading, setLoading] = useState(false);
+  const allowShowingWarehouseMedicines =
+    user?.type === UserTypeConstants.ADMIN ||
+    favorite.type === UserTypeConstants.COMPANY ||
+    (favorite.type === UserTypeConstants.WAREHOUSE && showWarehouseItem && favorite.allowShowingMedicines);
 
   // method to handle remove company from user's favorite
   const removeCompanyFromFavorite = (id) => {
@@ -39,26 +46,51 @@ const PartnerFavoriteRow = ({ type, favorite }) => {
   };
 
   const goToCompanyItems = (id) => {
-    console.log(type, showWarehouseItem);
-    if (type === 'company') {
-      navigation.navigate('Medicines', {
-        screen: 'AllMedicines',
-        params: {
-          companyId: id,
-          warehouseId: null,
-        },
-      });
+    if (
+      favorite.type === UserTypeConstants.WAREHOUSE &&
+      (user.type === UserTypeConstants.WAREHOUSE ||
+        user.type === UserTypeConstants.COMPANY ||
+        user.type === UserTypeConstants.GUEST)
+    ) {
+      return;
     }
 
-    if (type === 'warehouse' && showWarehouseItem) {
-      navigation.navigate('Medicines', {
-        screen: 'AllMedicines',
-        params: {
-          companyId: null,
-          warehouseId: id,
-        },
-      });
+    if (allowShowingWarehouseMedicines) {
+      // if the partner type is pharmacy or normal, change the selectedCount
+      // and selectedDates for this company
+      if (user.type === UserTypeConstants.PHARMACY) {
+        dispatch(
+          addStatistics({
+            obj: {
+              sourceUser: user._id,
+              targetUser: favorite._id,
+              action: 'choose-company',
+            },
+            token,
+          }),
+        );
+      }
     }
+
+    dispatch(resetMedicines());
+
+    if (favorite.type === UserTypeConstants.COMPANY) {
+      dispatch(setSearchCompanyId(favorite._id));
+    }
+
+    if (favorite.type === UserTypeConstants.WAREHOUSE) {
+      dispatch(setSearchWarehouseId(favorite._id));
+    }
+
+    if (favorite.type === UserTypeConstants.WAREHOUSE && user.type === UserTypeConstants.PHARMACY) {
+      dispatch(setSelectedWarehouse(favorite._id));
+    } else {
+      dispatch(setSelectedWarehouse(null));
+    }
+
+    navigation.navigate('Medicines', {
+      screen: 'AllMedicines',
+    });
   };
 
   return (
@@ -90,9 +122,8 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(0, 0, 0, .1)',
   },
   name: {
-    fontWeight: '700',
     fontSize: 16,
-    color: Colors.SECONDARY_COLOR,
+    color: Colors.MAIN_COLOR,
     flex: 1,
     textAlign: 'left',
   },

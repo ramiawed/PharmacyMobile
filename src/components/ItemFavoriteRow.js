@@ -1,12 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
-import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity, ScrollView } from 'react-native';
 
 // libraries
-import Toast from 'react-native-toast-message';
+import { BottomSheet } from 'react-native-btr';
+
+// components
+import AddToCart from './AddToCart';
 
 // redux stuff
-import { selectToken } from '../redux/auth/authSlice';
+import { selectUserData } from '../redux/auth/authSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { removeFavoriteItem } from '../redux/favorites/favoritesSlice';
 
@@ -14,25 +17,22 @@ import { removeFavoriteItem } from '../redux/favorites/favoritesSlice';
 import { useNavigation } from '@react-navigation/native';
 
 // constants
-import { Colors } from '../utils/constants';
+import { checkItemExistsInWarehouse, Colors, UserTypeConstants } from '../utils/constants';
 
 // icons
-import { AntDesign } from '@expo/vector-icons';
+import { AntDesign, Ionicons } from '@expo/vector-icons';
 
 const ItemFavoriteRow = ({ favorite }) => {
   const navigation = useNavigation();
-  const token = useSelector(selectToken);
+  const { token, user } = useSelector(selectUserData);
   const dispatch = useDispatch();
+
   const [loading, setLoading] = useState(false);
+  const [showAddToCartModal, setShowAddToCartModal] = useState(false);
+  const canAddToCart = user.type === UserTypeConstants.PHARMACY && checkItemExistsInWarehouse(favorite, user);
 
   // method to handle remove company from user's favorite
   const removeItemFromFavorite = () => {
-    // check the internet connection
-    // if (!checkConnection()) {
-    //   setConnectionError("no-internet-connection");
-    //   return;
-    // }
-
     setLoading(true);
 
     dispatch(removeFavoriteItem({ obj: { favoriteItemId: favorite._id }, token }));
@@ -48,21 +48,40 @@ const ItemFavoriteRow = ({ favorite }) => {
   };
 
   return (
-    <View key={favorite._id} style={styles.row}>
-      <Text style={styles.name} onPress={() => goToItemScreen(favorite._id)}>
-        {favorite.name}
-      </Text>
-      {loading ? (
-        <ActivityIndicator size="small" color={Colors.YELLOW_COLOR} />
-      ) : (
-        <AntDesign
-          name="star"
-          size={24}
-          color={Colors.YELLOW_COLOR}
-          onPress={() => removeItemFromFavorite(favorite._id)}
-        />
-      )}
-    </View>
+    <>
+      <View key={favorite._id} style={styles.row}>
+        <Text style={styles.name} onPress={() => goToItemScreen(favorite._id)}>
+          {favorite.name}
+        </Text>
+        {canAddToCart && (
+          <Ionicons
+            name="cart"
+            size={24}
+            color={Colors.SUCCEEDED_COLOR}
+            style={{ paddingHorizontal: 2 }}
+            onPress={() => setShowAddToCartModal(true)}
+          />
+        )}
+        {loading ? (
+          <ActivityIndicator size="small" color={Colors.YELLOW_COLOR} />
+        ) : (
+          <AntDesign
+            name="star"
+            size={24}
+            color={Colors.YELLOW_COLOR}
+            onPress={() => removeItemFromFavorite(favorite._id)}
+          />
+        )}
+      </View>
+
+      <BottomSheet
+        visible={showAddToCartModal}
+        onBackButtonPress={() => setShowAddToCartModal(false)}
+        onBackdropPress={() => setShowAddToCartModal(false)}
+      >
+        <AddToCart item={favorite} close={() => setShowAddToCartModal(false)} />
+      </BottomSheet>
+    </>
   );
 };
 
@@ -76,9 +95,8 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(0, 0, 0, .1)',
   },
   name: {
-    fontWeight: '700',
-    fontSize: 16,
-    color: Colors.SECONDARY_COLOR,
+    fontSize: 12,
+    color: Colors.MAIN_COLOR,
     flex: 1,
     textAlign: 'left',
   },

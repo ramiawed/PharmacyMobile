@@ -16,6 +16,8 @@ import { Colors, UserTypeConstants, checkItemExistsInWarehouse } from '../utils/
 
 // icons
 import { AntDesign, Ionicons } from '@expo/vector-icons';
+
+// components
 import SwipeableRow from './SwipeableRow';
 
 // if logged user is
@@ -70,7 +72,6 @@ const ItemCard = ({ item, advertisement, addToCart }) => {
   const [expanded, setExpanded] = useState(false);
   const [changeFavoriteLoading, setChangeFavoriteLoading] = useState(false);
   const [changeAddToWarehouseLoading, setChangeAddToWarehouseLoading] = useState(false);
-  const [showAddToCartModal, setShowAddToCartModal] = useState(false);
 
   const canAddToCart = user?.type === UserTypeConstants.PHARMACY && checkItemExistsInWarehouse(item, user);
   const isInWarehouse = item.warehouses.map((w) => w.warehouse._id).includes(user._id);
