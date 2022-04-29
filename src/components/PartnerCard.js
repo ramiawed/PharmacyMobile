@@ -7,7 +7,13 @@ import { AntDesign } from '@expo/vector-icons';
 
 // redux stuff
 import { unwrapResult } from '@reduxjs/toolkit';
-import { resetMedicines, setSearchCompanyName, setSearchWarehouseName } from '../redux/medicines/medicinesSlices';
+import {
+  resetMedicines,
+  setSearchCompanyName,
+  setSearchWarehouseId,
+  setSearchCompanyId,
+  setSearchWarehouseName,
+} from '../redux/medicines/medicinesSlices';
 import { useDispatch, useSelector } from 'react-redux';
 import { addFavorite, removeFavorite, selectFavoritesPartners } from '../redux/favorites/favoritesSlice';
 import { addStatistics, statisticsCompanySelected, statisticsUserFavorites } from '../redux/statistics/statisticsSlice';
@@ -65,13 +71,19 @@ const PartnerCard = ({ partner, advertisement }) => {
   };
 
   const dispatchPartnerSelected = () => {
-    if (partner.type === UserTypeConstants.WAREHOUSE && user.type === UserTypeConstants.WAREHOUSE) {
+    if (
+      partner.type === UserTypeConstants.WAREHOUSE &&
+      (user.type === UserTypeConstants.WAREHOUSE ||
+        user.type === UserTypeConstants.COMPANY ||
+        user.type === UserTypeConstants.GUEST)
+    ) {
       return;
     }
+
     if (allowShowingWarehouseMedicines) {
       // if the partner type is pharmacy or normal, change the selectedCount
       // and selectedDates for this company
-      if (user.type === UserTypeConstants.PHARMACY || user.type === UserTypeConstants.GUEST) {
+      if (user.type === UserTypeConstants.PHARMACY) {
         dispatch(
           addStatistics({
             obj: {
@@ -87,11 +99,11 @@ const PartnerCard = ({ partner, advertisement }) => {
     dispatch(resetMedicines());
 
     if (partner.type === UserTypeConstants.COMPANY) {
-      dispatch(setSearchCompanyName(partner.name));
+      dispatch(setSearchCompanyId(partner._id));
     }
 
     if (partner.type === UserTypeConstants.WAREHOUSE) {
-      dispatch(setSearchWarehouseName(partner.name));
+      dispatch(setSearchWarehouseId(partner._id));
     }
 
     if (partner.type === UserTypeConstants.WAREHOUSE && user.type === UserTypeConstants.PHARMACY) {
@@ -99,6 +111,7 @@ const PartnerCard = ({ partner, advertisement }) => {
     } else {
       dispatch(setSelectedWarehouse(null));
     }
+
     navigation.navigate('Medicines', {
       screen: 'AllMedicines',
     });

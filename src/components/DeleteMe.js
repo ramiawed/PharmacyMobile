@@ -66,6 +66,7 @@ const DeleteMe = ({ resetStore }) => {
       };
     }, []),
   );
+
   return (
     <>
       <View

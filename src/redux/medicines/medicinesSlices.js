@@ -1,34 +1,36 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
-import { BASEURL } from "../../utils/constants";
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import axios from 'axios';
+import { BASEURL } from '../../utils/constants';
 
 let CancelToken;
 let source;
 
 const initialState = {
-  status: "idle",
+  status: 'idle',
   medicines: [],
   count: 0,
-  error: "",
-  addToWarehouseStatus: "idle",
-  addToWarehouseError: "",
-  removeFromWarehouseStatus: "idle",
-  removeFromWarehouseError: "",
+  error: '',
+  addToWarehouseStatus: 'idle',
+  addToWarehouseError: '',
+  removeFromWarehouseStatus: 'idle',
+  removeFromWarehouseError: '',
   pageState: {
-    searchName: "",
-    searchCompanyName: "",
-    searchWarehouseName: "",
+    searchName: '',
+    searchWarehouseId: null,
+    searchCompanyId: null,
+    searchCompanyName: '',
+    searchWarehouseName: '',
     searchInWarehouse: false,
     searchOutWarehouse: false,
-    city: "",
-    displayType: "list",
+    city: '',
+    displayType: 'list',
     page: 1,
   },
 };
 
 export const cancelOperation = () => {
   if (source) {
-    source.cancel("operation canceled by user");
+    source.cancel('operation canceled by user');
   }
 };
 
@@ -38,7 +40,7 @@ const resetCancelAndSource = () => {
 };
 
 export const getMedicines = createAsyncThunk(
-  "medicines/getMedicines",
+  'medicines/getMedicines',
   async ({ token }, { rejectWithValue, getState }) => {
     try {
       const {
@@ -49,15 +51,23 @@ export const getMedicines = createAsyncThunk(
 
       let buildUrl = `${BASEURL}/items?forAdmin=false&isActive=true&page=${pageState.page}&limit=15`;
 
-      if (pageState.searchName.trim() !== "") {
+      if (pageState.searchName.trim() !== '') {
         buildUrl = buildUrl + `&itemName=${pageState.searchName}`;
       }
 
-      if (pageState.searchCompanyName.trim() !== "") {
+      if (pageState.searchCompanyId !== null) {
+        buildUrl = buildUrl + `&companyId=${pageState.searchCompanyId}`;
+      }
+
+      if (pageState.searchWarehouseId !== null) {
+        buildUrl = buildUrl + `&warehouseId=${pageState.searchWarehouseId}`;
+      }
+
+      if (pageState.searchCompanyName.trim() !== '') {
         buildUrl = buildUrl + `&companyName=${pageState.searchCompanyName}`;
       }
 
-      if (pageState.searchWarehouseName.trim() !== "") {
+      if (pageState.searchWarehouseName.trim() !== '') {
         buildUrl = buildUrl + `&warehouseName=${pageState.searchWarehouseName}`;
       }
 
@@ -87,24 +97,24 @@ export const getMedicines = createAsyncThunk(
     } catch (err) {
       resetCancelAndSource();
 
-      if (err.code === "ECONNABORTED" && err.message.startsWith("timeout")) {
-        return rejectWithValue("timeout");
+      if (err.code === 'ECONNABORTED' && err.message.startsWith('timeout')) {
+        return rejectWithValue('timeout');
       }
       if (axios.isCancel(err)) {
-        return rejectWithValue("cancel");
+        return rejectWithValue('cancel');
       }
 
       if (!err.response) {
-        return rejectWithValue("network failed");
+        return rejectWithValue('network failed');
       }
 
       return rejectWithValue(err.response.data);
     }
-  }
+  },
 );
 
 export const addItemToWarehouse = createAsyncThunk(
-  "medicines/addToWarehouse",
+  'medicines/addToWarehouse',
   async ({ obj, token }, { rejectWithValue }) => {
     try {
       CancelToken = axios.CancelToken;
@@ -119,7 +129,7 @@ export const addItemToWarehouse = createAsyncThunk(
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       resetCancelAndSource();
@@ -128,24 +138,24 @@ export const addItemToWarehouse = createAsyncThunk(
     } catch (err) {
       resetCancelAndSource();
 
-      if (err.code === "ECONNABORTED" && err.message.startsWith("timeout")) {
-        return rejectWithValue("timeout");
+      if (err.code === 'ECONNABORTED' && err.message.startsWith('timeout')) {
+        return rejectWithValue('timeout');
       }
       if (axios.isCancel(err)) {
-        return rejectWithValue("cancel");
+        return rejectWithValue('cancel');
       }
 
       if (!err.response) {
-        return rejectWithValue("network failed");
+        return rejectWithValue('network failed');
       }
 
       return rejectWithValue(err.response.data);
     }
-  }
+  },
 );
 
 export const removeItemFromWarehouse = createAsyncThunk(
-  "medicines/removeFromWarehouse",
+  'medicines/removeFromWarehouse',
   async ({ obj, token }, { rejectWithValue }) => {
     try {
       CancelToken = axios.CancelToken;
@@ -160,7 +170,7 @@ export const removeItemFromWarehouse = createAsyncThunk(
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       resetCancelAndSource();
@@ -169,51 +179,51 @@ export const removeItemFromWarehouse = createAsyncThunk(
     } catch (err) {
       resetCancelAndSource();
 
-      if (err.code === "ECONNABORTED" && err.message.startsWith("timeout")) {
-        return rejectWithValue("timeout");
+      if (err.code === 'ECONNABORTED' && err.message.startsWith('timeout')) {
+        return rejectWithValue('timeout');
       }
       if (axios.isCancel(err)) {
-        return rejectWithValue("cancel");
+        return rejectWithValue('cancel');
       }
 
       if (!err.response) {
-        return rejectWithValue("network failed");
+        return rejectWithValue('network failed');
       }
 
       return rejectWithValue(err.response.data);
     }
-  }
+  },
 );
 
 export const medicinesSlice = createSlice({
-  name: "medicinesSlice",
+  name: 'medicinesSlice',
   initialState,
   reducers: {
     resetStatus: (state) => {
-      state.status = "idle";
-      state.error = "";
+      state.status = 'idle';
+      state.error = '';
     },
 
     resetError: (state) => {
-      state.error = "";
+      state.error = '';
     },
 
     resetAddToWarehouseStatus: (state) => {
-      state.addToWarehouseStatus = "idle";
-      state.addToWarehouseError = "";
+      state.addToWarehouseStatus = 'idle';
+      state.addToWarehouseError = '';
     },
 
     resetAddToWarehouseError: (state) => {
-      state.addToWarehouseError = "";
+      state.addToWarehouseError = '';
     },
 
     resetRemoveFromWarehouseStatus: (state) => {
-      state.removeFromWarehouseStatus = "idle";
-      state.removeFromWarehouseError = "";
+      state.removeFromWarehouseStatus = 'idle';
+      state.removeFromWarehouseError = '';
     },
 
     resetRemoveFromWarehouseError: (state) => {
-      state.removeFromWarehouseError = "";
+      state.removeFromWarehouseError = '';
     },
 
     setSearchName: (state, action) => {
@@ -223,10 +233,17 @@ export const medicinesSlice = createSlice({
       };
     },
 
-    setSearchCompanyName: (state, action) => {
+    setSearchCompanyId: (state, action) => {
       state.pageState = {
         ...state.pageState,
-        searchName: action.payload,
+        searchCompanyId: action.payload,
+      };
+    },
+
+    setSearchWarehouseId: (state, action) => {
+      state.pageState = {
+        ...state.pageState,
+        searchWarehouseId: action.payload,
       };
     },
 
@@ -315,79 +332,95 @@ export const medicinesSlice = createSlice({
 
     resetMedicinesPageState: (state) => {
       state.pageState = {
-        searchName: "",
-        searchCompanyName: "",
-        searchWarehouseName: "",
+        searchName: '',
+        searchCompanyName: '',
+        searchWarehouseName: '',
+        searchWarehouseId: null,
+        searchCompanyId: null,
         searchInWarehouse: false,
         searchOutWarehouse: false,
-        city: "",
-        displayType: "list",
+        city: '',
+        displayType: 'list',
         page: 1,
       };
     },
 
     resetMedicines: (state) => {
-      state.status = "idle";
+      state.status = 'idle';
       state.medicines = [];
       state.count = 0;
-      state.error = "";
-      state.addToWarehouseStatus = "idle";
-      state.addToWarehouseError = "";
-      state.removeFromWarehouseStatus = "idle";
-      state.removeFromWarehouseError = "";
+      state.error = '';
+      state.addToWarehouseStatus = 'idle';
+      state.addToWarehouseError = '';
+      state.removeFromWarehouseStatus = 'idle';
+      state.removeFromWarehouseError = '';
       state.pageState = {
-        searchName: "",
-        searchCompanyName: "",
-        searchWarehouseName: "",
+        searchName: '',
+        searchCompanyName: '',
+        searchWarehouseName: '',
+        searchWarehouseId: null,
+        searchCompanyId: null,
         searchInWarehouse: false,
         searchOutWarehouse: false,
-        city: "",
-        displayType: "list",
+        city: '',
+        displayType: 'list',
         page: 1,
       };
     },
 
     medicinesSliceSignOut: (state) => {
-      state.status = "idle";
+      state.status = 'idle';
       state.medicines = [];
       state.count = 0;
-      state.error = "";
-      state.addToWarehouseStatus = "idle";
-      state.addToWarehouseError = "";
-      state.removeFromWarehouseStatus = "idle";
-      state.removeFromWarehouseError = "";
+      state.error = '';
+      state.addToWarehouseStatus = 'idle';
+      state.addToWarehouseError = '';
+      state.removeFromWarehouseStatus = 'idle';
+      state.removeFromWarehouseError = '';
+      state.pageState = {
+        searchName: '',
+        searchCompanyName: '',
+        searchWarehouseName: '',
+        searchWarehouseId: null,
+        searchCompanyId: null,
+        searchInWarehouse: false,
+        searchOutWarehouse: false,
+        city: '',
+        displayType: 'list',
+        page: 1,
+      };
     },
   },
   extraReducers: {
     [getMedicines.pending]: (state) => {
-      state.status = "loading";
+      state.status = 'loading';
     },
     [getMedicines.fulfilled]: (state, action) => {
-      state.status = "succeeded";
+      state.status = 'succeeded';
       state.medicines = [...state.medicines, ...action.payload.data.items];
       state.count = action.payload.count;
-      state.error = "";
+      state.error = '';
       state.pageState = {
         ...state.pageState,
         page: Math.ceil(state.medicines.length / 15) + 1,
       };
     },
     [getMedicines.rejected]: (state, { error, meta, payload }) => {
-      state.status = "failed";
+      state.status = 'failed';
 
-      if (payload === "timeout") {
+      if (payload === 'timeout') {
         state.error = payload;
-      } else if (payload === "cancel") {
-        state.error = "cancel-operation-msg";
-      } else if (payload === "network failed") {
-        state.error = "network failed";
+      } else if (payload === 'cancel') {
+        state.error = 'cancel-operation-msg';
+      } else if (payload === 'network failed') {
+        state.error = 'network failed';
       } else state.error = payload.message;
     },
     [addItemToWarehouse.pending]: (state) => {
-      state.addToWarehouseStatus = "loading";
+      state.addToWarehouseStatus = 'loading';
     },
     [addItemToWarehouse.fulfilled]: (state, action) => {
-      state.addToWarehouseStatus = "succeeded";
+      state.addToWarehouseStatus = 'succeeded';
 
       const newItems = state.medicines.map((item) => {
         if (item._id === action.payload.data.item._id) {
@@ -398,21 +431,21 @@ export const medicinesSlice = createSlice({
       state.medicines = newItems;
     },
     [addItemToWarehouse.rejected]: (state, { error, meta, payload }) => {
-      state.addToWarehouseStatus = "failed";
+      state.addToWarehouseStatus = 'failed';
 
-      if (payload === "timeout") {
+      if (payload === 'timeout') {
         state.addToWarehouseError = payload;
-      } else if (payload === "cancel") {
-        state.addToWarehouseError = "cancel-operation-msg";
-      } else if (payload === "network failed") {
-        state.addToWarehouseError = "network failed";
+      } else if (payload === 'cancel') {
+        state.addToWarehouseError = 'cancel-operation-msg';
+      } else if (payload === 'network failed') {
+        state.addToWarehouseError = 'network failed';
       } else state.addToWarehouseError = payload.message;
     },
     [removeItemFromWarehouse.pending]: (state, action) => {
-      state.removeFromWarehouseStatus = "loading";
+      state.removeFromWarehouseStatus = 'loading';
     },
     [removeItemFromWarehouse.fulfilled]: (state, action) => {
-      state.removeFromWarehouseStatus = "succeeded";
+      state.removeFromWarehouseStatus = 'succeeded';
       const newItems = state.medicines.map((item) => {
         if (item._id === action.payload.data.item._id) {
           return action.payload.data.item;
@@ -422,14 +455,14 @@ export const medicinesSlice = createSlice({
       state.medicines = newItems;
     },
     [removeItemFromWarehouse.rejected]: (state, { error, meta, payload }) => {
-      state.removeFromWarehouseStatus = "failed";
+      state.removeFromWarehouseStatus = 'failed';
 
-      if (payload === "timeout") {
+      if (payload === 'timeout') {
         state.removeFromWarehouseError = payload;
-      } else if (payload === "cancel") {
-        state.removeFromWarehouseError = "cancel-operation-msg";
-      } else if (payload === "network failed") {
-        state.removeFromWarehouseError = "network failed";
+      } else if (payload === 'cancel') {
+        state.removeFromWarehouseError = 'cancel-operation-msg';
+      } else if (payload === 'network failed') {
+        state.removeFromWarehouseError = 'network failed';
       } else state.removeFromWarehouseError = payload.message;
     },
   },
@@ -445,6 +478,8 @@ export const {
   resetRemoveFromWarehouseStatus,
   resetRemoveFromWarehouseError,
   setSearchName,
+  setSearchCompanyId,
+  setSearchWarehouseId,
   setSearchCompanyName,
   setSearchWarehouseName,
   setSearchInWarehouse,

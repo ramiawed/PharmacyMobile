@@ -26,7 +26,7 @@ import SwipeableRow from './SwipeableRow';
 // 5- PHARMACY: highlight the row by green if the medicine has an offer by any warehouse
 // in the same city with the logging user
 const checkOffer = (item, user) => {
-  if (user?.type === UserTypeConstants.GUEST || user.type === UserTypeConstants.COMPANY) {
+  if (user.type === UserTypeConstants.GUEST || user.type === UserTypeConstants.COMPANY) {
     return false;
   }
 
@@ -187,7 +187,12 @@ const ItemCard = ({ item, advertisement, addToCart }) => {
       addToCart={() => addToCartHandler(item)}
       item={item}
     >
-      <View style={styles.container}>
+      <View
+        style={{
+          ...styles.container,
+          backgroundColor: checkOffer(item, user) ? Colors.OFFER_COLOR : Colors.WHITE_COLOR,
+        }}
+      >
         <View style={styles.header}>
           {expanded ? (
             <AntDesign
@@ -305,9 +310,9 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'column',
     padding: 5,
-    // marginBottom: 10,
+    margin: 5,
     backgroundColor: Colors.WHITE_COLOR,
-    // borderRadius: 12,
+    borderRadius: 12,
     // shadowColor: Colors.MAIN_COLOR,
     // shadowOffset: {
     //   width: 0,
@@ -316,10 +321,10 @@ const styles = StyleSheet.create({
     // shadowOpacity: 1,
     // shadowRadius: 9.51,
     // elevation: 5,
-    // borderWidth: 1,
-    //   borderColor: Colors.SECONDARY_COLOR,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.SECONDARY_COLOR,
+    borderWidth: 1,
+    borderColor: Colors.SECONDARY_COLOR,
+    // borderBottomWidth: 1,
+    // borderBottomColor: Colors.SECONDARY_COLOR,
   },
   header: {
     flexDirection: 'row',

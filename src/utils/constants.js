@@ -82,9 +82,9 @@ export const Colors = {
   SUCCEEDED_COLOR: '#2aa70b',
   FAILED_COLOR: '#ff787e',
   YELLOW_COLOR: '#e9b93f',
-  OFFER_COLOR: '#81bbf5a4',
+  OFFER_COLOR: '#defeff',
   WHITE_COLOR: '#fff',
-  BLUE_COLOR: '#00A5CF',
+  BLUE_COLOR: '#89b8e7',
   GREY_COLOR: '#898F9C',
 };
 

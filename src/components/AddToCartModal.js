@@ -8,6 +8,7 @@ import { addItemToCart } from '../redux/cart/cartSlice';
 import { addStatistics } from '../redux/statistics/statisticsSlice';
 import { Colors, OfferTypes } from '../utils/constants';
 import CustomPicker from './CustomPicker';
+import { selectMedicines } from '../redux/medicines/medicinesSlices';
 
 const checkOfferQty = (selectedWarehouse, qty) => {
   // check if the specified warehouse has an offer
@@ -41,13 +42,22 @@ const AddToCartModal = ({ item, close }) => {
 
   // selectors
   const { token, user } = useSelector(selectUserData);
-  const { selectedWarehouse: sWarehouse } = useSelector(selectWarehouses);
+  // const { selectedWarehouse: sWarehouse } = useSelector(selectWarehouses);
+  const {
+    pageState: { searchWarehouseId: sWarehouse },
+  } = useSelector(selectMedicines);
 
   // build the warehouse option array that contains this item
   // get all the warehouse that contains this item
   // put asterisk after warehouse name if the warehouse has an offer
   const itemWarehousesOption = item.warehouses
     .filter((w) => w.warehouse.city === user.city && w.warehouse.isActive && w.warehouse.isApproved)
+    .filter((w) => {
+      if (sWarehouse) {
+        return w.warehouse._id == sWarehouse;
+      }
+      return true;
+    })
     .map((w) => {
       const asterisk = w.offer.offers.length > 0 ? '*' : '';
 

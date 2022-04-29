@@ -11,15 +11,13 @@ import {
   RefreshControl,
   ActivityIndicator,
   TextInput,
+  FlatList,
 } from 'react-native';
-
-import { FlatList } from 'react-native-gesture-handler';
 
 // redux stuff
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectUserData } from '../redux/auth/authSlice';
-import { selectFavoritesItems } from '../redux/favorites/favoritesSlice';
 import {
   getMedicines,
   selectMedicines,
@@ -34,13 +32,10 @@ import {
 // components
 import ItemCard from '../components/ItemCard';
 import SearchContainer from '../components/SearchContainer';
-
-// constatns
-import { Colors, UserTypeConstants } from '../utils/constants';
-import SwipeableRow from '../components/SwipeableRow';
 import AddToCartModal from '../components/AddToCartModal';
 
-const SPACING = 20;
+// constants
+import { Colors, UserTypeConstants } from '../utils/constants';
 
 let timer;
 
@@ -51,13 +46,10 @@ const MedicinesScreen = ({ navigation }) => {
   // selectors
   const { token, user } = useSelector(selectUserData);
   const { medicines, status, pageState } = useSelector(selectMedicines);
-  const favoritesItems = useSelector(selectFavoritesItems);
 
   // own state
   const [showAddToCartModal, setShowAddToCartModal] = useState(false);
   const [itemToAddToCart, setItemToAddToCart] = useState(null);
-  const [showFavorites, setShowFavorites] = useState(false);
-  const scrollY = React.useRef(new Animated.Value(0)).current;
   const [refreshing, setRefreshing] = useState(false);
 
   // search handler
@@ -137,18 +129,22 @@ const MedicinesScreen = ({ navigation }) => {
           value={pageState.searchName}
         />
 
-        <TextInput
-          style={styles.searchTextInput}
-          placeholder={i18n.t('search-by-company-name')}
-          onChangeText={(val) => {
-            dispatch(setSearchCompanyName(val));
-          }}
-          onSubmitEditing={onSearchSubmit}
-          onKeyPress={keyUpHandler}
-          value={pageState.searchCompanyName}
-        />
+        {(user.type === UserTypeConstants.ADMIN ||
+          (user.type === UserTypeConstants.PHARMACY && pageState.searchCompanyId === null)) && (
+          <TextInput
+            style={styles.searchTextInput}
+            placeholder={i18n.t('search-by-company-name')}
+            onChangeText={(val) => {
+              dispatch(setSearchCompanyName(val));
+            }}
+            onSubmitEditing={onSearchSubmit}
+            onKeyPress={keyUpHandler}
+            value={pageState.searchCompanyName}
+          />
+        )}
 
-        {(user?.type === UserTypeConstants.ADMIN || user?.type === UserTypeConstants.PHARMACY) && (
+        {(user.type === UserTypeConstants.ADMIN ||
+          (user.type === UserTypeConstants.PHARMACY && pageState.searchWarehouseId === null)) && (
           <TextInput
             style={styles.searchTextInput}
             placeholder={i18n.t('search-by-warehouse-name')}
@@ -181,6 +177,7 @@ const MedicinesScreen = ({ navigation }) => {
               onRefresh={onRefreshing}
             />
           }
+          contentContainerStyle={{ backgroundColor: Colors.WHITE_COLOR }}
           numColumns={1}
           onEndReached={handleMoreResult}
           onEndReachedThreshold={0.1}
@@ -208,7 +205,7 @@ const MedicinesScreen = ({ navigation }) => {
               marginTop: 20,
             }}
           >
-            {i18n.t('loading')}
+            {i18n.t('loading-data')}
           </Text>
         </View>
       )}

@@ -1,10 +1,19 @@
 // import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useCallback } from 'react';
 import i18n from '../i18n/index';
 import axios from 'axios';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image } from 'react-native';
 
+// components
+import UserInfoRow from '../components/UserInfoRow';
+import ChangePassword from '../components/ChangePassword';
+import DeleteMe from '../components/DeleteMe';
+import ExpandedView from '../components/ExpandedView';
+import ChangeInputModal from '../components/ChangeInputModal';
+import Loader from '../components/Loader';
+
 // redux stuff
+import { unwrapResult } from '@reduxjs/toolkit';
 import { useDispatch, useSelector } from 'react-redux';
 import { authSliceSignOut, selectUserData, updateUserInfo } from '../redux/auth/authSlice';
 import { usersSliceSignOut } from '../redux/users/usersSlice';
@@ -30,13 +39,7 @@ import { usersNotificationsSignOut } from '../redux/userNotifications/userNotifi
 
 // constants
 import { BASEURL, Colors, SERVER_URL, UserTypeConstants } from '../utils/constants';
-import UserInfoRow from '../components/UserInfoRow';
-import ChangePassword from '../components/ChangePassword';
-import DeleteMe from '../components/DeleteMe';
-import ExpandedView from '../components/ExpandedView';
-import ChangeInputModal from '../components/ChangeInputModal';
-import Loader from '../components/Loader';
-import { unwrapResult } from '@reduxjs/toolkit';
+import { useFocusEffect } from '@react-navigation/native';
 
 const ProfileScreen = () => {
   const dispatch = useDispatch();
@@ -140,6 +143,7 @@ const ProfileScreen = () => {
   };
 
   const getMyInfo = () => {
+    setLoading(true);
     axios
       .get(`${BASEURL}/users/me`, {
         headers: {
@@ -148,14 +152,28 @@ const ProfileScreen = () => {
       })
       .then((response) => {
         setUserObj(response.data.data.user);
+        setLoading(false);
       });
   };
 
-  useEffect(() => {
-    getMyInfo();
-  }, []);
+  // useEffect(() => {
 
-  return (
+  // }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      // Do something when the screen is focused
+      getMyInfo();
+
+      return () => {
+        setUserObj({});
+      };
+    }, []),
+  );
+
+  return loading ? (
+    <Loader />
+  ) : (
     <View style={{ flex: 1 }}>
       {/* <Image source={require('../../assets/logo.png')} style={styles.image} /> */}
       <ScrollView
