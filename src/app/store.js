@@ -15,7 +15,9 @@ import itemsSectionOneSlice from '../redux/advertisements/itemsSectionOneSlice';
 import itemsSectionTwoSlice from '../redux/advertisements/itemsSectionTwoSlice';
 import itemsSectionThreeSlice from '../redux/advertisements/itemsSectionThreeSlice';
 import settingsSlice from '../redux/settings/settingsSlice';
+import userNotificationsSlice from '../redux/userNotifications/userNotificationsSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import ordersSlice from '../redux/orders/ordersSlice';
 
 // const configureStore({
 //   reducer: {
@@ -51,6 +53,8 @@ const rootReducer = combineReducers({
   itemsSectionTwo: itemsSectionTwoSlice,
   itemsSectionThree: itemsSectionThreeSlice,
   settings: settingsSlice,
+  userNotifications: userNotificationsSlice,
+  orders: ordersSlice,
 });
 
 const persistConfig = {

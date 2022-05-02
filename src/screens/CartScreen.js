@@ -18,7 +18,12 @@ const CartScreen = () => {
 
   return user ? (
     <View style={styles.container}>
-      <ScrollView>
+      <ScrollView
+        contentContainerStyle={{
+          width: '100%',
+          height: '100%',
+        }}
+      >
         {cartWarehouse.length > 0 && (
           <View>
             {cartWarehouse.map((w, index) => (

@@ -45,7 +45,7 @@ const MedicinesScreen = ({ navigation }) => {
 
   // selectors
   const { token, user } = useSelector(selectUserData);
-  const { medicines, status, pageState } = useSelector(selectMedicines);
+  const { medicines, status, pageState, count } = useSelector(selectMedicines);
 
   // own state
   const [showAddToCartModal, setShowAddToCartModal] = useState(false);
@@ -78,7 +78,9 @@ const MedicinesScreen = ({ navigation }) => {
   };
 
   const handleMoreResult = () => {
-    handleSearch();
+    if (medicines.length < count) {
+      handleSearch();
+    }
   };
 
   const keyUpHandler = (event) => {
@@ -226,7 +228,7 @@ const MedicinesScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.WHITE_COLOR,
   },
   searchTextInput: {
     backgroundColor: Colors.WHITE_COLOR,

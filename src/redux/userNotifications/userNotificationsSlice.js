@@ -1,16 +1,16 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-import axios from "axios";
-import { BASEURL } from "../../utils/constants";
+import axios from 'axios';
+import { BASEURL } from '../../utils/constants';
 
 const initialState = {
-  status: "idle",
+  status: 'idle',
   userNotifications: [],
   count: 0,
   unReadNotificationCount: 0,
   refresh: true,
   forceRefresh: false,
-  error: "",
+  error: '',
   page: 1,
 };
 
@@ -18,7 +18,7 @@ let CancelToken = null;
 let source = null;
 
 export const getAllNotifications = createAsyncThunk(
-  "userNotifications/getAllNotifications",
+  'userNotifications/getAllNotifications',
   async ({ token }, { rejectWithValue, getState }) => {
     const {
       userNotifications: { page },
@@ -27,37 +27,34 @@ export const getAllNotifications = createAsyncThunk(
       CancelToken = axios.CancelToken;
       source = CancelToken.source();
 
-      const response = await axios.get(
-        `${BASEURL}/notifications?page=${page}&limit=15`,
-        {
-          // timeout: 10000,
-          cancelToken: source.token,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.get(`${BASEURL}/notifications?page=${page}&limit=15`, {
+        // timeout: 10000,
+        cancelToken: source.token,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       return response.data;
     } catch (err) {
-      if (err.code === "ECONNABORTED" && err.message.startsWith("timeout")) {
-        return rejectWithValue("timeout");
+      if (err.code === 'ECONNABORTED' && err.message.startsWith('timeout')) {
+        return rejectWithValue('timeout');
       }
       if (axios.isCancel(err)) {
-        return rejectWithValue("cancel");
+        return rejectWithValue('cancel');
       }
 
       if (!err.response) {
-        return rejectWithValue("network failed");
+        return rejectWithValue('network failed');
       }
 
       return rejectWithValue(err.response.data);
     }
-  }
+  },
 );
 
 export const getUnreadNotification = createAsyncThunk(
-  "notification/getUnreadNotification",
+  'notification/getUnreadNotification',
   async ({ token }, { rejectWithValue }) => {
     try {
       CancelToken = axios.CancelToken;
@@ -73,24 +70,24 @@ export const getUnreadNotification = createAsyncThunk(
 
       return response.data;
     } catch (err) {
-      if (err.code === "ECONNABORTED" && err.message.startsWith("timeout")) {
-        return rejectWithValue("timeout");
+      if (err.code === 'ECONNABORTED' && err.message.startsWith('timeout')) {
+        return rejectWithValue('timeout');
       }
       if (axios.isCancel(err)) {
-        return rejectWithValue("cancel");
+        return rejectWithValue('cancel');
       }
 
       if (!err.response) {
-        return rejectWithValue("network failed");
+        return rejectWithValue('network failed');
       }
 
       return rejectWithValue(err.response.data);
     }
-  }
+  },
 );
 
 export const setNotificationRead = createAsyncThunk(
-  "userNotifications/setNotificationRead",
+  'userNotifications/setNotificationRead',
   async ({ token, notificationId }, { rejectWithValue, getState }) => {
     try {
       CancelToken = axios.CancelToken;
@@ -105,38 +102,38 @@ export const setNotificationRead = createAsyncThunk(
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       return response.data;
     } catch (err) {
-      if (err.code === "ECONNABORTED" && err.message.startsWith("timeout")) {
-        return rejectWithValue("timeout");
+      if (err.code === 'ECONNABORTED' && err.message.startsWith('timeout')) {
+        return rejectWithValue('timeout');
       }
       if (axios.isCancel(err)) {
-        return rejectWithValue("cancel");
+        return rejectWithValue('cancel');
       }
 
       if (!err.response) {
-        return rejectWithValue("network failed");
+        return rejectWithValue('network failed');
       }
 
       return rejectWithValue(err.response.data);
     }
-  }
+  },
 );
 
 export const UserNotificationsSlice = createSlice({
-  name: "userNotifications",
+  name: 'userNotifications',
   initialState,
   reducers: {
     resetStatus: (state) => {
-      state.status = "idle";
-      state.error = "";
+      state.status = 'idle';
+      state.error = '';
     },
     resetError: (state) => {
-      state.status = "idle";
-      state.error = "";
+      state.status = 'idle';
+      state.error = '';
     },
     setPage: (state, action) => {
       state.page = action.payload;
@@ -148,8 +145,8 @@ export const UserNotificationsSlice = createSlice({
       state.forceRefresh = action.payload;
     },
     resetNotifications: (state) => {
-      state.status = "idle";
-      state.error = "";
+      state.status = 'idle';
+      state.error = '';
       state.userNotifications = [];
       state.unReadNotificationCount = 0;
       state.forceRefresh = false;
@@ -157,8 +154,8 @@ export const UserNotificationsSlice = createSlice({
       state.page = 1;
     },
     usersNotificationsSignOut: (state) => {
-      state.status = "idle";
-      state.error = "";
+      state.status = 'idle';
+      state.error = '';
       state.userNotifications = [];
       state.refresh = true;
       state.forceRefresh = false;
@@ -175,62 +172,56 @@ export const UserNotificationsSlice = createSlice({
   },
   extraReducers: {
     [getAllNotifications.pending]: (state) => {
-      state.status = "loading";
+      state.status = 'loading';
     },
     [getAllNotifications.fulfilled]: (state, action) => {
-      state.status = "succeeded";
-      state.userNotifications = [
-        ...state.userNotifications,
-        ...action.payload.data.notifications,
-      ];
+      state.status = 'succeeded';
+      state.userNotifications = [...state.userNotifications, ...action.payload.data.notifications];
       state.count = action.payload.count;
-      state.error = "";
+      state.page = state.page + 1;
+      state.error = '';
       state.refresh = false;
       state.forceRefresh = false;
     },
     [getAllNotifications.rejected]: (state, { payload }) => {
-      state.status = "failed";
+      state.status = 'failed';
 
-      if (payload === "timeout") {
-        state.error = "timeout-msg";
-      } else if (payload === "cancel") {
-        state.error = "cancel-operation-msg";
-      } else if (payload === "network failed") {
-        state.error = "network failed";
+      if (payload === 'timeout') {
+        state.error = 'timeout-msg';
+      } else if (payload === 'cancel') {
+        state.error = 'cancel-operation-msg';
+      } else if (payload === 'network failed') {
+        state.error = 'network failed';
       } else state.error = payload.message;
     },
     [setNotificationRead.pending]: (state) => {
-      state.status = "loading";
+      state.status = 'loading';
     },
     [setNotificationRead.fulfilled]: (state, action) => {
       const { updatedNotification } = action.payload.data;
-      state.status = "succeeded";
+      state.status = 'succeeded';
       const notifications = state.userNotifications.map((note) => {
         if (note._id === updatedNotification._id) return updatedNotification;
         else return note;
       });
 
       state.userNotifications = notifications;
-      state.error = "";
+      state.error = '';
     },
     [setNotificationRead.rejected]: (state, { payload }) => {
-      state.status = "failed";
+      state.status = 'failed';
 
-      if (payload === "timeout") {
-        state.error = "timeout-msg";
-      } else if (payload === "cancel") {
-        state.error = "cancel-operation-msg";
-      } else if (payload === "network failed") {
-        state.error = "network failed";
+      if (payload === 'timeout') {
+        state.error = 'timeout-msg';
+      } else if (payload === 'cancel') {
+        state.error = 'cancel-operation-msg';
+      } else if (payload === 'network failed') {
+        state.error = 'network failed';
       } else state.error = payload.message;
     },
 
     [getUnreadNotification.fulfilled]: (state, action) => {
       state.unReadNotificationCount = action.payload.data.count;
-      // if (action.payload.data.count !== state.unReadNotificationCount) {
-      //   state.userNotifications = [];
-      //   state.refresh = true;
-      // }
     },
     [getUnreadNotification.rejected]: () => {},
   },

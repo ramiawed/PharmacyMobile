@@ -314,18 +314,8 @@ const styles = StyleSheet.create({
     margin: 5,
     backgroundColor: Colors.WHITE_COLOR,
     borderRadius: 12,
-    // shadowColor: Colors.MAIN_COLOR,
-    // shadowOffset: {
-    //   width: 0,
-    //   height: 0,
-    // },
-    // shadowOpacity: 1,
-    // shadowRadius: 9.51,
-    // elevation: 5,
     borderWidth: 1,
     borderColor: Colors.SECONDARY_COLOR,
-    // borderBottomWidth: 1,
-    // borderBottomColor: Colors.SECONDARY_COLOR,
   },
   header: {
     flexDirection: 'row',

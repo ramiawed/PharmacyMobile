@@ -82,7 +82,6 @@ const SearchHome = () => {
 
       setLoading(false);
     } catch (err) {
-      console.log(err);
       setLoading(false);
     }
   };

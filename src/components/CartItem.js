@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
+import i18n from 'i18n-js';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 // redux stuff
 import { useDispatch } from 'react-redux';
+import { decreaseItemQty, increaseItemQty, removeItemFromCart } from '../redux/cart/cartSlice';
 
 // icons
 import { AntDesign, Ionicons } from '@expo/vector-icons';
+
+// constants
 import { Colors, OfferTypes } from '../utils/constants';
-import i18n from 'i18n-js';
-import { decreaseItemQty, increaseItemQty, removeItemFromCart } from '../redux/cart/cartSlice';
 
 const CartItem = ({ item, inOrderDetails }) => {
   const dispatch = useDispatch();

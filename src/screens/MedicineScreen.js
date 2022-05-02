@@ -60,9 +60,7 @@ const MedicineScreen = ({ route }) => {
     )
       .then(unwrapResult)
       .then(() => getItemFromDB())
-      .catch((err) => {
-        console.log(err);
-      });
+      .catch((err) => {});
   };
 
   const addItemToWarehouseHandler = () => {

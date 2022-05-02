@@ -12,10 +12,17 @@ const ProfileImage = () => {
     user && (
       <>
         <View style={{ backgroundColor: Colors.WHITE_COLOR, borderRadius: 6, overflow: 'hidden' }}>
-          <Image
-            source={{ uri: `${SERVER_URL}profiles/${user.logo_url}` }}
-            style={{ width: 150, height: 150, resizeMode: 'contain' }}
-          />
+          {user.logo_url && user.logo_url.length !== 0 ? (
+            <Image
+              source={{ uri: `${SERVER_URL}profiles/${user.logo_url}` }}
+              style={{ width: 150, height: 150, resizeMode: 'contain' }}
+            />
+          ) : (
+            <Image
+              source={require('../../assets/logo.png')}
+              style={{ width: 150, height: 150, resizeMode: 'contain' }}
+            />
+          )}
         </View>
         <Text style={styles.name}>{user.name}</Text>
         <Text style={styles.type}>{i18n.t(user.type)}</Text>

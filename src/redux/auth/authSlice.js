@@ -117,7 +117,6 @@ export const updateUserInfo = createAsyncThunk('auth/updateUser', async ({ obj, 
     resetCancelAndSource();
     return response.data;
   } catch (err) {
-    console.log(err);
     resetCancelAndSource();
     // timeout finished
     if (err.code === 'ECONNABORTED' && err.message.startsWith('timeout')) {

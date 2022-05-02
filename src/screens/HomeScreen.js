@@ -11,6 +11,7 @@ import { selectUserData } from '../redux/auth/authSlice';
 import SearchHome from '../components/SearchHome';
 import SectionHomeScreen from '../components/SectionHomeScreen';
 import { Colors } from '../utils/constants';
+import SocketObserver from '../components/SocketObserver';
 
 const HomeScreen = () => {
   const windowHeight = Dimensions.get('window').height;
@@ -22,9 +23,12 @@ const HomeScreen = () => {
   useEffect(() => {}, []);
 
   return (
-    <ScrollView>
-      <SearchHome />
-    </ScrollView>
+    <>
+      <SocketObserver />
+      <ScrollView>
+        <SearchHome />
+      </ScrollView>
+    </>
   );
 };
 

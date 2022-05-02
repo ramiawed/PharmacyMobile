@@ -45,7 +45,6 @@ const WarehousesScreen = ({ navigation }) => {
 
   const { token, user } = useSelector(selectUserData);
   const { warehouses, status, count } = useSelector(selectWarehouses);
-  const { searchName } = useSelector(selectWarehousesPageState);
 
   const [refreshing, setRefreshing] = useState(false);
 

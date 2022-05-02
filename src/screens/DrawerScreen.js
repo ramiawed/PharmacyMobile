@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import i18n from '../i18n';
 import { View, StyleSheet, Text } from 'react-native';
+import { useSafeAreaInsets, SafeAreaView } from 'react-native-safe-area-context';
 
 // Screens
 import MainScreen from './MainScreen';
@@ -13,6 +14,7 @@ import CartScreen from './CartScreen';
 import FavoriteScreen from './FavoriteScreen';
 import HomeScreen from './HomeScreen';
 import NotificationsStack from './NotificationsStack';
+import OrdersStack from '../stacks/OrdersStack';
 
 // navigation stuff
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
@@ -25,6 +27,7 @@ import {
   MaterialIcons,
   FontAwesome,
   Ionicons,
+  Entypo,
 } from '@expo/vector-icons';
 
 // constants
@@ -32,11 +35,12 @@ import { Colors, BASEURL, UserTypeConstants } from '../utils/constants';
 
 // redux stuff
 import { useDispatch, useSelector } from 'react-redux';
-import { selectUserData, signOut } from '../redux/auth/authSlice';
+import { selectUser, selectUserData, signOut } from '../redux/auth/authSlice';
 import { resetFavorites } from '../redux/favorites/favoritesSlice';
 import { resetCompanies } from '../redux/company/companySlice';
 import { setSearchCompanyId, setSearchWarehouseId } from '../redux/medicines/medicinesSlices';
 import { selectCartItemCount } from '../redux/cart/cartSlice';
+import SocketObserver from '../components/SocketObserver';
 
 const Drawer = createDrawerNavigator();
 
@@ -79,6 +83,7 @@ const DrawerScreen = () => {
       <Drawer.Screen name="Medicines" component={MedicinesStack} options={{ title: i18n.t('medicines-screen') }} />
       <Drawer.Screen name="Companies" component={CompaniesScreen} options={{ title: i18n.t('companies-screen') }} />
       <Drawer.Screen name="Warehouses" component={WarehousesScreen} options={{ title: i18n.t('warehouses-screen') }} />
+      <Drawer.Screen name="Orders" component={OrdersStack} options={{ title: i18n.t('orders-screen') }} />
       <Drawer.Screen name="Cart" component={CartScreen} options={{ title: i18n.t('cart-screen') }} />
       <Drawer.Screen name="Favorite" component={FavoriteScreen} options={{ title: i18n.t('favorites-screen') }} />
       <Drawer.Screen
@@ -93,6 +98,7 @@ const DrawerScreen = () => {
 
 function CustomDrawerContent(props) {
   const dispatch = useDispatch();
+
   const { user } = props;
   return (
     <DrawerContentScrollView
@@ -186,10 +192,36 @@ function CustomDrawerContent(props) {
           </View>
         )}
 
-        {user.type === UserTypeConstants.PHARMACY && (
+        {(user.type === UserTypeConstants.PHARMACY ||
+          user.type === UserTypeConstants.ADMIN ||
+          user.type === UserTypeConstants.WAREHOUSE) && (
           <View
             style={{
               backgroundColor: props.state.index === 4 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
+              ...styles.option,
+            }}
+          >
+            <DrawerItem
+              label={i18n.t('orders-screen')}
+              icon={({}) => <Entypo name="mail" size={24} color={Colors.WHITE_COLOR} />}
+              onPress={() => {
+                dispatch(setSearchWarehouseId(null));
+                dispatch(setSearchCompanyId(null));
+                props.navigation.navigate('Orders');
+              }}
+              labelStyle={{
+                color: Colors.WHITE_COLOR,
+                fontSize: 16,
+                fontWeight: 'bold',
+              }}
+            />
+          </View>
+        )}
+
+        {user.type === UserTypeConstants.PHARMACY && (
+          <View
+            style={{
+              backgroundColor: props.state.index === 5 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
               ...styles.option,
             }}
           >
@@ -212,7 +244,7 @@ function CustomDrawerContent(props) {
 
         <View
           style={{
-            backgroundColor: props.state.index === 5 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
+            backgroundColor: props.state.index === 6 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
             ...styles.option,
           }}
         >
@@ -230,7 +262,7 @@ function CustomDrawerContent(props) {
 
         <View
           style={{
-            backgroundColor: props.state.index === 6 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
+            backgroundColor: props.state.index === 7 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
             ...styles.option,
           }}
         >
@@ -240,7 +272,9 @@ function CustomDrawerContent(props) {
             onPress={() => {
               dispatch(setSearchWarehouseId(null));
               dispatch(setSearchCompanyId(null));
-              props.navigation.navigate('Notifications');
+              props.navigation.navigate('Notifications', {
+                screen: 'allNotifications',
+              });
             }}
             labelStyle={styles.drawerItemLabel}
           />
@@ -248,7 +282,7 @@ function CustomDrawerContent(props) {
 
         <View
           style={{
-            backgroundColor: props.state.index === 7 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
+            backgroundColor: props.state.index === 8 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
             ...styles.option,
           }}
         >
@@ -269,55 +303,64 @@ function CustomDrawerContent(props) {
 }
 
 function DrawerHeader({ navigation, route, options }) {
+  const insets = useSafeAreaInsets();
   const cartCount = useSelector(selectCartItemCount);
   const title = getHeaderTitle(options, route.name);
+  const user = useSelector(selectUser);
   return (
-    <View style={styles.drawerHeader}>
-      <View style={styles.drawerHeaderContent}>
-        <MaterialIcons name="menu" size={30} color={Colors.WHITE_COLOR} onPress={() => navigation.openDrawer()} />
-        <Text
-          style={{
-            fontSize: 20,
-            flex: 1,
-            color: Colors.WHITE_COLOR,
-            marginStart: 5,
-          }}
-        >
-          {title}
-        </Text>
-        <View style={styles.favoriteIcon}>
-          <Ionicons
-            name="cart"
-            size={24}
-            color={options.title === i18n.t('cart-screen') ? Colors.FAILED_COLOR : Colors.WHITE_COLOR}
-            onPress={() => {
-              navigation.navigate('Cart');
+    <>
+      <View style={{ ...styles.drawerHeader, paddingTop: insets.top }}>
+        <View style={styles.drawerHeaderContent}>
+          <MaterialIcons name="menu" size={30} color={Colors.WHITE_COLOR} onPress={() => navigation.openDrawer()} />
+          <Text
+            style={{
+              fontSize: 20,
+              flex: 1,
+              color: Colors.WHITE_COLOR,
+              marginStart: 5,
             }}
-          />
-          {cartCount > 0 && <View style={styles.cartNotEmpty}></View>}
-        </View>
-        <View style={styles.favoriteIcon}>
-          <Ionicons
-            name="notifications"
-            size={24}
-            color={options.title === i18n.t('notifications-screen') ? Colors.FAILED_COLOR : Colors.WHITE_COLOR}
-            onPress={() => {
-              navigation.navigate('Notifications');
-            }}
-          />
-        </View>
-        <View style={styles.favoriteIcon}>
-          <AntDesign
-            name="star"
-            size={24}
-            color={options.title === i18n.t('favorites-screen') ? Colors.FAILED_COLOR : Colors.WHITE_COLOR}
-            onPress={() => {
-              navigation.navigate('Favorite');
-            }}
-          />
+          >
+            {title}
+          </Text>
+          {user.type === UserTypeConstants.PHARMACY && (
+            <View style={styles.favoriteIcon}>
+              <Ionicons
+                name="cart"
+                size={24}
+                color={options.title === i18n.t('cart-screen') ? Colors.FAILED_COLOR : Colors.WHITE_COLOR}
+                onPress={() => {
+                  navigation.navigate('Cart');
+                }}
+              />
+              {cartCount > 0 && <View style={styles.cartNotEmpty}></View>}
+            </View>
+          )}
+
+          <View style={styles.favoriteIcon}>
+            <Ionicons
+              name="notifications"
+              size={24}
+              color={options.title === i18n.t('notifications-screen') ? Colors.FAILED_COLOR : Colors.WHITE_COLOR}
+              onPress={() => {
+                navigation.navigate('Notifications', {
+                  screen: 'allNotifications',
+                });
+              }}
+            />
+          </View>
+          <View style={styles.favoriteIcon}>
+            <AntDesign
+              name="star"
+              size={24}
+              color={options.title === i18n.t('favorites-screen') ? Colors.FAILED_COLOR : Colors.WHITE_COLOR}
+              onPress={() => {
+                navigation.navigate('Favorite');
+              }}
+            />
+          </View>
         </View>
       </View>
-    </View>
+    </>
   );
 }
 
@@ -331,13 +374,11 @@ const styles = StyleSheet.create({
   menuContainer: {
     flex: 1,
     flexDirection: 'column',
-    justifyContent: 'space-evenly',
+    // justifyContent: 'space-evenly',
     alignItems: 'center',
     backgroundColor: Colors.MAIN_COLOR,
   },
   option: {
-    marginHorizontal: 10,
-    marginBottom: 5,
     borderRadius: 6,
     width: '90%',
   },
@@ -367,7 +408,6 @@ const styles = StyleSheet.create({
     height: 12,
   },
   drawerHeader: {
-    height: 80,
     backgroundColor: Colors.MAIN_COLOR,
     justifyContent: 'flex-end',
     flexDirection: 'column',
