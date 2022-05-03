@@ -1,6 +1,6 @@
 import i18n from 'i18n-js';
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Modal, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 
 // components
 import CustomPicker from './CustomPicker';

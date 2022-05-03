@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
     writingDirection: 'rtl',
     flexDirection: 'row',
     borderWidth: 1,
-    borderColor: Colors.SECONDARY_COLOR,
+    borderColor: '#e3e3e3',
     marginBottom: 5,
     borderRadius: 6,
     overflow: 'hidden',

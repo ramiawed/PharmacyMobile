@@ -1,17 +1,24 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import i18n from 'i18n-js';
 
 import {
   View,
   Text,
   StyleSheet,
+  TextInput,
   ScrollView,
   RefreshControl,
   Image,
   ActivityIndicator,
   FlatList,
   TouchableOpacity,
+  Button,
+  Platform,
 } from 'react-native';
+
+// components
+import SearchContainer from '../components/SearchContainer';
+import CustomPicker from '../components/CustomPicker';
 
 // redux stuff
 import { useDispatch, useSelector } from 'react-redux';
@@ -24,16 +31,28 @@ import {
   deleteOrder,
   getUnreadOrders,
   updateOrders,
+  setSearchPharmacyName,
+  setSearchWarehouseName,
+  setAdminOrderStatus,
+  setWarehouseOrderStatus,
+  setPharmacyOrderStatus,
+  setDateOption,
+  setSearchDate,
 } from '../redux/orders/ordersSlice';
-
 import { Ionicons, FontAwesome, MaterialIcons } from '@expo/vector-icons';
 // constants
-import { Colors, UserTypeConstants } from '../utils/constants';
+import {
+  AdminOrderStatus,
+  Colors,
+  DateOptions,
+  PharmacyOrderStatus,
+  UserTypeConstants,
+  WarehouseOrderStatus,
+} from '../utils/constants';
 
 // components
 import OrderRow from '../components/OrderRow';
 import { unwrapResult } from '@reduxjs/toolkit';
-import { useFocusEffect } from '@react-navigation/native';
 
 const calculateSelectedOrdersCount = (orders) => {
   let count = 0;
@@ -73,6 +92,12 @@ const OrdersScreen = () => {
     if (orders.length < count) {
       handleSearch();
     }
+  };
+
+  const onSearchSubmit = () => {
+    dispatch(resetOrders());
+    dispatch(setPage(1));
+    handleSearch();
   };
 
   const deleteOrderHandler = (orderId) => {
@@ -123,19 +148,96 @@ const OrdersScreen = () => {
     }
   };
 
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     // Do something when the screen is focused
-  //     if (forceRefresh) {
-  //       dispatch(setPage(1));
-  //     }
-  //     handleSearch();
-  //     return () => {};
-  //   }, [forceRefresh]),
-  // );
+  const adminOrderStatusOptions = [
+    {
+      value: AdminOrderStatus.ALL,
+      label: i18n.t('all'),
+    },
+
+    {
+      value: AdminOrderStatus.SEEN,
+      label: i18n.t('seen'),
+    },
+    {
+      value: AdminOrderStatus.NOT_SEEN,
+      label: i18n.t('not-seen'),
+    },
+  ];
+
+  const handleAdminOrderStatusOption = (val) => {
+    dispatch(setAdminOrderStatus(val));
+    onSearchSubmit();
+  };
+
+  const warehouseOrderStatusOptions = [
+    {
+      value: WarehouseOrderStatus.ALL,
+      label: i18n.t('all'),
+    },
+    {
+      value: WarehouseOrderStatus.UNREAD,
+      label: i18n.t('unread'),
+    },
+    {
+      value: WarehouseOrderStatus.RECEIVED,
+      label: i18n.t('received'),
+    },
+    {
+      value: WarehouseOrderStatus.SENT,
+      label: i18n.t('shipped'),
+    },
+    {
+      value: WarehouseOrderStatus.WILL_DONT_SERVER,
+      label: i18n.t('will-dont-serve'),
+    },
+  ];
+
+  const handleWarehouseOrderStatusOption = (val) => {
+    dispatch(setWarehouseOrderStatus(val));
+    onSearchSubmit();
+  };
+
+  const pharmacyOrderStatusOptions = [
+    {
+      value: PharmacyOrderStatus.ALL,
+      label: i18n.t('all'),
+    },
+
+    {
+      value: PharmacyOrderStatus.RECEIVED,
+      label: i18n.t('received'),
+    },
+    {
+      value: PharmacyOrderStatus.SENT,
+      label: i18n.t('sent'),
+    },
+  ];
+
+  const handlePharmacyOrderStatusOption = (val) => {
+    dispatch(setPharmacyOrderStatus(val));
+    onSearchSubmit();
+  };
+
+  const dateOptions = [
+    { value: '', label: i18n.t('choose-date') },
+    { value: DateOptions.ONE_DAY, label: i18n.t('one-day') },
+    { value: DateOptions.THREE_DAY, label: i18n.t('three-days') },
+    { value: DateOptions.ONE_WEEK, label: i18n.t('one-week') },
+    { value: DateOptions.TWO_WEEK, label: i18n.t('two-weeks') },
+    { value: DateOptions.ONE_MONTH, label: i18n.t('one-month') },
+    { value: DateOptions.TWO_MONTH, label: i18n.t('two-months') },
+    { value: DateOptions.SIX_MONTH, label: i18n.t('six-months') },
+    { value: DateOptions.ONE_YEAR, label: i18n.t('one-year') },
+  ];
+
+  const handleDateOptions = (val) => {
+    dispatch(setDateOption(val));
+  };
 
   useEffect(() => {
+    console.log(forceRefresh);
     if (forceRefresh) {
+      dispatch(resetOrders());
       dispatch(setPage(1));
     }
     handleSearch();
@@ -143,6 +245,80 @@ const OrdersScreen = () => {
 
   return (
     <View style={styles.container}>
+      <SearchContainer>
+        {user.type !== UserTypeConstants.PHARMACY && (
+          <TextInput
+            style={styles.searchTextInput}
+            placeholder={i18n.t('search-by-name-composition-barcode')}
+            onChangeText={(val) => {
+              dispatch(setSearchPharmacyName(val));
+            }}
+            onSubmitEditing={onSearchSubmit}
+            // onKeyPress={keyUpHandler}
+            value={pageState.searchPharmacyName}
+          />
+        )}
+
+        {user.type !== UserTypeConstants.WAREHOUSE && (
+          <TextInput
+            style={styles.searchTextInput}
+            placeholder={i18n.t('search-by-name-composition-barcode')}
+            onChangeText={(val) => {
+              dispatch(setSearchWarehouseName(val));
+            }}
+            onSubmitEditing={onSearchSubmit}
+            // onKeyPress={keyUpHandler}
+            value={pageState.searchWarehouseName}
+          />
+        )}
+
+        {user.type === UserTypeConstants.ADMIN && (
+          <CustomPicker
+            selectedValue={{
+              label: '',
+              value: pageState.adminOrderStatus,
+            }}
+            data={adminOrderStatusOptions}
+            onChange={handleAdminOrderStatusOption}
+            label={i18n.t('admin-order-status')}
+            forSearch={true}
+          />
+        )}
+
+        <CustomPicker
+          selectedValue={{
+            label: '',
+            value: pageState.warehouseOrderStatus,
+          }}
+          data={warehouseOrderStatusOptions}
+          onChange={handleWarehouseOrderStatusOption}
+          label={i18n.t('warehouse-order-status')}
+          forSearch={true}
+        />
+
+        <CustomPicker
+          selectedValue={{
+            label: '',
+            value: pageState.pharmacyOrderStatus,
+          }}
+          data={pharmacyOrderStatusOptions}
+          onChange={handlePharmacyOrderStatusOption}
+          label={i18n.t('pharmacy-order-status')}
+          forSearch={true}
+        />
+
+        <CustomPicker
+          selectedValue={{
+            label: '',
+            value: pageState.dateOption,
+          }}
+          data={dateOptions}
+          onChange={handleDateOptions}
+          label={i18n.t('dates-within')}
+          forSearch={true}
+        />
+      </SearchContainer>
+
       {selectedOrdersCount > 0 && (
         <View style={styles.topActionsView}>
           {user.type === UserTypeConstants.PHARMACY && selectedOrdersCount > 0 && (
@@ -283,6 +459,16 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   actionText: { color: Colors.WHITE_COLOR, marginEnd: 10 },
+  searchTextInput: {
+    backgroundColor: Colors.WHITE_COLOR,
+    borderRadius: 6,
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+  },
+  datePickerStyle: {
+    width: 200,
+    marginTop: 20,
+  },
 });
 
 export default OrdersScreen;

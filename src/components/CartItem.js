@@ -40,12 +40,14 @@ const CartItem = ({ item, inOrderDetails }) => {
           </View>
         </TouchableOpacity>
 
-        <AntDesign
-          name="delete"
-          size={24}
-          color={Colors.FAILED_COLOR}
-          onPress={() => dispatch(removeItemFromCart(item))}
-        />
+        {!inOrderDetails && (
+          <AntDesign
+            name="delete"
+            size={24}
+            color={Colors.FAILED_COLOR}
+            onPress={() => dispatch(removeItemFromCart(item))}
+          />
+        )}
       </View>
       {expanded && (
         <>
@@ -105,7 +107,7 @@ const CartItem = ({ item, inOrderDetails }) => {
         </View>
       </View>
 
-      {expanded && (
+      {expanded && !inOrderDetails && (
         <View style={styles.row}>
           <Text style={styles.label}>{i18n.t('item-max-qty')}</Text>
           <Text style={[styles.value]}>{item.warehouse.maxQty ? item.warehouse.maxQty : ''}</Text>
@@ -121,7 +123,7 @@ const CartItem = ({ item, inOrderDetails }) => {
           }}
         >
           <Text style={styles.label}>{i18n.t('quantity-label')}:</Text>
-          {!item.bonus && (
+          {!item.bonus && !inOrderDetails && (
             <AntDesign
               name="minus"
               size={24}
@@ -132,7 +134,7 @@ const CartItem = ({ item, inOrderDetails }) => {
             />
           )}
           <Text style={styles.value}>{item.qty}</Text>
-          {!item.bonus && (
+          {!item.bonus && !inOrderDetails && (
             <Ionicons
               name="md-add"
               size={24}
@@ -190,7 +192,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.MAIN_COLOR,
     flexDirection: 'row',
     alignItems: 'center',
-    width: '90%',
+    width: '100%',
     padding: 5,
     borderBottomWidth: 2,
     borderBottomColor: Colors.GREY_COLOR,

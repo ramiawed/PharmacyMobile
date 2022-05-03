@@ -42,7 +42,7 @@ export const WarehouseOrderStatus = {
   UNREAD: 'unread',
   RECEIVED: 'received',
   SENT: 'sent',
-  WILL_DONT_SERVER: 'will-dont-serve',
+  WILL_DONT_SERVER: 'dontServe',
 };
 
 export const PharmacyOrderStatus = {

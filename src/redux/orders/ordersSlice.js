@@ -331,6 +331,7 @@ export const ordersSlice = createSlice({
     },
 
     setForceRefresh: (state, action) => {
+      console.log(action);
       state.forceRefresh = action.payload;
     },
 

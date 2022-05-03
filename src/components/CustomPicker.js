@@ -3,9 +3,21 @@ import { View, Text, StyleSheet } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { Colors } from '../utils/constants';
 
-const CustomPicker = ({ selectedValue, onChange, data, label, error }) => {
+const CustomPicker = ({ selectedValue, onChange, data, label, error, forSearch }) => {
   return (
-    <View style={{ ...styles.container, borderColor: error ? Colors.FAILED_COLOR : Colors.MAIN_COLOR }}>
+    <View
+      style={{
+        backgroundColor: Colors.WHITE_COLOR,
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: forSearch ? 0 : 10,
+        width: forSearch ? '100%' : '90%',
+        borderRadius: forSearch ? 6 : 15,
+        padding: forSearch ? 5 : 10,
+        borderWidth: forSearch ? 0 : 1,
+        borderColor: error ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
+      }}
+    >
       <Text>{label}</Text>
       <Picker
         selectedValue={selectedValue}
@@ -29,17 +41,6 @@ const CustomPicker = ({ selectedValue, onChange, data, label, error }) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#fff',
-    width: '90%',
-    borderWidth: 1,
-    borderRadius: 15,
-    padding: 10,
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-    borderColor: Colors.MAIN_COLOR,
-  },
   text: {
     color: Colors.MAIN_COLOR,
   },

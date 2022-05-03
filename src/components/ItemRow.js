@@ -28,28 +28,6 @@ const ItemRow = ({ item }) => {
         <View>
           <Text style={styles.title}>{item.name}</Text>
         </View>
-
-        {/* <TouchableWithoutFeedback onPress={() => {}}>
-          <View style={styles.favoriteIcon}>
-            {changeFavoriteLoading ? (
-              <ActivityIndicator size="small" color={Colors.YELLOW_COLOR} />
-            ) : favorites && favorites.map((favorite) => favorite._id).includes(partner?._id) ? (
-              <AntDesign
-                name="star"
-                size={24}
-                color={Colors.YELLOW_COLOR}
-                onPress={() => removeCompanyFromFavorite(partner._id)}
-              />
-            ) : (
-              <AntDesign
-                name="staro"
-                size={24}
-                color={Colors.YELLOW_COLOR}
-                onPress={() => addCompanyToFavorite(partner._id)}
-              />
-            )}
-          </View>
-        </TouchableWithoutFeedback> */}
       </View>
     </TouchableWithoutFeedback>
   );

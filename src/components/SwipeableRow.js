@@ -13,6 +13,7 @@ export default class SwipeableRow extends Component {
       inputRange: [0, 50, 100, 101],
       outputRange: [-20, 0, 0, 1],
     });
+
     return (
       <RectButton
         style={{

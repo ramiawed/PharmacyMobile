@@ -315,7 +315,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.WHITE_COLOR,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: Colors.SECONDARY_COLOR,
+    borderColor: '#e3e3e3',
   },
   header: {
     flexDirection: 'row',

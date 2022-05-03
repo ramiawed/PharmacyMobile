@@ -18,27 +18,25 @@ const CartScreen = () => {
 
   return user ? (
     <View style={styles.container}>
-      <ScrollView
-        contentContainerStyle={{
-          width: '100%',
-          height: '100%',
-        }}
-      >
-        {cartWarehouse.length > 0 && (
+      {cartWarehouse.length > 0 && (
+        <ScrollView
+          contentContainerStyle={{
+            width: '100%',
+          }}
+        >
           <View>
             {cartWarehouse.map((w, index) => (
               <CartWarehouse warehouse={w} key={index} index={index} />
             ))}
           </View>
-        )}
-
-        {cartWarehouse.length === 0 && (
-          <View style={styles.noContentContainer}>
-            <Image source={require('../../assets/no-content.jpeg')} style={styles.noContentImage} />
-            <Text style={styles.noContent}>{i18n.t('empty-cart')}</Text>
-          </View>
-        )}
-      </ScrollView>
+        </ScrollView>
+      )}
+      {cartWarehouse.length === 0 && (
+        <View style={styles.noContentContainer}>
+          <Image source={require('../../assets/no-content.jpeg')} style={styles.noContentImage} />
+          <Text style={styles.noContent}>{i18n.t('empty-cart')}</Text>
+        </View>
+      )}
     </View>
   ) : null;
 };
@@ -49,6 +47,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   noContentContainer: {
+    borderWidth: 1,
+    borderColor: 'red',
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',

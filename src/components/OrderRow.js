@@ -138,7 +138,7 @@ const OrderRow = ({ order, deleteAction }) => {
 
 const styles = StyleSheet.create({
   container: {
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: '#e3e3e3',
     flexDirection: 'row',
     padding: 5,
