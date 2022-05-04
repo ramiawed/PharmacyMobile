@@ -176,13 +176,15 @@ const OrderDetailsScreen = ({ route }) => {
             <FlatList
               data={orderDetails.items}
               keyExtractor={(item) => item._id}
-              contentContainerStyle={{ backgroundColor: Colors.WHITE_COLOR, padding: 10 }}
+              contentContainerStyle={{ backgroundColor: Colors.WHITE_COLOR, alignItems: 'center' }}
               numColumns={1}
               renderItem={({ item, index }) => <CartItem item={item} key={index} inOrderDetails={true} />}
             />
           )}
         </>
       )}
+
+      {status === 'loading' && <Loader />}
     </View>
   );
 };
@@ -210,7 +212,7 @@ const styles = StyleSheet.create({
   },
   topActionsView: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'flex-start',
     flexWrap: 'wrap',
     marginVertical: 10,
     marginHorizontal: 20,
@@ -220,6 +222,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.SECONDARY_COLOR,
     padding: 5,
     borderRadius: 6,
+    marginEnd: 10,
   },
   actionText: { color: Colors.WHITE_COLOR, marginEnd: 10 },
 });

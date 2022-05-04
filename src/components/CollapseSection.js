@@ -11,8 +11,8 @@ if (Platform.OS === 'android') {
   }
 }
 
-function CollapseSection({ header, favorites, type }) {
-  const [open, setOpen] = useState(false);
+function CollapseSection({ header, favorites, type, isOpen }) {
+  const [open, setOpen] = useState(isOpen);
 
   const onPress = () => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
   item: {
     marginHorizontal: 10,
     borderWidth: 1,
-    borderColor: Colors.MAIN_COLOR,
+    borderColor: '#e3e3e3',
     borderRadius: 6,
     overflow: 'hidden',
     marginBottom: 10,

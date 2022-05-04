@@ -2,12 +2,14 @@ import React, { useCallback, useEffect, useState } from 'react';
 import i18n from '../i18n/index';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import axios from 'axios';
+// libraries
+import { BottomSheet } from 'react-native-btr';
 
 // component
 import Loader from '../components/Loader';
 import ExpandedView from '../components/ExpandedView';
 import UserInfoRow from '../components/UserInfoRow';
-import AddToCartModal from '../components/AddToCartModal';
+import AddToCart from '../components/AddToCart';
 
 // redux stuff
 import { unwrapResult } from '@reduxjs/toolkit';
@@ -170,14 +172,14 @@ const MedicineScreen = ({ route }) => {
       </ScrollView>
 
       {(addToWarehouseStatus === 'loading' || removeFromWarehouseStatus === 'loading') && <Loader />}
-      {showAddToCartModal && (
-        <AddToCartModal
-          close={() => {
-            setShowAddToCartModal(false);
-          }}
-          item={item}
-        />
-      )}
+
+      <BottomSheet
+        visible={showAddToCartModal}
+        onBackButtonPress={() => setShowAddToCartModal(false)}
+        onBackdropPress={() => setShowAddToCartModal(false)}
+      >
+        <AddToCart item={item} close={() => setShowAddToCartModal(false)} />
+      </BottomSheet>
     </View>
   ) : (
     <Loader />

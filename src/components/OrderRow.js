@@ -163,6 +163,7 @@ const styles = StyleSheet.create({
   },
   name: {
     color: Colors.MAIN_COLOR,
+    fontWeight: 'bold',
     marginStart: 10,
     flex: 1,
   },

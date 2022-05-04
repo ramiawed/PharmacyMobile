@@ -106,7 +106,9 @@ const CartWarehouse = ({ warehouse, index }) => {
   return (
     <>
       <ScrollView>
-        <View style={{ ...styles.container, backgroundColor: index % 2 === 0 ? '#e3e3e3' : Colors.WHITE_COLOR }}>
+        <View
+          style={{ ...styles.container, backgroundColor: index % 2 === 0 ? Colors.OFFER_COLOR : Colors.WHITE_COLOR }}
+        >
           <View style={styles.headerView}>
             <View style={styles.header}>
               <TouchableOpacity

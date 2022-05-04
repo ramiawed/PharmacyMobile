@@ -7,12 +7,13 @@ import {
   Text,
   StyleSheet,
   ScrollView,
-  Animated,
   RefreshControl,
   ActivityIndicator,
   TextInput,
   FlatList,
 } from 'react-native';
+// libraries
+import { BottomSheet } from 'react-native-btr';
 
 // redux stuff
 import { unwrapResult } from '@reduxjs/toolkit';
@@ -32,10 +33,10 @@ import {
 // components
 import ItemCard from '../components/ItemCard';
 import SearchContainer from '../components/SearchContainer';
-import AddToCartModal from '../components/AddToCartModal';
 
 // constants
 import { Colors, UserTypeConstants } from '../utils/constants';
+import AddToCart from '../components/AddToCart';
 
 let timer;
 
@@ -212,15 +213,13 @@ const MedicinesScreen = ({ navigation }) => {
         </View>
       )}
 
-      {showAddToCartModal && (
-        <AddToCartModal
-          item={itemToAddToCart}
-          close={() => {
-            setShowAddToCartModal(false);
-            setItemToAddToCart(null);
-          }}
-        />
-      )}
+      <BottomSheet
+        visible={showAddToCartModal}
+        onBackButtonPress={() => setShowAddToCartModal(false)}
+        onBackdropPress={() => setShowAddToCartModal(false)}
+      >
+        <AddToCart item={itemToAddToCart} close={() => setShowAddToCartModal(false)} />
+      </BottomSheet>
     </View>
   ) : null;
 };

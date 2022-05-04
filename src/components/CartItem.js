@@ -167,7 +167,7 @@ const CartItem = ({ item, inOrderDetails }) => {
         </View>
       </View>
 
-      <View style={styles.row}>
+      <View style={{ ...styles.row, borderBottomWidth: 0 }}>
         <Text style={styles.totalPrice}>
           {item.qty * (inOrderDetails ? item.price : item.item.price) -
             (item.bonus && item.bonusType === OfferTypes.PERCENTAGE
@@ -183,10 +183,11 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'column',
     borderWidth: 1,
-    borderColor: Colors.SECONDARY_COLOR,
+    borderColor: '#e3e3e3',
     borderRadius: 6,
     marginVertical: 5,
     overflow: 'hidden',
+    width: '95%',
   },
   header: {
     backgroundColor: Colors.MAIN_COLOR,
