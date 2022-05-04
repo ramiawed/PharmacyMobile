@@ -180,7 +180,7 @@ const MedicinesScreen = ({ navigation }) => {
               onRefresh={onRefreshing}
             />
           }
-          contentContainerStyle={{ backgroundColor: Colors.WHITE_COLOR }}
+          contentContainerStyle={{ backgroundColor: Colors.WHITE_COLOR, marginStart: 10 }}
           numColumns={1}
           onEndReached={handleMoreResult}
           onEndReachedThreshold={0.1}

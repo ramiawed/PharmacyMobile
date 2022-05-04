@@ -31,6 +31,7 @@ const CartScreen = () => {
           </View>
         </ScrollView>
       )}
+
       {cartWarehouse.length === 0 && (
         <View style={styles.noContentContainer}>
           <Image source={require('../../assets/no-content.jpeg')} style={styles.noContentImage} />
@@ -44,7 +45,7 @@ const CartScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.WHITE_COLOR,
   },
   noContentContainer: {
     flex: 1,

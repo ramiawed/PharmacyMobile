@@ -51,7 +51,6 @@ const styles = StyleSheet.create({
     color: Colors.SECONDARY_COLOR,
     textAlign: 'center',
   },
-  favoriteIcon: {},
 });
 
 export default memo(ItemRow);

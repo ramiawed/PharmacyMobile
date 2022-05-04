@@ -1,6 +1,10 @@
 import { useNavigation } from '@react-navigation/native';
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, CheckBox, TouchableWithoutFeedback } from 'react-native';
+
+// libraries
+import { BottomSheet } from 'react-native-btr';
+import ConfirmBottomSheet from '../components/ConfirmBottomSheet';
 
 // redux stuff
 import { unwrapResult } from '@reduxjs/toolkit';
@@ -19,6 +23,8 @@ const OrderRow = ({ order, deleteAction }) => {
   const dispatch = useDispatch();
 
   const { user, token } = useSelector(selectUserData);
+
+  const [showDeleteConfirmBts, setShowDeleteConfirmBts] = useState(false);
 
   const rowClickHandler = (id) => {
     if (user.type !== UserTypeConstants.PHARMACY) {
@@ -66,7 +72,10 @@ const OrderRow = ({ order, deleteAction }) => {
         </View>
       )}
 
-      <TouchableWithoutFeedback style={styles.details} onPress={() => rowClickHandler(order._id)}>
+      <TouchableWithoutFeedback
+        style={{ ...styles.details, borderStartWidth: user.type === UserTypeConstants.ADMIN ? 0 : 1 }}
+        onPress={() => rowClickHandler(order._id)}
+      >
         <View style={styles.details}>
           {(user.type === UserTypeConstants.ADMIN || user.type === UserTypeConstants.WAREHOUSE) && (
             <View style={styles.row}>
@@ -129,9 +138,29 @@ const OrderRow = ({ order, deleteAction }) => {
         )}
 
         {user.type !== UserTypeConstants.WAREHOUSE ? (
-          <AntDesign name="delete" size={20} color={Colors.FAILED_COLOR} />
+          <AntDesign
+            name="delete"
+            size={20}
+            color={Colors.FAILED_COLOR}
+            onPress={() => setShowDeleteConfirmBts(true)}
+          />
         ) : null}
       </View>
+
+      <BottomSheet
+        visible={showDeleteConfirmBts}
+        onBackButtonPress={() => setShowDeleteConfirmBts(false)}
+        onBackdropPress={() => setShowDeleteConfirmBts(false)}
+      >
+        <ConfirmBottomSheet
+          okLabel="ok-label"
+          cancelLabel="cancel-label"
+          header="delete-order-confirm-header"
+          message="delete-order-confirm-msg"
+          cancelAction={() => setShowDeleteConfirmBts(false)}
+          okAction={() => deleteAction(order._id)}
+        />
+      </BottomSheet>
     </View>
   ) : null;
 };
@@ -149,7 +178,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     flex: 1,
     borderStartColor: Colors.SECONDARY_COLOR,
-    borderStartWidth: 1,
+    // borderStartWidth: 1,
     borderEndColor: Colors.SECONDARY_COLOR,
     borderEndWidth: 1,
   },

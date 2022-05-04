@@ -50,9 +50,14 @@ const ItemFavoriteRow = ({ favorite }) => {
   return (
     <>
       <View key={favorite._id} style={styles.row}>
-        <Text style={styles.name} onPress={() => goToItemScreen(favorite._id)}>
-          {favorite.name}
-        </Text>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.name} onPress={() => goToItemScreen(favorite._id)}>
+            {favorite.name}
+          </Text>
+          <Text style={styles.companyName}>{favorite.company.name}</Text>
+          <Text style={styles.caliber}>{favorite.caliber}</Text>
+        </View>
+
         {canAddToCart && (
           <Ionicons
             name="cart"
@@ -88,17 +93,28 @@ const ItemFavoriteRow = ({ favorite }) => {
 const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
-    justifyContent: 'flex-start',
+    justifyContent: 'center',
+    alignItems: 'center',
     writingDirection: 'rtl',
     padding: 10,
     borderBottomWidth: 1,
     borderColor: 'rgba(0, 0, 0, .1)',
   },
   name: {
-    fontSize: 12,
+    fontSize: 14,
     color: Colors.MAIN_COLOR,
     flex: 1,
     textAlign: 'left',
+  },
+  companyName: {
+    fontSize: 12,
+    color: Colors.SECONDARY_COLOR,
+  },
+  caliber: {
+    textAlign: 'left',
+    fontSize: 10,
+    fontWeight: 'bold',
+    color: Colors.SECONDARY_COLOR,
   },
 });
 

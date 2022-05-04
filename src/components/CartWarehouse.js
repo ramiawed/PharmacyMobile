@@ -7,6 +7,7 @@ import Toast from 'react-native-toast-message';
 // component
 import CartItem from './CartItem';
 import Loader from './Loader';
+import ConfirmBottomSheet from './ConfirmBottomSheet';
 
 // redux stuff
 import { unwrapResult } from '@reduxjs/toolkit';
@@ -29,6 +30,7 @@ const CartWarehouse = ({ warehouse, index }) => {
   const { user, token } = useSelector(selectUserData);
   const cartItems = useSelector(selectCartItems);
 
+  // owns state
   const [showLoadingModal, setShowLoadingModal] = useState(false);
   const [showConfirmSaveOrder, setShowConfirmSaveOrder] = useState(false);
   const [expanded, setExpanded] = useState(false);
@@ -107,7 +109,7 @@ const CartWarehouse = ({ warehouse, index }) => {
     <>
       <ScrollView>
         <View
-          style={{ ...styles.container, backgroundColor: index % 2 === 0 ? Colors.OFFER_COLOR : Colors.WHITE_COLOR }}
+          style={{ ...styles.container, backgroundColor: index % 2 === 0 ? Colors.WHITE_COLOR : Colors.WHITE_COLOR }}
         >
           <View style={styles.headerView}>
             <View style={styles.header}>
@@ -161,41 +163,14 @@ const CartWarehouse = ({ warehouse, index }) => {
         onBackdropPress={() => setShowConfirmSaveOrder(false)}
         //Toggling the visibility state on the clicking out side of the sheet
       >
-        {/*Bottom Sheet inner View*/}
-        <View style={styles.bottomNavigationView}>
-          <View
-            style={{
-              flex: 1,
-              flexDirection: 'column',
-            }}
-          >
-            <Text
-              style={{
-                textAlign: 'center',
-                padding: 20,
-                fontSize: 20,
-                color: Colors.MAIN_COLOR,
-              }}
-            >
-              {i18n.t('send-order')}
-            </Text>
-            <Text
-              style={{
-                flex: 1,
-              }}
-            >
-              {i18n.t('confirm-save-order')}
-            </Text>
-            <View style={styles.actions}>
-              <TouchableOpacity onPress={sendOrderHandler}>
-                <Text style={styles.okBtn}>{i18n.t('ok-label')}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => setShowConfirmSaveOrder(false)}>
-                <Text style={styles.cancelBtn}>{i18n.t('cancel-label')}</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
+        <ConfirmBottomSheet
+          header="send-order"
+          message="confirm-save-order"
+          okLabel="ok-label"
+          cancelLabel="cancel-label"
+          okAction={sendOrderHandler}
+          cancelAction={() => setShowConfirmSaveOrder(false)}
+        />
       </BottomSheet>
 
       {showLoadingModal && <Loader />}
@@ -209,7 +184,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
     paddingVertical: 10,
     alignItems: 'center',
-    borderBottomWidth: 1,
+    borderBottomWidth: 20,
     borderBottomColor: Colors.SECONDARY_COLOR,
   },
   totalPrice: {

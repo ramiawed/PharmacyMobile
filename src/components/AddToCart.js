@@ -262,7 +262,7 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     borderRadius: 6,
     marginHorizontal: 5,
-    fontSize: 20,
+    fontSize: 18,
   },
   cancelBtn: {
     color: Colors.MAIN_COLOR,
@@ -270,13 +270,13 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     borderRadius: 6,
     marginHorizontal: 5,
-    fontSize: 20,
+    fontSize: 18,
   },
   header: {
     backgroundColor: Colors.MAIN_COLOR,
     color: Colors.WHITE_COLOR,
     padding: 10,
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
   },
 });

@@ -133,6 +133,7 @@
   "search-home-placeholder": "اسم المنتج - الاسم التجاري - الباركود - اسم الشركة - اسم المستودع",
   "search-engines": "محركات البحث",
   "search-by-warehouse-name": "بحث من خلال اسم المستودع",
+  "search-by-pharmacy-name": "بحث من خلال اسم الصيدلية",
   "user-action": "",
   "tooltip-approve": "الحساب مفعل",
   "tooltip-disapprove": "الحساب غير مفعل",

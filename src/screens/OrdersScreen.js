@@ -249,7 +249,7 @@ const OrdersScreen = () => {
         {user.type !== UserTypeConstants.PHARMACY && (
           <TextInput
             style={styles.searchTextInput}
-            placeholder={i18n.t('search-by-name-composition-barcode')}
+            placeholder={i18n.t('search-by-pharmacy-name')}
             onChangeText={(val) => {
               dispatch(setSearchPharmacyName(val));
             }}
@@ -262,7 +262,7 @@ const OrdersScreen = () => {
         {user.type !== UserTypeConstants.WAREHOUSE && (
           <TextInput
             style={styles.searchTextInput}
-            placeholder={i18n.t('search-by-name-composition-barcode')}
+            placeholder={i18n.t('search-by-warehouse-name')}
             onChangeText={(val) => {
               dispatch(setSearchWarehouseName(val));
             }}
@@ -392,7 +392,8 @@ const OrdersScreen = () => {
           data={orders}
           keyExtractor={(order) => order._id}
           contentContainerStyle={{
-            padding: 20,
+            paddingTop: 10,
+            paddingHorizontal: 10,
           }}
           refreshControl={
             <RefreshControl
@@ -446,9 +447,9 @@ const styles = StyleSheet.create({
   },
   topActionsView: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'flex-start',
     flexWrap: 'wrap',
-    marginVertical: 10,
+    marginTop: 10,
     marginHorizontal: 20,
   },
   action: {
@@ -457,6 +458,7 @@ const styles = StyleSheet.create({
     padding: 5,
     borderRadius: 6,
     marginBottom: 5,
+    marginEnd: 10,
   },
   actionText: { color: Colors.WHITE_COLOR, marginEnd: 10 },
   searchTextInput: {

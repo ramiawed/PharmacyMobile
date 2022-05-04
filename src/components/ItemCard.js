@@ -285,7 +285,7 @@ const ItemCard = ({ item, advertisement, addToCart }) => {
         </View>
         <View style={styles.subHeader}>
           <View style={styles.fullWidth}>
-            <Text style={styles.company}>{item.company.name}</Text>
+            <Text style={styles.companyName}>{item.company.name}</Text>
           </View>
           <Text style={{ ...styles.priceValue, color: Colors.SUCCEEDED_COLOR }}>{item.price}</Text>
           <Text style={{ ...styles.priceValue, color: Colors.FAILED_COLOR }}>{item.customer_price}</Text>
@@ -316,6 +316,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     borderColor: '#e3e3e3',
+    width: '95%',
   },
   header: {
     flexDirection: 'row',
@@ -349,22 +350,31 @@ const styles = StyleSheet.create({
     writingDirection: 'rtl',
     paddingHorizontal: 5,
   },
-  company: {
+  companyName: {
     fontSize: 12,
-    color: Colors.GREY_COLOR,
+    fontWeight: 'bold',
+    color: Colors.SECONDARY_COLOR,
     marginStart: 20,
+  },
+  caliber: {
+    textAlign: 'left',
+    fontSize: 10,
+    fontWeight: 'bold',
+    color: Colors.SECONDARY_COLOR,
   },
   moreData: {
     flexDirection: 'column',
   },
   moreDataText: {
-    color: Colors.SECONDARY_COLOR,
-    fontSize: 12,
+    color: Colors.GREY_COLOR,
+    fontSize: 10,
+    fontWeight: 'bold',
     marginBottom: 3,
     marginStart: 10,
     flexWrap: 'wrap',
     flexDirection: 'row',
     justifyContent: 'flex-start',
+    textAlign: 'left',
   },
 });
 

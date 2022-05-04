@@ -212,7 +212,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 3,
     alignItems: 'center',
     borderBottomWidth: 1,
-    borderBottomColor: Colors.SECONDARY_COLOR,
+    borderBottomColor: '#e3e3e3',
   },
   value: {
     textAlign: 'center',

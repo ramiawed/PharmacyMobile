@@ -29,6 +29,9 @@ const SearchContainer = ({ children, searchAction }) => {
       </View>
       {childrenArray.length > 1 && (
         <Feather
+          style={{
+            marginTop: 5,
+          }}
           name="more-vertical"
           size={24}
           color={Colors.WHITE_COLOR}

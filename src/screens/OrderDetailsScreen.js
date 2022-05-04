@@ -98,9 +98,7 @@ const OrderDetailsScreen = ({ route }) => {
     getOrderDetails();
   }, []);
 
-  return loading ? (
-    <Loader />
-  ) : (
+  return orderDetails ? (
     <View style={styles.container}>
       {orderDetails && (
         <>
@@ -186,6 +184,8 @@ const OrderDetailsScreen = ({ route }) => {
 
       {status === 'loading' && <Loader />}
     </View>
+  ) : (
+    <Loader />
   );
 };
 
@@ -198,6 +198,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 5,
+    paddingStart: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e3e3e3',
   },
   label: {
     width: 90,
