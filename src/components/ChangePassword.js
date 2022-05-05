@@ -1,10 +1,14 @@
-import i18n from 'i18n-js';
+import i18n from '../i18n/index';
 import React, { useCallback, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { View, StyleSheet, Text, TextInput, TouchableOpacity } from 'react-native';
 import Toast from 'react-native-toast-message';
+// libraries
+import { BottomSheet } from 'react-native-btr';
 
 // components
 import Loader from '../components/Loader';
+import ConfirmBottomSheet from '../components/ConfirmBottomSheet';
 
 // redux stuff
 import { unwrapResult } from '@reduxjs/toolkit';
@@ -13,12 +17,12 @@ import { changeMyPassword, selectUserData } from '../redux/auth/authSlice';
 
 // constants
 import { Colors } from '../utils/constants';
-import { useFocusEffect } from '@react-navigation/native';
 
 const ChangePassword = () => {
   const dispatch = useDispatch();
   const { token } = useSelector(selectUserData);
 
+  const [showChangePasswordConfirmBts, setShowChangePasswordConfirmBts] = useState(false);
   // own state that holds the oldPassword, newPassword, newPasswordConfirm values
   const [passwordObj, setPasswordObj] = useState({
     oldPassword: '',
@@ -33,7 +37,7 @@ const ChangePassword = () => {
     newPasswordConfirm: '',
   });
 
-  const changePasswordHandler = () => {
+  const checkPasswords = () => {
     let errorObj = {};
     if (passwordObj.oldPassword.length === 0) {
       errorObj = {
@@ -85,6 +89,11 @@ const ChangePassword = () => {
       return;
     }
 
+    setShowChangePasswordConfirmBts(true);
+  };
+
+  const changePasswordHandler = () => {
+    setShowChangePasswordConfirmBts(false);
     dispatch(changeMyPassword({ obj: passwordObj, token }))
       .then(unwrapResult)
       .then(() => {
@@ -124,7 +133,6 @@ const ChangePassword = () => {
   useFocusEffect(
     useCallback(() => {
       // Do something when the screen is focused
-
       return () => {
         setPasswordObj({
           oldPassword: '',
@@ -203,7 +211,7 @@ const ChangePassword = () => {
         )}
       </View>
 
-      <TouchableOpacity onPress={changePasswordHandler} style={styles.button}>
+      <TouchableOpacity onPress={checkPasswords} style={styles.button}>
         <Text
           style={{
             color: Colors.WHITE_COLOR,
@@ -212,6 +220,21 @@ const ChangePassword = () => {
           {i18n.t('change-password')}
         </Text>
       </TouchableOpacity>
+
+      <BottomSheet
+        visible={showChangePasswordConfirmBts}
+        onBackButtonPress={() => setShowChangePasswordConfirmBts(false)}
+        onBackdropPress={() => setShowChangePasswordConfirmBts(false)}
+      >
+        <ConfirmBottomSheet
+          okLabel="ok-label"
+          cancelLabel="cancel-label"
+          cancelAction={() => setShowChangePasswordConfirmBts(false)}
+          okAction={changePasswordHandler}
+          header="change-password"
+          message="change-password-confirm-msg"
+        />
+      </BottomSheet>
     </>
   );
 };
@@ -224,7 +247,7 @@ const styles = StyleSheet.create({
     height: 45,
     paddingHorizontal: 5,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.SECONDARY_COLOR,
+    borderBottomColor: '#e3e3e3',
   },
   value: {
     flex: 1,

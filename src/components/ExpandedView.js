@@ -17,7 +17,7 @@ const ExpandedView = ({ title, children, danger }) => {
   };
 
   return (
-    <View style={{ ...styles.container, borderColor: danger ? Colors.FAILED_COLOR : Colors.GREY_COLOR }}>
+    <View style={{ ...styles.container, borderColor: danger ? Colors.FAILED_COLOR : '#e3e3e3' }}>
       <TouchableWithoutFeedback onPress={onPress}>
         <Text
           style={{

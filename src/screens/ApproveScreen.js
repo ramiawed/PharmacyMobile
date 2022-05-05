@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Colors } from '../utils/constants';
-import i18n from 'i18n-js';
+import i18n from '../i18n/index';
 
 const ApproveScreen = ({ navigation }) => {
   return (

@@ -1,4 +1,4 @@
-import i18n from 'i18n-js';
+import i18n from '../i18n/index';
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 

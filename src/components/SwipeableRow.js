@@ -1,4 +1,4 @@
-import i18n from 'i18n-js';
+import i18n from '../i18n/index';
 import React, { Component } from 'react';
 import { Animated, StyleSheet, Text, View, I18nManager } from 'react-native';
 

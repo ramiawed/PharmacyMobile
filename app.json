@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "PharmacyMobile",
-    "slug": "PharmacyMobile",
+    "name": "Smart Pharma",
+    "slug": "expo.dev/ramiawed/smartpharmasy",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

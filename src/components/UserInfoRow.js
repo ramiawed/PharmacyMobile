@@ -1,12 +1,12 @@
-import i18n from 'i18n-js';
+import i18n from '../i18n/index';
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, Button } from 'react-native';
 import { Colors } from '../utils/constants';
 import ChangeInputModal from './ChangeInputModal';
 
-const UserInfoRow = ({ label, value, action, editable }) => {
+const UserInfoRow = ({ label, value, action, editable, withoutBottomBorder }) => {
   return (
-    <View style={styles.row}>
+    <View style={{ ...styles.row, borderBottomWidth: withoutBottomBorder ? 0 : 1 }}>
       <Text style={styles.label}>{label}</Text>
       <Text style={styles.value}>{value}</Text>
       {editable && (
@@ -25,8 +25,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     height: 45,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.SECONDARY_COLOR,
+    borderBottomColor: '#e3e3e3',
   },
   value: {
     flex: 1,

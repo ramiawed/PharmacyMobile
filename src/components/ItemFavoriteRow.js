@@ -29,6 +29,7 @@ const ItemFavoriteRow = ({ favorite }) => {
 
   const [loading, setLoading] = useState(false);
   const [showAddToCartModal, setShowAddToCartModal] = useState(false);
+
   const canAddToCart = user.type === UserTypeConstants.PHARMACY && checkItemExistsInWarehouse(favorite, user);
 
   // method to handle remove company from user's favorite

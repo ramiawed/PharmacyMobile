@@ -1,4 +1,4 @@
-import i18n from 'i18n-js';
+import i18n from '../i18n/index';
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Modal, TextInput, TouchableOpacity } from 'react-native';
 import { Colors } from '../utils/constants';

@@ -1,15 +1,20 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import i18n from '../i18n/index';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
 import axios from 'axios';
 // libraries
 import { BottomSheet } from 'react-native-btr';
+import * as ImagePicker from 'expo-image-picker';
+
+// icons
+import { EvilIcons } from '@expo/vector-icons';
 
 // component
 import Loader from '../components/Loader';
 import ExpandedView from '../components/ExpandedView';
 import UserInfoRow from '../components/UserInfoRow';
 import AddToCart from '../components/AddToCart';
+import ItemImage from '../components/ItemImage';
 
 // redux stuff
 import { unwrapResult } from '@reduxjs/toolkit';
@@ -26,15 +31,16 @@ import { BASEURL, checkItemExistsInWarehouse, Colors, UserTypeConstants } from '
 const MedicineScreen = ({ route }) => {
   const { medicineId } = route.params;
   const dispatch = useDispatch();
+
   const { token, user } = useSelector(selectUserData);
   const { addToWarehouseStatus, removeFromWarehouseStatus } = useSelector(selectMedicines);
 
+  const [refreshing, setRefreshing] = useState(false);
   const [showAddToCartModal, setShowAddToCartModal] = useState(false);
-  const [loadingItem, setLoadingItem] = useState(false);
   const [item, setItem] = useState(null);
 
   const getItemFromDB = useCallback(() => {
-    setLoadingItem(true);
+    setItem(null);
     axios
       .get(`${BASEURL}/items/item/${medicineId}`, {
         headers: {
@@ -43,10 +49,10 @@ const MedicineScreen = ({ route }) => {
       })
       .then((response) => {
         setItem(response.data.data.item);
-        setLoadingItem(false);
+        setRefreshing(false);
       })
       .catch((err) => {
-        setLoadingItem(false);
+        setRefreshing(false);
       });
   });
 
@@ -80,6 +86,47 @@ const MedicineScreen = ({ route }) => {
       .catch(() => {});
   };
 
+  const pickImage = async () => {
+    // No permissions request is necessary for launching the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.cancelled) {
+      const data = new FormData();
+
+      let localUri = result.uri;
+      let filename = localUri.split('/').pop();
+
+      // Infer the type of the image
+      let match = /\.(\w+)$/.exec(filename);
+      let type = match ? `image/${match[1]}` : `image`;
+      data.append('file', { uri: localUri, name: filename, type });
+
+      const config = {
+        headers: {
+          'content-type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      axios
+        .post(`${BASEURL}/items/upload/${item._id}`, data, config)
+        .then(() => {
+          getItemFromDB();
+        })
+        .catch((err) => {});
+    }
+  };
+
+  const onRefreshing = () => {
+    setRefreshing(true);
+    getItemFromDB();
+  };
+
   useEffect(() => {
     if (medicineId) {
       getItemFromDB();
@@ -88,50 +135,59 @@ const MedicineScreen = ({ route }) => {
 
   return item ? (
     <View style={{ flex: 1 }}>
-      {user.type === UserTypeConstants.PHARMACY && item !== null && checkItemExistsInWarehouse(item, user) && (
-        <TouchableOpacity
-          style={{ backgroundColor: Colors.WHITE_COLOR, alignItems: 'center' }}
-          onPress={() => {
-            setShowAddToCartModal(true);
-          }}
-        >
-          <View style={styles.addBtn}>
-            <Ionicons name="cart" size={24} color={Colors.WHITE_COLOR} style={{ paddingHorizontal: 4 }} />
-            <Text style={{ color: Colors.WHITE_COLOR }}>{i18n.t('add-to-cart')}</Text>
-          </View>
-        </TouchableOpacity>
-      )}
-
-      {user.type === UserTypeConstants.WAREHOUSE &&
-        (item.warehouses?.map((w) => w.warehouse._id).includes(user._id) ? (
-          <TouchableOpacity
-            style={{ backgroundColor: Colors.WHITE_COLOR, alignItems: 'center' }}
-            onPress={removeItemFromWarehouseHandler}
-          >
-            <View style={{ ...styles.addBtn, backgroundColor: Colors.FAILED_COLOR }}>
-              <AntDesign name="delete" size={24} color={Colors.WHITE_COLOR} style={{ paddingHorizontal: 4 }} />
-              <Text style={{ color: Colors.WHITE_COLOR }}>{i18n.t('remove-from-warehouse')}</Text>
-            </View>
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity
-            style={{ backgroundColor: Colors.WHITE_COLOR, alignItems: 'center' }}
-            onPress={addItemToWarehouseHandler}
-          >
-            <View style={styles.addBtn}>
-              <Ionicons name="add-circle" size={24} color={Colors.WHITE_COLOR} style={{ paddingHorizontal: 4 }} />
-              <Text style={{ color: Colors.WHITE_COLOR }}>{i18n.t('add-to-warehouse')}</Text>
-            </View>
-          </TouchableOpacity>
-        ))}
-
       <ScrollView
         contentContainerStyle={{
           alignItems: 'center',
           paddingTop: 10,
         }}
         style={styles.container}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefreshing} />}
       >
+        <ItemImage item={item} />
+        {(item.company._id === user._id || user.type === UserTypeConstants.ADMIN) && (
+          <TouchableOpacity style={{ backgroundColor: Colors.WHITE_COLOR, alignItems: 'center' }} onPress={pickImage}>
+            <View style={styles.changeImageBtn}>
+              <EvilIcons name="image" size={24} color={Colors.WHITE_COLOR} style={{ paddingHorizontal: 4 }} />
+              <Text style={{ color: Colors.WHITE_COLOR }}>{i18n.t('change-logo')}</Text>
+            </View>
+          </TouchableOpacity>
+        )}
+        {user.type === UserTypeConstants.PHARMACY && item !== null && checkItemExistsInWarehouse(item, user) && (
+          <TouchableOpacity
+            style={{ backgroundColor: Colors.WHITE_COLOR, alignItems: 'center' }}
+            onPress={() => {
+              setShowAddToCartModal(true);
+            }}
+          >
+            <View style={styles.addBtn}>
+              <Ionicons name="cart" size={24} color={Colors.WHITE_COLOR} style={{ paddingHorizontal: 4 }} />
+              <Text style={{ color: Colors.WHITE_COLOR }}>{i18n.t('add-to-cart')}</Text>
+            </View>
+          </TouchableOpacity>
+        )}
+
+        {user.type === UserTypeConstants.WAREHOUSE &&
+          (item.warehouses?.map((w) => w.warehouse._id).includes(user._id) ? (
+            <TouchableOpacity
+              style={{ backgroundColor: Colors.WHITE_COLOR, alignItems: 'center' }}
+              onPress={removeItemFromWarehouseHandler}
+            >
+              <View style={{ ...styles.addBtn, backgroundColor: Colors.FAILED_COLOR }}>
+                <AntDesign name="delete" size={24} color={Colors.WHITE_COLOR} style={{ paddingHorizontal: 4 }} />
+                <Text style={{ color: Colors.WHITE_COLOR }}>{i18n.t('remove-from-warehouse')}</Text>
+              </View>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              style={{ backgroundColor: Colors.WHITE_COLOR, alignItems: 'center' }}
+              onPress={addItemToWarehouseHandler}
+            >
+              <View style={styles.addBtn}>
+                <Ionicons name="add-circle" size={24} color={Colors.WHITE_COLOR} style={{ paddingHorizontal: 4 }} />
+                <Text style={{ color: Colors.WHITE_COLOR }}>{i18n.t('add-to-warehouse')}</Text>
+              </View>
+            </TouchableOpacity>
+          ))}
         <ExpandedView title={i18n.t('item-main-info')}>
           <UserInfoRow label={i18n.t('item-trade-name')} value={item.name} editable={false} />
           <UserInfoRow label={i18n.t('item-formula')} value={item.formula} editable={false} />
@@ -192,6 +248,15 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.WHITE_COLOR,
   },
   addBtn: {
+    flexDirection: 'row',
+    backgroundColor: Colors.SUCCEEDED_COLOR,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 6,
+    padding: 6,
+    marginVertical: 5,
+  },
+  changeImageBtn: {
     flexDirection: 'row',
     backgroundColor: Colors.SUCCEEDED_COLOR,
     alignItems: 'center',

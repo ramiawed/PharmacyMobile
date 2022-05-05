@@ -1,8 +1,10 @@
-// import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useState, useEffect, useLayoutEffect, useCallback } from 'react';
 import i18n from '../i18n/index';
 import axios from 'axios';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, RefreshControl } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
+import { EvilIcons } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
 
 // components
 import UserInfoRow from '../components/UserInfoRow';
@@ -11,11 +13,12 @@ import DeleteMe from '../components/DeleteMe';
 import ExpandedView from '../components/ExpandedView';
 import ChangeInputModal from '../components/ChangeInputModal';
 import Loader from '../components/Loader';
+import ProfileImage from '../components/ProfileImage';
 
 // redux stuff
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useDispatch, useSelector } from 'react-redux';
-import { authSliceSignOut, selectUserData, updateUserInfo } from '../redux/auth/authSlice';
+import { authSliceSignOut, changeLogoURL, selectUserData, updateUserInfo } from '../redux/auth/authSlice';
 import { usersSliceSignOut } from '../redux/users/usersSlice';
 import { favoritesSliceSignOut } from '../redux/favorites/favoritesSlice';
 import { companySliceSignOut } from '../redux/company/companySlice';
@@ -39,7 +42,6 @@ import { usersNotificationsSignOut } from '../redux/userNotifications/userNotifi
 
 // constants
 import { BASEURL, Colors, SERVER_URL, UserTypeConstants } from '../utils/constants';
-import { useFocusEffect } from '@react-navigation/native';
 
 const ProfileScreen = () => {
   const dispatch = useDispatch();
@@ -70,9 +72,8 @@ const ProfileScreen = () => {
     dispatch(usersNotificationsSignOut());
   };
 
-  const inputFileRef = React.useRef(null);
-
   // own state
+  const [refreshing, setRefreshing] = useState(false);
   const [userObj, setUserObj] = useState({});
   const [loading, setLoading] = useState(false);
   const [showChangeInputModal, setShowChangeInputModal] = useState(false);
@@ -84,16 +85,26 @@ const ProfileScreen = () => {
     },
   });
 
-  const handleClick = () => {
-    inputFileRef.current.click();
-  };
+  const pickImage = async () => {
+    // No permissions request is necessary for launching the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
 
-  const fileSelectedHandler = (event) => {
-    if (event.target.files[0]) {
+    if (!result.cancelled) {
       setLoading(true);
-      // setSelectedFile(event.target.files[0]);
-      let formData = new FormData();
-      formData.append('file', event.target.files[0]);
+      const data = new FormData();
+
+      let localUri = result.uri;
+      let filename = localUri.split('/').pop();
+
+      // Infer the type of the image
+      let match = /\.(\w+)$/.exec(filename);
+      let type = match ? `image/${match[1]}` : `image`;
+      data.append('file', { uri: localUri, name: filename, type });
 
       const config = {
         headers: {
@@ -102,26 +113,18 @@ const ProfileScreen = () => {
         },
       };
 
-      axios.post(`${BASEURL}/users/upload`, formData, config).then((res) => {
-        dispatch(changeLogoURL(res.data.data.name));
-        getMyInfo();
-        setLoading(false);
-      });
+      axios
+        .post(`${BASEURL}/users/upload`, data, config)
+        .then((res) => {
+          dispatch(changeLogoURL(res.data.data.name));
+          getMyInfo();
+          setLoading(false);
+        })
+        .catch((err) => {
+          setLoading(false);
+          console.log(err);
+        });
     }
-  };
-
-  const handleInputChange = (field, val) => {
-    setUserObj({
-      ...userObj,
-      [field]: val,
-    });
-  };
-
-  const handleCityChange = (val) => {
-    setUserObj({
-      ...userObj,
-      city: val,
-    });
   };
 
   const updateFieldHandler = (field, val) => {
@@ -153,12 +156,14 @@ const ProfileScreen = () => {
       .then((response) => {
         setUserObj(response.data.data.user);
         setLoading(false);
+        setRefreshing(false);
       });
   };
 
-  // useEffect(() => {
-
-  // }, []);
+  const onRefreshing = () => {
+    setRefreshing(true);
+    getMyInfo();
+  };
 
   useFocusEffect(
     useCallback(() => {
@@ -175,14 +180,21 @@ const ProfileScreen = () => {
     <Loader />
   ) : (
     <View style={{ flex: 1 }}>
-      {/* <Image source={require('../../assets/logo.png')} style={styles.image} /> */}
       <ScrollView
         contentContainerStyle={{
           alignItems: 'center',
           paddingTop: 10,
         }}
         style={styles.container}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefreshing} />}
       >
+        <ProfileImage />
+        <TouchableOpacity style={{ backgroundColor: Colors.WHITE_COLOR, alignItems: 'center' }} onPress={pickImage}>
+          <View style={styles.changeProfileImageBtn}>
+            <EvilIcons name="image" size={24} color={Colors.WHITE_COLOR} style={{ paddingHorizontal: 4 }} />
+            <Text style={{ color: Colors.WHITE_COLOR }}>{i18n.t('change-logo')}</Text>
+          </View>
+        </TouchableOpacity>
         {/* personal information */}
         <ExpandedView title={i18n.t('personal-info')}>
           <UserInfoRow
@@ -197,7 +209,12 @@ const ProfileScreen = () => {
             editable={true}
             action={() => actionHandler('user-username', 'username')}
           />
-          <UserInfoRow label={i18n.t('user-type')} value={i18n.t(userObj.type)} editable={false} />
+          <UserInfoRow
+            label={i18n.t('user-type')}
+            value={i18n.t(userObj.type)}
+            editable={false}
+            withoutBottomBorder={true}
+          />
         </ExpandedView>
 
         <ExpandedView title={i18n.t('communication-info')}>
@@ -218,6 +235,7 @@ const ProfileScreen = () => {
             value={userObj.email}
             editable={true}
             action={() => actionHandler('user-email', 'email')}
+            withoutBottomBorder={true}
           />
         </ExpandedView>
 
@@ -228,6 +246,7 @@ const ProfileScreen = () => {
             value={userObj.addressDetails}
             editable={true}
             action={() => actionHandler('user-address-details', 'addressDetails')}
+            withoutBottomBorder={true}
           />
         </ExpandedView>
 
@@ -244,6 +263,7 @@ const ProfileScreen = () => {
               value={userObj.certificateName}
               editable={true}
               action={() => actionHandler('user-certificate-name', 'certificateName')}
+              withoutBottomBorder={true}
             />
           </ExpandedView>
         )}
@@ -253,7 +273,6 @@ const ProfileScreen = () => {
             <UserInfoRow
               label={i18n.t('user-job')}
               value={i18n.t(userObj.guestDetails?.job)}
-              // editable={true}
               action={() => actionHandler('user-job', 'guestDetails.job')}
             />
             <UserInfoRow
@@ -261,6 +280,7 @@ const ProfileScreen = () => {
               value={userObj.guestDetails?.companyName}
               editable={true}
               action={() => actionHandler('user-company-name', 'guestDetails.companyName')}
+              withoutBottomBorder={true}
             />
           </ExpandedView>
         )}
@@ -314,6 +334,15 @@ const styles = StyleSheet.create({
     padding: 5,
     borderRadius: 6,
     marginBottom: 5,
+  },
+  changeProfileImageBtn: {
+    flexDirection: 'row',
+    backgroundColor: Colors.SUCCEEDED_COLOR,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 6,
+    padding: 6,
+    marginVertical: 5,
   },
 });
 

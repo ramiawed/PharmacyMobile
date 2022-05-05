@@ -109,7 +109,7 @@ function CustomDrawerContent(props) {
     >
       <View style={styles.menuContainer}>
         <View style={styles.profileImageContainer}>
-          <ProfileImage />
+          <ProfileImage withDetails={true} />
         </View>
         <View
           style={{

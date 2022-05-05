@@ -1,10 +1,14 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { View, TouchableOpacity, Text, StyleSheet, TextInput } from 'react-native';
-import i18n from 'i18n-js';
+import i18n from '../i18n/index';
 import Toast from 'react-native-toast-message';
+
+// libraries
+import { BottomSheet } from 'react-native-btr';
 
 // components
 import Loader from '../components/Loader';
+import ConfirmBottomSheet from '../components/ConfirmBottomSheet';
 
 // redux stuff
 import { unwrapResult } from '@reduxjs/toolkit';
@@ -22,6 +26,7 @@ const DeleteMe = ({ resetStore }) => {
   const [loading, setLoading] = useState(false);
   const [passwordForDelete, setPasswordForDelete] = useState('');
   const [passwordForDeleteError, setPasswordForDeleteError] = useState('');
+  const [showDeleteConfirmBts, setShowDeleteConfirmBts] = useState(false);
 
   // method to handle change in password for delete account
   const handlePasswordForDeleteChange = (val) => {
@@ -29,14 +34,18 @@ const DeleteMe = ({ resetStore }) => {
     setPasswordForDeleteError('');
   };
 
-  const handleDeleteMe = () => {
-    // the password length must be greater than 0
+  const checkPasswordEmpty = () => {
     if (passwordForDelete.length === 0) {
       setPasswordForDeleteError('enter-password');
       return;
     }
+    setShowDeleteConfirmBts(true);
+  };
 
+  const handleDeleteMe = () => {
+    // the password length must be greater than 0
     setLoading(true);
+    setShowDeleteConfirmBts(false);
 
     dispatch(deleteMe({ obj: { password: passwordForDelete }, token }))
       .then(unwrapResult)
@@ -89,7 +98,7 @@ const DeleteMe = ({ resetStore }) => {
         </View>
         {passwordForDeleteError.length > 0 && <Text style={styles.errorText}>{i18n.t(passwordForDeleteError)}</Text>}
       </View>
-      <TouchableOpacity onPress={handleDeleteMe} style={styles.button}>
+      <TouchableOpacity onPress={checkPasswordEmpty} style={styles.button}>
         <Text
           style={{
             color: Colors.WHITE_COLOR,
@@ -100,6 +109,21 @@ const DeleteMe = ({ resetStore }) => {
       </TouchableOpacity>
 
       {loading && <Loader />}
+
+      <BottomSheet
+        visible={showDeleteConfirmBts}
+        onBackButtonPress={() => setShowDeleteConfirmBts(false)}
+        onBackdropPress={() => setShowDeleteConfirmBts(false)}
+      >
+        <ConfirmBottomSheet
+          okLabel="ok-label"
+          cancelLabel="cancel-label"
+          cancelAction={() => setShowDeleteConfirmBts(false)}
+          okAction={handleDeleteMe}
+          header="delete-account"
+          message="delete-me-confirm-msg"
+        />
+      </BottomSheet>
     </>
   );
 };
@@ -112,7 +136,7 @@ const styles = StyleSheet.create({
     height: 45,
     paddingHorizontal: 5,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.SECONDARY_COLOR,
+    borderBottomColor: '#e3e3e3',
   },
   value: {
     flex: 1,

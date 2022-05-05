@@ -1,10 +1,8 @@
 import React from 'react';
-
-import { View, StyleSheet, TextInput, Text, Pressable } from 'react-native';
-import { AntDesign } from '@expo/vector-icons';
+import i18n from '../i18n/index';
+import { View, StyleSheet, TextInput, Text } from 'react-native';
 
 import { Colors } from '../utils/constants';
-import i18n from 'i18n-js';
 
 const Input = ({ value, onTextChange, placeholder, password, icon, error, border, label }) => {
   return (

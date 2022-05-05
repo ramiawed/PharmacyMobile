@@ -1,17 +1,23 @@
 import React from 'react';
+import i18n from '../i18n';
 
 import { Image, View, Text, StyleSheet } from 'react-native';
-import { useSelector } from 'react-redux';
-import i18n from '../i18n';
-import { selectUser } from '../redux/auth/authSlice';
-import { BASEURL, Colors, SERVER_URL } from '../utils/constants';
 
-const ProfileImage = () => {
+// redux stuff
+import { useSelector } from 'react-redux';
+import { selectUser } from '../redux/auth/authSlice';
+
+// constants
+import { Colors, SERVER_URL } from '../utils/constants';
+
+const ProfileImage = ({ withDetails }) => {
   const user = useSelector(selectUser);
   return (
     user && (
       <>
-        <View style={{ backgroundColor: Colors.WHITE_COLOR, borderRadius: 6, overflow: 'hidden' }}>
+        <View
+          style={{ backgroundColor: Colors.WHITE_COLOR, borderRadius: 6, overflow: 'hidden', alignItems: 'center' }}
+        >
           {user.logo_url && user.logo_url.length !== 0 ? (
             <Image
               source={{ uri: `${SERVER_URL}profiles/${user.logo_url}` }}
@@ -24,8 +30,12 @@ const ProfileImage = () => {
             />
           )}
         </View>
-        <Text style={styles.name}>{user.name}</Text>
-        <Text style={styles.type}>{i18n.t(user.type)}</Text>
+        {withDetails && (
+          <>
+            <Text style={styles.name}>{user.name}</Text>
+            <Text style={styles.type}>{i18n.t(user.type)}</Text>
+          </>
+        )}
       </>
     )
   );
