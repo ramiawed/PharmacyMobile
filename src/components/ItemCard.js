@@ -63,7 +63,7 @@ const checkOffer = (item, user) => {
   return result;
 };
 
-const ItemCard = ({ item, advertisement, addToCart }) => {
+const ItemCard = ({ item, addToCart }) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const { user, token } = useSelector(selectUserData);

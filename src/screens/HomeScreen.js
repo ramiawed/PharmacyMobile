@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import i18n from '../i18n/index';
-import { View, Text, TextInput, ScrollView, ActivityIndicator, Dimensions, StyleSheet, Button } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, TextInput, ScrollView, ActivityIndicator, Dimensions, StyleSheet, Image } from 'react-native';
 
 // redux stuff
 import { useSelector, useDispatch } from 'react-redux';
@@ -9,9 +8,10 @@ import { selectUserData } from '../redux/auth/authSlice';
 
 // component
 import SearchHome from '../components/SearchHome';
-import SectionHomeScreen from '../components/SectionHomeScreen';
-import { Colors } from '../utils/constants';
 import SocketObserver from '../components/SocketObserver';
+
+// constants
+import { Colors, UserTypeConstants } from '../utils/constants';
 
 const HomeScreen = () => {
   const windowHeight = Dimensions.get('window').height;
@@ -22,38 +22,22 @@ const HomeScreen = () => {
 
   useEffect(() => {}, []);
 
-  const [date, setDate] = useState(new Date(1598051730000));
-
-  const onChange = (event, selectedDate) => {
-    const currentDate = selectedDate;
-    setDate(currentDate);
-  };
-
-  const showMode = (currentMode) => {
-    DateTimePickerAndroid.open({
-      value: date,
-      onChange,
-      mode: currentMode,
-      is24Hour: true,
-    });
-  };
-
-  const showDatepicker = () => {
-    showMode('date');
-  };
-
-  const showTimepicker = () => {
-    showMode('time');
-  };
-
   return (
-    <>
+    <View
+      style={{
+        flex: 1,
+        alignItems: 'center',
+        backgroundColor: Colors.WHITE_COLOR,
+      }}
+    >
       <SocketObserver />
+      {/* <Image source={require('../../assets/logo.png')} style={{ width: 150, height: 150, resizeMode: 'contain' }} /> */}
+      <SearchHome />
       <ScrollView>
         {/* <Button onPress={showDatepicker} title="Show date picker!" /> */}
         {/* <SearchHome /> */}
       </ScrollView>
-    </>
+    </View>
   );
 };
 
@@ -61,6 +45,12 @@ const styles = StyleSheet.create({
   loading: {
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  searchTextInput: {
+    backgroundColor: Colors.WHITE_COLOR,
+    borderRadius: 6,
+    paddingVertical: 4,
+    paddingHorizontal: 10,
   },
 });
 

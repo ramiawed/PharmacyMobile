@@ -11,32 +11,42 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
+// icons
 import { AntDesign } from '@expo/vector-icons';
-import { useDispatch, useSelector } from 'react-redux';
-import { addFavorite, removeFavorite, selectFavoritesPartners } from '../redux/favorites/favoritesSlice';
-import { statisticsCompanySelected, statisticsUserFavorites } from '../redux/statistics/statisticsSlice';
-import { Colors, BASEURL, UserTypeConstants } from '../utils/constants';
-import { selectUserData } from '../redux/auth/authSlice';
+
+// redux stuff
 import { unwrapResult } from '@reduxjs/toolkit';
-import { resetMedicines } from '../redux/medicines/medicinesSlices';
+import { useDispatch, useSelector } from 'react-redux';
+import { resetMedicines, setSearchWarehouseId, setSearchCompanyId } from '../redux/medicines/medicinesSlices';
+import { addFavorite, removeFavorite, selectFavoritesPartners } from '../redux/favorites/favoritesSlice';
+import { addStatistics } from '../redux/statistics/statisticsSlice';
+import { selectUserData } from '../redux/auth/authSlice';
 import { useNavigation } from '@react-navigation/core';
 import { selectSettings } from '../redux/settings/settingsSlice';
+
+// constants
+import { Colors, BASEURL, UserTypeConstants } from '../utils/constants';
+import { setSelectedWarehouse } from '../redux/warehouse/warehousesSlice';
 
 const PartnerRow = ({ partner, type }) => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
 
-  // selectors
+  const { token, user } = useSelector(selectUserData);
+  const favorites = useSelector(selectFavoritesPartners);
   const {
     settings: { showWarehouseItem },
   } = useSelector(selectSettings);
-  const { token, user } = useSelector(selectUserData);
-  const favorites = useSelector(selectFavoritesPartners);
 
   const [changeFavoriteLoading, setChangeFavoriteLoading] = useState(false);
 
+  const allowShowingWarehouseMedicines =
+    user?.type === UserTypeConstants.ADMIN ||
+    partner.type === UserTypeConstants.COMPANY ||
+    (partner.type === UserTypeConstants.WAREHOUSE && showWarehouseItem && partner.allowShowingMedicines);
+
   // method to handle add company to user's favorite
-  const addCompanyToFavorite = () => {
+  const addPartnerToFavorites = () => {
     setChangeFavoriteLoading(true);
 
     dispatch(addFavorite({ obj: { favoriteId: partner._id }, token }))
@@ -51,7 +61,7 @@ const PartnerRow = ({ partner, type }) => {
   };
 
   // method to handle remove company from user's favorite
-  const removeCompanyFromFavorite = (id) => {
+  const removePartnerFromFavorites = (id) => {
     setChangeFavoriteLoading(true);
 
     dispatch(removeFavorite({ obj: { favoriteId: id }, token }))
@@ -62,45 +72,56 @@ const PartnerRow = ({ partner, type }) => {
       .catch(() => setChangeFavoriteLoading(false));
   };
 
-  const handlePartnerRowPress = () => {
-    dispatchCompanySelectedHandler();
-
-    if (type === 'company') {
-      navigation.navigate('Medicines', {
-        screen: 'AllMedicines',
-        params: {
-          companyId: partner._id,
-          warehouseId: null,
-        },
-      });
+  const dispatchPartnerSelected = () => {
+    if (
+      partner.type === UserTypeConstants.WAREHOUSE &&
+      (user.type === UserTypeConstants.WAREHOUSE ||
+        user.type === UserTypeConstants.COMPANY ||
+        user.type === UserTypeConstants.GUEST)
+    ) {
+      return;
     }
 
-    if (type === 'warehouse' && showWarehouseItem) {
-      navigation.navigate('Medicines', {
-        screen: 'AllMedicines',
-        params: {
-          companyId: null,
-          warehouseId: partner._id,
-        },
-      });
+    if (allowShowingWarehouseMedicines) {
+      // if the partner type is pharmacy or normal, change the selectedCount
+      // and selectedDates for this company
+      if (user.type === UserTypeConstants.PHARMACY) {
+        dispatch(
+          addStatistics({
+            obj: {
+              sourceUser: user._id,
+              targetUser: partner._id,
+              action: 'choose-company',
+            },
+            token,
+          }),
+        );
+      }
     }
-  };
 
-  const dispatchCompanySelectedHandler = () => {
-    // if the user type is pharmacy or normal, change the selectedCount
-    // and selectedDates for this company
-    if (type === 'company' && (user.type === UserTypeConstants.PHARMACY || user.type === UserTypeConstants.GUEST)) {
-      dispatch(
-        statisticsCompanySelected({
-          obj: { companyId: partner._id },
-          token,
-        }),
-      );
+    dispatch(resetMedicines());
+
+    if (partner.type === UserTypeConstants.COMPANY) {
+      dispatch(setSearchCompanyId(partner._id));
     }
+
+    if (partner.type === UserTypeConstants.WAREHOUSE) {
+      dispatch(setSearchWarehouseId(partner._id));
+    }
+
+    if (partner.type === UserTypeConstants.WAREHOUSE && user.type === UserTypeConstants.PHARMACY) {
+      dispatch(setSelectedWarehouse(partner._id));
+    } else {
+      dispatch(setSelectedWarehouse(null));
+    }
+
+    navigation.navigate('Medicines', {
+      screen: 'AllMedicines',
+    });
   };
 
   return (
-    <TouchableWithoutFeedback onPress={handlePartnerRowPress}>
+    <TouchableWithoutFeedback onPress={dispatchPartnerSelected}>
       <View style={styles.container}>
         <View>
           <Text style={styles.title}>{partner.name}</Text>
@@ -115,14 +136,14 @@ const PartnerRow = ({ partner, type }) => {
                 name="star"
                 size={24}
                 color={Colors.YELLOW_COLOR}
-                onPress={() => removeCompanyFromFavorite(partner._id)}
+                onPress={() => removePartnerFromFavorites(partner._id)}
               />
             ) : (
               <AntDesign
                 name="staro"
                 size={24}
                 color={Colors.YELLOW_COLOR}
-                onPress={() => addCompanyToFavorite(partner._id)}
+                onPress={() => addPartnerToFavorites(partner._id)}
               />
             )}
           </View>
@@ -140,14 +161,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: 10,
     borderBottomWidth: 1,
-    borderColor: 'rgba(0, 0, 0, .1)',
+    borderColor: '#e3e3e3',
   },
 
   title: {
     flex: 1,
-    fontSize: 16,
-    fontWeight: '700',
-    color: Colors.SECONDARY_COLOR,
+    fontSize: 14,
+    color: Colors.MAIN_COLOR,
     textAlign: 'center',
   },
   favoriteIcon: {},

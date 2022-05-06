@@ -235,7 +235,6 @@ const OrdersScreen = () => {
   };
 
   useEffect(() => {
-    console.log(forceRefresh);
     if (forceRefresh) {
       dispatch(resetOrders());
       dispatch(setPage(1));

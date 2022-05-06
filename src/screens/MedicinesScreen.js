@@ -55,7 +55,6 @@ const MedicinesScreen = ({ navigation }) => {
 
   // search handler
   const handleSearch = () => {
-    console.log(pageState);
     if (user.type === UserTypeConstants.PHARMACY) {
       dispatch(setCity(user.city));
     } else {

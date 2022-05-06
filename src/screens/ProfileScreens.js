@@ -122,7 +122,6 @@ const ProfileScreen = () => {
         })
         .catch((err) => {
           setLoading(false);
-          console.log(err);
         });
     }
   };

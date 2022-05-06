@@ -7,13 +7,7 @@ import { AntDesign } from '@expo/vector-icons';
 
 // redux stuff
 import { unwrapResult } from '@reduxjs/toolkit';
-import {
-  resetMedicines,
-  setSearchCompanyName,
-  setSearchWarehouseId,
-  setSearchCompanyId,
-  setSearchWarehouseName,
-} from '../redux/medicines/medicinesSlices';
+import { resetMedicines, setSearchWarehouseId, setSearchCompanyId } from '../redux/medicines/medicinesSlices';
 import { useDispatch, useSelector } from 'react-redux';
 import { addFavorite, removeFavorite, selectFavoritesPartners } from '../redux/favorites/favoritesSlice';
 import { addStatistics, statisticsCompanySelected, statisticsUserFavorites } from '../redux/statistics/statisticsSlice';
