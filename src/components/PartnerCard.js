@@ -96,6 +96,7 @@ const PartnerCard = ({ partner, advertisement }) => {
         );
       }
     }
+
     dispatch(resetMedicines());
 
     if (partner.type === UserTypeConstants.COMPANY) {
