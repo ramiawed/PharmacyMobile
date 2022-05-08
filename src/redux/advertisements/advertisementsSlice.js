@@ -5,6 +5,7 @@ import { BASEURL } from '../../utils/constants';
 
 const initialState = {
   status: 'idle',
+  completed: 'loading',
   advertisements: [],
   forceRefresh: false,
   error: '',
@@ -157,6 +158,7 @@ export const advertisementsSlice = createSlice({
     },
     advertisementsSignOut: (state) => {
       state.status = 'idle';
+      state.completed = 'loading';
       state.error = '';
       state.forceRefresh = false;
       state.advertisements = [];
@@ -175,6 +177,7 @@ export const advertisementsSlice = createSlice({
     },
     [addAdvertisement.fulfilled]: (state, action) => {
       state.status = 'succeeded';
+
       state.advertisements = [action.payload.data.advertisement, ...state.advertisements];
       state.forceRefresh = false;
     },
@@ -220,6 +223,7 @@ export const advertisementsSlice = createSlice({
     },
     [getAllAdvertisements.fulfilled]: (state, action) => {
       state.status = 'succeeded';
+      state.completed = 'done';
       state.advertisements = action.payload.data.advertisements;
       state.error = '';
     },

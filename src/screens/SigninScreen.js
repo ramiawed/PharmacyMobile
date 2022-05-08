@@ -9,9 +9,12 @@ import { authSign, resetError, selectUserData } from '../redux/auth/authSlice';
 import { addStatistics } from '../redux/statistics/statisticsSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { getFavorites } from '../redux/favorites/favoritesSlice';
+import { getAllSettings } from '../redux/settings/settingsSlice';
+import { getAllAdvertisements } from '../redux/advertisements/advertisementsSlice';
 
 // components
 import Input from '../components/Input';
+import Loader from '../components/Loader';
 
 // constants
 import { Colors } from '../utils/constants';
@@ -19,13 +22,14 @@ import { Colors } from '../utils/constants';
 // icons
 import { AntDesign } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
-import { getAllSettings } from '../redux/settings/settingsSlice';
-import { getAllAdvertisements } from '../redux/advertisements/advertisementsSlice';
 
 const SignInScreen = ({ navigation }) => {
   const dispatch = useDispatch();
+
+  // selectors
   const { error, status } = useSelector(selectUserData);
 
+  // own states
   const [globalError, setGlobalError] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -105,72 +109,75 @@ const SignInScreen = ({ navigation }) => {
         colors={[Colors.MAIN_COLOR, Colors.WHITE_COLOR]}
         style={styles.background}
       />
-      <View style={styles.signInView}>
-        <LinearGradient
-          // Background Linear Gradient
-          colors={[Colors.WHITE_COLOR, Colors.MAIN_COLOR]}
-          style={styles.background}
-        />
-        {/* <Text style={styles.appName}>فارما لينك</Text> */}
+      {status === 'loading' ? (
+        <Loader />
+      ) : (
+        <>
+          <View style={styles.signInView}>
+            <LinearGradient
+              // Background Linear Gradient
+              colors={[Colors.WHITE_COLOR, Colors.MAIN_COLOR]}
+              style={styles.background}
+            />
 
-        <Image style={styles.logo} source={require('../../assets/logo.png')} />
-        <View style={styles.inputDiv}>
-          <Text style={[styles.signInLabel, styles.bigFont]}>{i18n.t('sign-in')}</Text>
+            <Image style={styles.logo} source={require('../../assets/logo.png')} />
+            <View style={styles.inputDiv}>
+              <Text style={[styles.signInLabel, styles.bigFont]}>{i18n.t('sign-in')}</Text>
 
-          <Input
-            value={username}
-            onTextChange={(text) => {
-              setUsername(text);
-              setPreSignError({
-                ...preSignError,
-                username: '',
-              });
-              setGlobalError('');
-              dispatch(resetError());
-            }}
-            placeholder={i18n.t('enter-username')}
-            icon={<AntDesign name="user" size={24} color={Colors.MAIN_COLOR} />}
-            border={1}
-            error={preSignError?.username}
-            label={i18n.t('user-username')}
-          />
-          <Input
-            value={password}
-            onTextChange={(text) => {
-              setPassword(text);
-              setPreSignError({
-                ...preSignError,
-                password: '',
-              });
-              setGlobalError('');
-              dispatch(resetError());
-            }}
-            placeholder={i18n.t('enter-password')}
-            password={true}
-            icon={<FontAwesome name="lock" size={24} color={Colors.MAIN_COLOR} />}
-            border={1}
-            error={preSignError?.password}
-            label={i18n.t('user-password')}
-          />
+              <Input
+                value={username}
+                onTextChange={(text) => {
+                  setUsername(text);
+                  setPreSignError({
+                    ...preSignError,
+                    username: '',
+                  });
+                  setGlobalError('');
+                  dispatch(resetError());
+                }}
+                placeholder={i18n.t('enter-username')}
+                icon={<AntDesign name="user" size={24} color={Colors.MAIN_COLOR} />}
+                border={1}
+                error={preSignError?.username}
+                label={i18n.t('user-username')}
+              />
+              <Input
+                value={password}
+                onTextChange={(text) => {
+                  setPassword(text);
+                  setPreSignError({
+                    ...preSignError,
+                    password: '',
+                  });
+                  setGlobalError('');
+                  dispatch(resetError());
+                }}
+                placeholder={i18n.t('enter-password')}
+                password={true}
+                icon={<FontAwesome name="lock" size={24} color={Colors.MAIN_COLOR} />}
+                border={1}
+                error={preSignError?.password}
+                label={i18n.t('user-password')}
+              />
 
-          {error ? <Text style={{ color: Colors.FAILED_COLOR }}>{i18n.t(error)}</Text> : null}
-          {globalError.length > 0 ? <Text style={{ color: Colors.FAILED_COLOR }}>{i18n.t(globalError)}</Text> : null}
+              {error ? <Text style={{ color: Colors.FAILED_COLOR }}>{i18n.t(error)}</Text> : null}
+              {globalError.length > 0 ? (
+                <Text style={{ color: Colors.FAILED_COLOR }}>{i18n.t(globalError)}</Text>
+              ) : null}
 
-          <TouchableOpacity style={styles.button} onPress={signinHanlder}>
-            {status === 'loading' ? (
-              <ActivityIndicator size="small" color="#fff" />
-            ) : (
-              <Text style={styles.buttonText}>{i18n.t('sign-in')}</Text>
-            )}
-          </TouchableOpacity>
-        </View>
-      </View>
-      <View style={styles.signupView}>
-        <Text style={styles.signupSentences}>{i18n.t('sign-up-sentence')}</Text>
-        <Text style={styles.signupBtn} onPress={goToSignUpHandler}>
-          {i18n.t('sign-up')}
-        </Text>
-      </View>
+              <TouchableOpacity style={styles.button} onPress={signinHanlder}>
+                <Text style={styles.buttonText}>{i18n.t('sign-in')}</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View style={styles.signupView}>
+            <Text style={styles.signupSentences}>{i18n.t('sign-up-sentence')}</Text>
+            <Text style={styles.signupBtn} onPress={goToSignUpHandler}>
+              {i18n.t('sign-up')}
+            </Text>
+          </View>
+        </>
+      )}
     </View>
   );
 };
@@ -251,3 +258,8 @@ const styles = StyleSheet.create({
 });
 
 export default SignInScreen;
+
+// {status === 'loading' ? (
+//   <ActivityIndicator size="small" color="#fff" />
+// ) : (
+// )}

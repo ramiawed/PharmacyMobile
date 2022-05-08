@@ -50,8 +50,8 @@ const DrawerScreen = () => {
   const dispatch = useDispatch();
   const { user, token } = useSelector(selectUserData);
   const { completed: settingsCompleted } = useSelector(selectSettings);
-  const { status: favoritesStatus } = useSelector(selectFavorites);
-  const { status: advertisementsStatus } = useSelector(selectAdvertisements);
+  const { completed: favoritesCompleted } = useSelector(selectFavorites);
+  const { completed: advertisementsCompleted } = useSelector(selectAdvertisements);
 
   useEffect(() => {
     // dispatch(getAllSettings({ token }));
@@ -66,7 +66,7 @@ const DrawerScreen = () => {
   }, []);
 
   return user ? (
-    settingsCompleted === 'loading' ? (
+    settingsCompleted === 'loading' || favoritesCompleted === 'loading' || advertisementsCompleted === 'loading' ? (
       <Loader />
     ) : (
       <Drawer.Navigator

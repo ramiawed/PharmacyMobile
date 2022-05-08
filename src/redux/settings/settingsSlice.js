@@ -125,6 +125,7 @@ export const settingsSlice = createSlice({
     },
     resetSetting: (state) => {
       state.status = 'idle';
+      state.completed = 'loading';
       state.error = '';
       state.settings = {
         companiesSectionOne: {
@@ -167,6 +168,7 @@ export const settingsSlice = createSlice({
     },
     settingsSignOut: (state) => {
       state.status = 'idle';
+      state.completed = 'loading';
       state.error = '';
       state.settings = {
         companiesSectionOne: {

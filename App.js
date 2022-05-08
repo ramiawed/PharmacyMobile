@@ -11,8 +11,9 @@ import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/
 // redux stuff
 import { unwrapResult } from '@reduxjs/toolkit';
 import { Provider, useDispatch, useSelector } from 'react-redux';
-
-import { authSign, selectToken, selectUser, authSignWithToken } from './src/redux/auth/authSlice';
+import { getFavorites } from './src/redux/favorites/favoritesSlice';
+import { getAllAdvertisements } from './src/redux/advertisements/advertisementsSlice';
+import { selectToken, selectUser, authSignWithToken } from './src/redux/auth/authSlice';
 import { addStatistics } from './src/redux/statistics/statisticsSlice';
 import { getAllSettings } from './src/redux/settings/settingsSlice';
 
@@ -30,25 +31,24 @@ import SplashScreen from './src/screens/SplashScreen';
 // constants
 import { Colors } from './src/utils/constants';
 
+// configuration for store
 import { persistStore } from 'redux-persist';
 import { PersistGate } from 'redux-persist/integration/react';
-
 import store from './src/app/store';
-
-// redux stuff
-import { getFavorites } from './src/redux/favorites/favoritesSlice';
-import { getAllAdvertisements } from './src/redux/advertisements/advertisementsSlice';
-
 let persistor = persistStore(store);
 
+// navigation's stuff
 const Stack = createStackNavigator();
 
 const App = () => {
-  // const [isReady, setReady] = useState(false);
-  const [showSplashScreen, setShowSplashScreen] = useState(true);
+  const dispatch = useDispatch();
+
+  // selectors
   const user = useSelector(selectUser);
   const token = useSelector(selectToken);
-  const dispatch = useDispatch();
+
+  // own states
+  const [showSplashScreen, setShowSplashScreen] = useState(true);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -82,11 +82,6 @@ const App = () => {
       clearTimeout(timer);
     };
   }, []);
-
-  // show splash screen and load necessary data
-  // if (!isReady) {
-  //   return <AppLoading startAsync={onStartAsync} onError={console.warn} onFinish={finishHandler} />;
-  // }
 
   if (showSplashScreen) {
     return <SplashScreen />;
