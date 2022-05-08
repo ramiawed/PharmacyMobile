@@ -16,6 +16,12 @@ import { Colors } from '../utils/constants';
 import PharmacyIntroduce from '../components/PharmacyIntroduce';
 import WarehouseIntroduce from '../components/WarehouseIntroduce';
 import GuestIntroduce from '../components/GuestIntroduce';
+import CompaniesSectionOne from '../components/CompaniesSectionOne';
+import CompaniesSectionTwo from '../components/CompaniesSectionTwo';
+import WarehousesSectionOne from '../components/WarehousesSectionOne';
+import ItemsSectionOne from '../components/ItemsSectionOne';
+import ItemsSectionTwo from '../components/ItemsSectionTwo';
+import ItemsSectionThree from '../components/ItemsSectionThree';
 
 const HomeScreen = () => {
   const { settings } = useSelector(selectSettings);
@@ -34,6 +40,14 @@ const HomeScreen = () => {
       <ScrollView>
         <IntroduceUs />
         <Advertisements />
+        <View>
+          <CompaniesSectionOne />
+          <CompaniesSectionTwo />
+          <WarehousesSectionOne />
+          <ItemsSectionOne />
+          <ItemsSectionTwo />
+          <ItemsSectionThree />
+        </View>
         <PharmacyIntroduce />
         <WarehouseIntroduce />
         <GuestIntroduce />

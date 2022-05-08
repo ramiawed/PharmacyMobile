@@ -259,6 +259,12 @@ export const settingsSlice = createSlice({
 });
 
 export const selectSettings = (state) => state.settings;
+export const selectCompaniesSectionOneFromSettings = (state) => state.settings.settings.companiesSectionOne;
+export const selectCompaniesSectionTwoFromSettings = (state) => state.settings.settings.companiesSectionTwo;
+export const selectWarehousesSectionOneFromSettings = (state) => state.settings.settings.warehousesSectionOne;
+export const selectItemsSectionOneFromSettings = (state) => state.settings.settings.itemsSectionOne;
+export const selectItemsSectionTwoFromSettings = (state) => state.settings.settings.itemsSectionTwo;
+export const selectItemsSectionThreeFromSettings = (state) => state.settings.settings.itemsSectionThree;
 
 export const { resetSettingStatus, resetSettingError, resetSetting, settingsSignOut, socketUpdateSettings } =
   settingsSlice.actions;

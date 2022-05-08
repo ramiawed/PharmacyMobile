@@ -19,25 +19,7 @@ import settingsSlice from '../redux/settings/settingsSlice';
 import userNotificationsSlice from '../redux/userNotifications/userNotificationsSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ordersSlice from '../redux/orders/ordersSlice';
-
-// const configureStore({
-//   reducer: {
-//     auth: authSlice,
-//     users: usersSlice,
-//     companies: companiesSlice,
-//     warehouses: warehousesSlice,
-//     favorites: favoritesSlice,
-//     cart: cartSlice,
-//     statistics: statisticsSlice,
-//     medicines: medicinesSlice,
-//     companiesSectionOne: companiesSectionOneSlice,
-//     companiesSectionTwo: companiesSectionTwoSlice,
-//     itemsSectionOne: itemsSectionOneSlice,
-//     itemsSectionTwo: itemsSectionTwoSlice,
-//     itemsSectionThree: itemsSectionThreeSlice,
-//     settings: settingsSlice,
-//   },
-// });
+import warehousesSectionOneSlice from '../redux/advertisements/warehousesSectionOneSlice';
 
 const rootReducer = combineReducers({
   auth: authSlice,
@@ -50,6 +32,7 @@ const rootReducer = combineReducers({
   medicines: medicinesSlice,
   companiesSectionOne: companiesSectionOneSlice,
   companiesSectionTwo: companiesSectionTwoSlice,
+  warehousesSectionOne: warehousesSectionOneSlice,
   itemsSectionOne: itemsSectionOneSlice,
   itemsSectionTwo: itemsSectionTwoSlice,
   itemsSectionThree: itemsSectionThreeSlice,

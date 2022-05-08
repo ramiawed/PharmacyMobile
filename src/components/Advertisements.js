@@ -96,38 +96,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     paddingTop: 10,
   },
-  image: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'contain',
-    borderRadius: 6,
-  },
-  advertisement: {
-    padding: 10,
-    backgroundColor: '#f3f3f3',
-    height: 300,
-    width: 300,
-    marginHorizontal: 10,
-    marginVertical: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 10,
-  },
 });
 
 export default Advertisements;
-
-{
-  /* <TouchableOpacity
-            style={styles.advertisement}
-            onPress={() => {
-              onAdvertisementPressHandler(item);
-            }}
-          >
-            {item.type === 'static' ? (
-              <Image source={item.source} style={styles.image} />
-            ) : (
-              <Image source={{ uri: `${SERVER_URL}/advertisements/${item.source}` }} style={styles.image} />
-            )}
-          </TouchableOpacity> */
-}
