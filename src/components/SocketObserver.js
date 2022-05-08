@@ -12,6 +12,7 @@ import { Colors, SERVER_URL, UserTypeConstants } from '../utils/constants';
 import socketIoClient from 'socket.io-client';
 import { authSliceSignOut, selectUserData } from '../redux/auth/authSlice';
 import { deleteOrderSocket, getUnreadOrders, setForceRefresh, updateOrderStatus } from '../redux/orders/ordersSlice';
+import { addAdvertisementSocket } from '../redux/advertisements/advertisementsSlice';
 
 const socket = socketIoClient(`${SERVER_URL}`, { autoConnect: false });
 
@@ -76,11 +77,9 @@ function SocketObserver() {
     });
 
     // advertisements observer
-    // socket.on('advertisement-changed', (data) => {
-    //   if (data.operationType === 'insert') {
-    //     dispatch(advertisementForceRefresh(true));
-    //   }
-    // });
+    socket.on('new-advertisement', (data) => {
+      dispatch(addAdvertisementSocket(data));
+    });
 
     // // notifications observer
     // if (user.type !== UserTypeConstants.ADMIN) {

@@ -12,11 +12,14 @@ import SocketObserver from '../components/SocketObserver';
 
 // constants
 import { Colors, UserTypeConstants } from '../utils/constants';
+import Advertisements from '../components/Advertisements';
+import { selectAdvertisements } from '../redux/advertisements/advertisementsSlice';
 
 const HomeScreen = () => {
   const windowHeight = Dimensions.get('window').height;
   const dispatch = useDispatch();
   const { token } = useSelector(selectUserData);
+  // const { advertisements } = useSelector(selectAdvertisements);
 
   const { settings } = useSelector(selectSettings);
 
@@ -31,9 +34,11 @@ const HomeScreen = () => {
       }}
     >
       <SocketObserver />
-      {/* <Image source={require('../../assets/logo.png')} style={{ width: 150, height: 150, resizeMode: 'contain' }} /> */}
       <SearchHome />
+
       <ScrollView>
+        <Advertisements />
+
         {/* <Button onPress={showDatepicker} title="Show date picker!" /> */}
         {/* <SearchHome /> */}
       </ScrollView>

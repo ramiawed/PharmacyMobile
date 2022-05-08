@@ -2,6 +2,7 @@ import { combineReducers, configureStore, getDefaultMiddleware } from '@reduxjs/
 import { persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
 
 import authSlice from '../redux/auth/authSlice';
+import AdvertisementsSlice from '../redux/advertisements/advertisementsSlice';
 import usersSlice from '../redux/users/usersSlice';
 import companiesSlice from '../redux/company/companySlice';
 import favoritesSlice from '../redux/favorites/favoritesSlice';
@@ -55,6 +56,7 @@ const rootReducer = combineReducers({
   settings: settingsSlice,
   userNotifications: userNotificationsSlice,
   orders: ordersSlice,
+  advertisements: AdvertisementsSlice,
 });
 
 const persistConfig = {

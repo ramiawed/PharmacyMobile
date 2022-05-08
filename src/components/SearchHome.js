@@ -16,6 +16,7 @@ import { selectUserData } from '../redux/auth/authSlice';
 // components
 import ItemFavoriteRow from './ItemFavoriteRow';
 import PartnerRow from './PartnerRow';
+import Scanner from './Scanner';
 
 let CancelToken;
 let source;
@@ -23,6 +24,7 @@ let source;
 const SearchHome = () => {
   const { token, user } = useSelector(selectUserData);
 
+  const [showScanner, setShowScanner] = useState(false);
   const [searchName, setSearchName] = useState('');
   const [data, setData] = useState([]);
   const [companiesData, setCompaniesData] = useState([]);
@@ -123,56 +125,72 @@ const SearchHome = () => {
     setShowResult(false);
   };
 
+  const scannerDoneHandler = (val) => {
+    setSearchName(val);
+    setShowScanner(false);
+    searchHandler(val);
+  };
+
   return (
-    <View style={styles.container}>
-      <View style={Object.assign({}, styles.searchContainer, showResult ? styles.searchHasValue : {})}>
-        <AntDesign name="search1" size={20} color={Colors.MAIN_COLOR} />
-        <TextInput
-          placeholder={i18n.t('search-home-placeholder')}
-          value={searchName}
-          onChangeText={(val) => {
-            setSearchName(val);
-            searchHandler(val);
-          }}
-          onSubmitEditing={() => searchHandler(searchName)}
-          // onKeyPress={searchHandler}
-          style={styles.searchTextInput}
-        />
-        {searchName.trim().length > 0 && (
-          <TouchableOpacity>
-            <AntDesign name="closecircleo" size={24} color={Colors.FAILED_COLOR} onPress={clearResultHandler} />
-          </TouchableOpacity>
+    <>
+      <View style={styles.container}>
+        <View style={Object.assign({}, styles.searchContainer, showResult ? styles.searchHasValue : {})}>
+          <AntDesign name="search1" size={20} color={Colors.MAIN_COLOR} />
+          <TextInput
+            placeholder={i18n.t('search-home-placeholder')}
+            value={searchName}
+            onChangeText={(val) => {
+              setSearchName(val);
+              searchHandler(val);
+            }}
+            onSubmitEditing={() => searchHandler(searchName)}
+            // onKeyPress={searchHandler}
+            style={styles.searchTextInput}
+          />
+          {searchName.trim().length > 0 && (
+            <TouchableOpacity>
+              <AntDesign name="closecircleo" size={24} color={Colors.FAILED_COLOR} onPress={clearResultHandler} />
+            </TouchableOpacity>
+          )}
+          <AntDesign
+            name="barcode"
+            size={32}
+            color={Colors.MAIN_COLOR}
+            onPress={() => setShowScanner(true)}
+            style={{ marginStart: 10 }}
+          />
+        </View>
+        {showResult ? (
+          <View style={styles.searchResult}>
+            {loading ? (
+              <ActivityIndicator size="large" color={Colors.SECONDARY_COLOR} />
+            ) : data.length > 0 || companiesData.length > 0 || warehousesData.length > 0 ? (
+              <ScrollView>
+                <>
+                  {data.length > 0 && <Text style={styles.header}>{i18n.t('items')}</Text>}
+                  {data.map((item, index) => (
+                    <ItemFavoriteRow key={index} favorite={item} />
+                  ))}
+                  {companiesData.length > 0 && <Text style={styles.header}>{i18n.t('companies')}</Text>}
+                  {companiesData.map((company) => (
+                    <PartnerRow key={company._id} partner={company} />
+                  ))}
+                  {warehousesData.length > 0 && <Text style={styles.header}>{i18n.t('warehouses')}</Text>}
+                  {warehousesData.map((warehouse) => (
+                    <PartnerRow key={warehouse._id} partner={warehouse} />
+                  ))}
+                </>
+              </ScrollView>
+            ) : (
+              <Text style={styles.noContent}>{i18n.t('no-data-found')}</Text>
+            )}
+          </View>
+        ) : (
+          <></>
         )}
       </View>
-      {showResult ? (
-        <View style={styles.searchResult}>
-          {loading ? (
-            <ActivityIndicator size="large" color={Colors.SECONDARY_COLOR} />
-          ) : data.length > 0 || companiesData.length > 0 || warehousesData.length > 0 ? (
-            <ScrollView>
-              <>
-                {data.length > 0 && <Text style={styles.header}>{i18n.t('items')}</Text>}
-                {data.map((item, index) => (
-                  <ItemFavoriteRow key={index} favorite={item} />
-                ))}
-                {companiesData.length > 0 && <Text style={styles.header}>{i18n.t('companies')}</Text>}
-                {companiesData.map((company) => (
-                  <PartnerRow key={company._id} partner={company} />
-                ))}
-                {warehousesData.length > 0 && <Text style={styles.header}>{i18n.t('warehouses')}</Text>}
-                {warehousesData.map((warehouse) => (
-                  <PartnerRow key={warehouse._id} partner={warehouse} />
-                ))}
-              </>
-            </ScrollView>
-          ) : (
-            <Text style={styles.noContent}>{i18n.t('no-data-found')}</Text>
-          )}
-        </View>
-      ) : (
-        <></>
-      )}
-    </View>
+      {showScanner && <Scanner onScannerDone={scannerDoneHandler} close={() => setShowScanner(false)} />}
+    </>
   );
 };
 

@@ -20,10 +20,11 @@ import { Colors } from '../utils/constants';
 import { AntDesign } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
 import { getAllSettings } from '../redux/settings/settingsSlice';
+import { getAllAdvertisements } from '../redux/advertisements/advertisementsSlice';
 
-const SigninScreen = ({ navigation }) => {
+const SignInScreen = ({ navigation }) => {
   const dispatch = useDispatch();
-  const { error, status, token } = useSelector(selectUserData);
+  const { error, status } = useSelector(selectUserData);
 
   const [globalError, setGlobalError] = useState('');
   const [username, setUsername] = useState('');
@@ -82,6 +83,7 @@ const SigninScreen = ({ navigation }) => {
         );
         dispatch(getAllSettings({ token: result.token }));
         dispatch(getFavorites({ token: result.token }));
+        dispatch(getAllAdvertisements({ token: result.token }));
       })
       .catch((err) => {});
   };
@@ -248,4 +250,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SigninScreen;
+export default SignInScreen;

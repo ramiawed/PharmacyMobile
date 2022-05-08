@@ -136,12 +136,7 @@ const AddToCart = ({ item, close }) => {
       }}
     >
       <Text style={styles.header}>{i18n.t('add-to-cart')}</Text>
-      <View
-        style={{
-          alignItems: 'center',
-          paddingTop: 10,
-        }}
-      >
+      <View style={styles.body}>
         <CustomPicker
           selectedValue={{
             label: selectedWarehouse.warehouse.name,
@@ -153,19 +148,14 @@ const AddToCart = ({ item, close }) => {
         />
 
         <View style={styles.row}>
-          <Text style={{ fontSize: 10, marginEnd: 10 }}>{i18n.t('item-max-qty')}</Text>
+          <Text style={styles.rowLabel}>{i18n.t('item-max-qty')}</Text>
           <Text style={{ fontSize: 14, color: Colors.MAIN_COLOR }}>
             {selectedWarehouse.maxQty === 0 ? i18n.t('no-limit-qty') : selectedWarehouse.maxQty}
           </Text>
         </View>
         <View style={styles.row}>
-          <Text style={{ fontSize: 10, marginEnd: 10 }}>{i18n.t('selected-qty')}</Text>
-          <TextInput
-            value={qty}
-            onChangeText={setQty}
-            style={{ flex: 1, writingDirection: 'rtl', textAlign: 'right' }}
-            keyboardType="number-pad"
-          />
+          <Text style={styles.rowLabel}>{i18n.t('selected-qty')}</Text>
+          <TextInput value={qty} onChangeText={setQty} style={styles.selectedQty} keyboardType="number-pad" />
         </View>
       </View>
 
@@ -250,6 +240,7 @@ const styles = StyleSheet.create({
   label: {
     color: Colors.MAIN_COLOR,
   },
+  rowLabel: { fontSize: 10, marginEnd: 10 },
   actions: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
@@ -279,6 +270,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
+  body: {
+    alignItems: 'center',
+    paddingTop: 10,
+  },
+  selectedQty: { flex: 1, writingDirection: 'rtl', textAlign: 'right' },
 });
 
 export default AddToCart;

@@ -1,6 +1,5 @@
 import React, { memo, useState } from 'react';
-import { useNavigation } from '@react-navigation/core';
-
+import { useNavigation } from '@react-navigation/native';
 import { View, Text, StyleSheet, TouchableWithoutFeedback, ActivityIndicator } from 'react-native';
 
 // redux stuff

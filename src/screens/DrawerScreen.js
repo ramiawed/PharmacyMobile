@@ -36,17 +36,22 @@ import { Colors, BASEURL, UserTypeConstants } from '../utils/constants';
 // redux stuff
 import { useDispatch, useSelector } from 'react-redux';
 import { selectUser, selectUserData, signOut } from '../redux/auth/authSlice';
-import { resetFavorites } from '../redux/favorites/favoritesSlice';
+import { resetFavorites, selectFavorites } from '../redux/favorites/favoritesSlice';
 import { resetCompanies } from '../redux/company/companySlice';
 import { setSearchCompanyId, setSearchWarehouseId } from '../redux/medicines/medicinesSlices';
 import { selectCartItemCount } from '../redux/cart/cartSlice';
-import SocketObserver from '../components/SocketObserver';
+import { selectSettings } from '../redux/settings/settingsSlice';
+import { selectAdvertisements } from '../redux/advertisements/advertisementsSlice';
+import Loader from '../components/Loader';
 
 const Drawer = createDrawerNavigator();
 
 const DrawerScreen = () => {
   const dispatch = useDispatch();
   const { user, token } = useSelector(selectUserData);
+  const { completed: settingsCompleted } = useSelector(selectSettings);
+  const { status: favoritesStatus } = useSelector(selectFavorites);
+  const { status: advertisementsStatus } = useSelector(selectAdvertisements);
 
   useEffect(() => {
     // dispatch(getAllSettings({ token }));
@@ -61,38 +66,46 @@ const DrawerScreen = () => {
   }, []);
 
   return user ? (
-    <Drawer.Navigator
-      screenOptions={{
-        headerStyle: {
-          backgroundColor: Colors.MAIN_COLOR,
-        },
-        headerTintColor: Colors.WHITE_COLOR,
-        header: ({ navigation, route, options }) => (
-          <DrawerHeader navigation={navigation} route={route} options={options} />
-        ),
-      }}
-      drawerContent={(props) => <CustomDrawerContent {...props} user={user} />}
-    >
-      <Drawer.Screen
-        name="Main"
-        component={HomeScreen}
-        options={{
-          title: i18n.t('main-screen'),
+    settingsCompleted === 'loading' ? (
+      <Loader />
+    ) : (
+      <Drawer.Navigator
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: Colors.MAIN_COLOR,
+          },
+          headerTintColor: Colors.WHITE_COLOR,
+          header: ({ navigation, route, options }) => (
+            <DrawerHeader navigation={navigation} route={route} options={options} />
+          ),
         }}
-      />
-      <Drawer.Screen name="Medicines" component={MedicinesStack} options={{ title: i18n.t('medicines-screen') }} />
-      <Drawer.Screen name="Companies" component={CompaniesScreen} options={{ title: i18n.t('companies-screen') }} />
-      <Drawer.Screen name="Warehouses" component={WarehousesScreen} options={{ title: i18n.t('warehouses-screen') }} />
-      <Drawer.Screen name="Orders" component={OrdersStack} options={{ title: i18n.t('orders-screen') }} />
-      <Drawer.Screen name="Cart" component={CartScreen} options={{ title: i18n.t('cart-screen') }} />
-      <Drawer.Screen name="Favorite" component={FavoriteScreen} options={{ title: i18n.t('favorites-screen') }} />
-      <Drawer.Screen
-        name="Notifications"
-        component={NotificationsStack}
-        options={{ title: i18n.t('notifications-screen') }}
-      />
-      <Drawer.Screen name="Profile" component={ProfileScreen} options={{ title: i18n.t('profile-screen') }} />
-    </Drawer.Navigator>
+        drawerContent={(props) => <CustomDrawerContent {...props} user={user} />}
+      >
+        <Drawer.Screen
+          name="Main"
+          component={HomeScreen}
+          options={{
+            title: i18n.t('main-screen'),
+          }}
+        />
+        <Drawer.Screen name="Medicines" component={MedicinesStack} options={{ title: i18n.t('medicines-screen') }} />
+        <Drawer.Screen name="Companies" component={CompaniesScreen} options={{ title: i18n.t('companies-screen') }} />
+        <Drawer.Screen
+          name="Warehouses"
+          component={WarehousesScreen}
+          options={{ title: i18n.t('warehouses-screen') }}
+        />
+        <Drawer.Screen name="Orders" component={OrdersStack} options={{ title: i18n.t('orders-screen') }} />
+        <Drawer.Screen name="Cart" component={CartScreen} options={{ title: i18n.t('cart-screen') }} />
+        <Drawer.Screen name="Favorite" component={FavoriteScreen} options={{ title: i18n.t('favorites-screen') }} />
+        <Drawer.Screen
+          name="Notifications"
+          component={NotificationsStack}
+          options={{ title: i18n.t('notifications-screen') }}
+        />
+        <Drawer.Screen name="Profile" component={ProfileScreen} options={{ title: i18n.t('profile-screen') }} />
+      </Drawer.Navigator>
+    )
   ) : null;
 };
 

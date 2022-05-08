@@ -21,7 +21,7 @@ import Toast from 'react-native-toast-message';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 // components
-import SigninScreen from './src/screens/SigninScreen';
+import SignInScreen from './src/screens/SignInScreen';
 import SignupScreen from './src/screens/SignupScreen';
 import DrawerScreen from './src/screens/DrawerScreen';
 import ApproveScreen from './src/screens/ApproveScreen';
@@ -37,6 +37,7 @@ import store from './src/app/store';
 
 // redux stuff
 import { getFavorites } from './src/redux/favorites/favoritesSlice';
+import { getAllAdvertisements } from './src/redux/advertisements/advertisementsSlice';
 
 let persistor = persistStore(store);
 
@@ -66,6 +67,7 @@ const App = () => {
             );
             dispatch(getAllSettings({ token: result.token }));
             dispatch(getFavorites({ token: result.token }));
+            dispatch(getAllAdvertisements({ token: result.token }));
             setShowSplashScreen(false);
           })
           .catch(() => {
@@ -103,7 +105,7 @@ const App = () => {
             <Stack.Screen name="Drawer" component={DrawerScreen} />
           ) : (
             <>
-              <Stack.Screen name="SignIn" component={SigninScreen} />
+              <Stack.Screen name="SignIn" component={SignInScreen} />
               <Stack.Screen name="SignUp" component={SignupScreen} />
               <Stack.Screen name="Approve" component={ApproveScreen} />
             </>
