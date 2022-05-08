@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Colors } from '../utils/constants';
 
@@ -36,10 +36,9 @@ const PharmacyIntroduce = () => {
 
 const styles = StyleSheet.create({
   container: {
-    width: '95%',
     margin: 10,
     padding: 10,
-    borderRadius: 6,
+    borderRadius: 12,
     backgroundColor: '#f3f3f3',
     overflow: 'hidden',
   },
@@ -63,4 +62,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PharmacyIntroduce;
+export default memo(PharmacyIntroduce);

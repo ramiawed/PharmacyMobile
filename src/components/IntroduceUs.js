@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Colors } from '../utils/constants';
 
@@ -35,4 +35,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default IntroduceUs;
+export default memo(IntroduceUs);

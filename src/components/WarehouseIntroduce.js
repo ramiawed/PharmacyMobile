@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Colors } from '../utils/constants';
 
@@ -26,7 +26,6 @@ const WarehouseIntroduce = () => {
 
 const styles = StyleSheet.create({
   container: {
-    width: '95%',
     margin: 10,
     padding: 10,
     borderRadius: 6,
@@ -53,4 +52,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default WarehouseIntroduce;
+export default memo(WarehouseIntroduce);
