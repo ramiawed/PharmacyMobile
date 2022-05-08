@@ -18,6 +18,7 @@ import FreeServicesImage from '../../assets/free-services.jpg';
 // constants
 import { Colors, SERVER_URL } from '../utils/constants';
 import { setSearchCompanyId, setSearchWarehouseId } from '../redux/medicines/medicinesSlices';
+import AdvertisementCard from './AdvertisementCard';
 
 const Advertisements = () => {
   const navigation = useNavigation();
@@ -81,20 +82,7 @@ const Advertisements = () => {
         keyExtractor={(item, index) => index + ''}
         numColumns={1}
         horizontal={true}
-        renderItem={({ item, index }) => (
-          <TouchableOpacity
-            style={styles.advertisement}
-            onPress={() => {
-              onAdvertisementPressHandler(item);
-            }}
-          >
-            {item.type === 'static' ? (
-              <Image source={item.source} style={styles.image} />
-            ) : (
-              <Image source={{ uri: `${SERVER_URL}/advertisements/${item.source}` }} style={styles.image} />
-            )}
-          </TouchableOpacity>
-        )}
+        renderItem={({ item }) => <AdvertisementCard adv={item} onAdvertisementPress={onAdvertisementPressHandler} />}
       />
     </View>
   );
@@ -102,7 +90,7 @@ const Advertisements = () => {
 
 const styles = StyleSheet.create({
   header: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: 'bold',
     color: Colors.MAIN_COLOR,
     textAlign: 'center',
@@ -128,3 +116,18 @@ const styles = StyleSheet.create({
 });
 
 export default Advertisements;
+
+{
+  /* <TouchableOpacity
+            style={styles.advertisement}
+            onPress={() => {
+              onAdvertisementPressHandler(item);
+            }}
+          >
+            {item.type === 'static' ? (
+              <Image source={item.source} style={styles.image} />
+            ) : (
+              <Image source={{ uri: `${SERVER_URL}/advertisements/${item.source}` }} style={styles.image} />
+            )}
+          </TouchableOpacity> */
+}
