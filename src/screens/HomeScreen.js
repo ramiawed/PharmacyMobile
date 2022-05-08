@@ -1,29 +1,24 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { View, Text, TextInput, ScrollView, ActivityIndicator, Dimensions, StyleSheet, Image } from 'react-native';
 
 // redux stuff
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { selectSettings } from '../redux/settings/settingsSlice';
-import { selectUserData } from '../redux/auth/authSlice';
 
 // component
 import SearchHome from '../components/SearchHome';
 import SocketObserver from '../components/SocketObserver';
+import Advertisements from '../components/Advertisements';
+import IntroduceUs from '../components/IntroduceUs';
 
 // constants
-import { Colors, UserTypeConstants } from '../utils/constants';
-import Advertisements from '../components/Advertisements';
-import { selectAdvertisements } from '../redux/advertisements/advertisementsSlice';
+import { Colors } from '../utils/constants';
+import PharmacyIntroduce from '../components/PharmacyIntroduce';
+import WarehouseIntroduce from '../components/WarehouseIntroduce';
+import GuestIntroduce from '../components/GuestIntroduce';
 
 const HomeScreen = () => {
-  const windowHeight = Dimensions.get('window').height;
-  const dispatch = useDispatch();
-  const { token } = useSelector(selectUserData);
-  // const { advertisements } = useSelector(selectAdvertisements);
-
   const { settings } = useSelector(selectSettings);
-
-  useEffect(() => {}, []);
 
   return (
     <View
@@ -37,10 +32,11 @@ const HomeScreen = () => {
       <SearchHome />
 
       <ScrollView>
+        <IntroduceUs />
         <Advertisements />
-
-        {/* <Button onPress={showDatepicker} title="Show date picker!" /> */}
-        {/* <SearchHome /> */}
+        <PharmacyIntroduce />
+        <WarehouseIntroduce />
+        <GuestIntroduce />
       </ScrollView>
     </View>
   );
