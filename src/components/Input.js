@@ -1,6 +1,9 @@
 import React from 'react';
 import i18n from '../i18n/index';
-import { View, StyleSheet, TextInput, Text } from 'react-native';
+import { View, StyleSheet, TextInput, Text, TouchableOpacity } from 'react-native';
+
+// icons
+import { AntDesign } from '@expo/vector-icons';
 
 import { Colors } from '../utils/constants';
 
@@ -26,6 +29,11 @@ const Input = ({ value, onTextChange, placeholder, password, icon, error, border
           placeholder={placeholder}
           secureTextEntry={password}
         />
+        {value.trim().length > 0 && (
+          <TouchableOpacity>
+            <AntDesign name="closecircleo" size={24} color={Colors.MAIN_COLOR} onPress={() => onTextChange('')} />
+          </TouchableOpacity>
+        )}
       </View>
 
       <Text style={{ display: error ? 'flex' : 'none', ...styles.errorText }}>{error ? i18n.t(error) : ''}</Text>

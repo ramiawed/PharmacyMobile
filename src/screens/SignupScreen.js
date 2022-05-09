@@ -457,24 +457,23 @@ const SignupScreen = ({ navigation }) => {
   return (
     <>
       <View style={styles.container}>
-        <LinearGradient
+        {/* <LinearGradient
           // Background Linear Gradient
           colors={[Colors.MAIN_COLOR, Colors.WHITE_COLOR]}
           style={styles.background}
+        /> */}
+        <LinearGradient
+          // Background Linear Gradient
+          colors={[Colors.WHITE_COLOR, Colors.MAIN_COLOR]}
+          style={styles.background}
         />
         <View style={styles.signUpView}>
-          <LinearGradient
-            // Background Linear Gradient
-            colors={[Colors.WHITE_COLOR, Colors.MAIN_COLOR]}
-            style={styles.background}
-          />
-
-          <Image style={styles.logo} source={require('../../assets/logo.png')} />
           <View style={styles.inputDiv}>
-            <Text style={[styles.signUpLabel, styles.bigFont]}>{i18n.t('sign-up')}</Text>
-
-            <UserType userType={signUpUser.type} userTypeChange={changeUserType} />
             <ScrollView contentContainerStyle={styles.scrollView}>
+              <Image style={styles.logo} source={require('../../assets/logo.png')} />
+              <Text style={[styles.signUpLabel, styles.bigFont]}>{i18n.t('sign-up')}</Text>
+
+              <UserType userType={signUpUser.type} userTypeChange={changeUserType} />
               <Input
                 value={signUpUser.name}
                 onTextChange={(text) => {
@@ -768,11 +767,10 @@ const SignupScreen = ({ navigation }) => {
                   )}
                 </View>
               )}
+              <TouchableOpacity style={styles.button} onPress={createAccountHandler}>
+                <Text style={styles.buttonText}>{i18n.t('sign-up')}</Text>
+              </TouchableOpacity>
             </ScrollView>
-
-            <TouchableOpacity style={styles.button} onPress={createAccountHandler}>
-              <Text style={styles.buttonText}>{i18n.t('sign-up')}</Text>
-            </TouchableOpacity>
           </View>
         </View>
 
@@ -873,7 +871,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   signInSentences: {
-    color: Colors.WHITE_COLOR,
+    color: Colors.MAIN_COLOR,
   },
   signInBtn: {
     color: Colors.FAILED_COLOR,

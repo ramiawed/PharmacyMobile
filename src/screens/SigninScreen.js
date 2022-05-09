@@ -106,7 +106,7 @@ const SignInScreen = ({ navigation }) => {
     <View style={styles.container}>
       <LinearGradient
         // Background Linear Gradient
-        colors={[Colors.MAIN_COLOR, Colors.WHITE_COLOR]}
+        colors={[Colors.WHITE_COLOR, Colors.MAIN_COLOR]}
         style={styles.background}
       />
       {status === 'loading' ? (
@@ -114,11 +114,11 @@ const SignInScreen = ({ navigation }) => {
       ) : (
         <>
           <View style={styles.signInView}>
-            <LinearGradient
+            {/* <LinearGradient
               // Background Linear Gradient
               colors={[Colors.WHITE_COLOR, Colors.MAIN_COLOR]}
               style={styles.background}
-            />
+            /> */}
 
             <Image style={styles.logo} source={require('../../assets/logo.png')} />
             <View style={styles.inputDiv}>
@@ -198,10 +198,10 @@ const styles = StyleSheet.create({
   signInView: {
     borderRadius: 15,
     width: '80%',
-    minHeight: '80%',
+    minHeight: '65%',
     alignItems: 'center',
     justifyContent: 'flex-start',
-    overflow: 'hidden',
+    // overflow: 'hidden',
   },
   appName: {
     fontSize: 32,
@@ -247,7 +247,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   signupSentences: {
-    color: Colors.WHITE_COLOR,
+    color: Colors.MAIN_COLOR,
   },
   signupBtn: {
     color: Colors.FAILED_COLOR,
@@ -258,8 +258,3 @@ const styles = StyleSheet.create({
 });
 
 export default SignInScreen;
-
-// {status === 'loading' ? (
-//   <ActivityIndicator size="small" color="#fff" />
-// ) : (
-// )}

@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { FlatList, View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import i18n from '../i18n/index';
 
 // components
 import HomeScreenAdvertisementCard from './HomeScreenAdvertisementCard';
@@ -27,9 +28,16 @@ const CompaniesSectionTwo = () => {
 
   return show ? (
     companiesSectionTwoStatus === 'loading' ? (
-      <>
-        <ActivityIndicator size="large" color={Colors.MAIN_COLOR} />
-      </>
+      <View style={styles.loaderView}>
+        <ActivityIndicator size="large" color={Colors.MAIN_COLOR} style={{ flex: 1 }} />
+        <Text
+          style={{
+            color: Colors.MAIN_COLOR,
+          }}
+        >
+          {i18n.t('loading-data')}
+        </Text>
+      </View>
     ) : companiesSectionTwo.length > 0 ? (
       <View style={{ ...styles.container }}>
         <Text style={styles.title}>{title}</Text>
@@ -58,6 +66,17 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: Colors.SECONDARY_COLOR,
     textAlign: 'center',
+  },
+  loaderView: {
+    height: 150,
+    backgroundColor: '#e3e3e3',
+    width: '90%',
+    marginHorizontal: '5%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+    borderRadius: 15,
+    marginBottom: 20,
   },
 });
 

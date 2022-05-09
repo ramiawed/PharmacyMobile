@@ -139,6 +139,7 @@ const MedicineScreen = ({ route }) => {
         contentContainerStyle={{
           alignItems: 'center',
           paddingTop: 10,
+          paddingHorizontal: 10,
         }}
         style={styles.container}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefreshing} />}

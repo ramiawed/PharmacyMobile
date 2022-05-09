@@ -47,23 +47,9 @@ const NotificationRow = ({ notification }) => {
           }}
         >
           {notification.logo_url && notification.logo_url.length !== 0 ? (
-            <Image
-              source={{ uri: `${SERVER_URL}/notifications/${notification.logo_url}` }}
-              style={{
-                width: 75,
-                height: 75,
-                resizeMode: 'contain',
-              }}
-            />
+            <Image source={{ uri: `${SERVER_URL}/notifications/${notification.logo_url}` }} style={styles.logo} />
           ) : (
-            <Image
-              source={require('../../assets/logo.png')}
-              style={{
-                width: 75,
-                height: 75,
-                resizeMode: 'contain',
-              }}
-            />
+            <Image source={require('../../assets/logo.png')} style={styles.logo} />
           )}
         </View>
         <View style={styles.content}>
@@ -84,6 +70,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#e3e3e3',
     marginBottom: 5,
+    paddingHorizontal: 5,
     borderRadius: 6,
     overflow: 'hidden',
   },
@@ -106,7 +93,12 @@ const styles = StyleSheet.create({
     color: Colors.GREY_COLOR,
     fontSize: 12,
   },
-
+  logo: {
+    width: 75,
+    height: 75,
+    resizeMode: 'contain',
+    borderRadius: 6,
+  },
   badge: {
     position: 'absolute',
     top: -2,

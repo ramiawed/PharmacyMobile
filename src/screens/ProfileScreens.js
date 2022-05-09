@@ -5,6 +5,7 @@ import { View, Text, TouchableOpacity, StyleSheet, ScrollView, RefreshControl } 
 import { useFocusEffect } from '@react-navigation/native';
 import { EvilIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
+import Toast from 'react-native-toast-message';
 
 // components
 import UserInfoRow from '../components/UserInfoRow';
@@ -132,6 +133,18 @@ const ProfileScreen = () => {
       .then(unwrapResult)
       .then(() => {
         getMyInfo();
+        Toast.show({
+          type: 'success',
+          text1: i18n.t('user-profile-update-success'),
+          text2: i18n.t('update-succeeded'),
+        });
+      })
+      .catch((err) => {
+        Toast.show({
+          type: 'error',
+          text1: i18n.t('user-profile-update-error'),
+          text2: i18n.t(err.message),
+        });
       });
   };
 
