@@ -308,6 +308,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.WHITE_COLOR,
+    paddingHorizontal: 10,
   },
   button: {
     backgroundColor: Colors.FAILED_COLOR,

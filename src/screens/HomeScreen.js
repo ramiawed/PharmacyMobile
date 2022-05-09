@@ -41,12 +41,12 @@ const HomeScreen = () => {
         <IntroduceUs />
         <Advertisements />
         <View>
-          <CompaniesSectionOne />
-          <CompaniesSectionTwo />
-          <WarehousesSectionOne />
           <ItemsSectionOne />
           <ItemsSectionTwo />
+          <CompaniesSectionOne />
+          <WarehousesSectionOne />
           <ItemsSectionThree />
+          <CompaniesSectionTwo />
         </View>
         <PharmacyIntroduce />
         <WarehouseIntroduce />

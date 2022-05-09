@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { FlatList, View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 
 // components
-import PartnerCardAdvertisement from './PartnerCardAdvertisement';
+import HomeScreenAdvertisementCard from './HomeScreenAdvertisementCard';
 
 // redux stuff
 import { useDispatch, useSelector } from 'react-redux';
@@ -38,7 +38,7 @@ const ItemsSectionTwo = () => {
           data={itemsSectionTwo}
           keyExtractor={(item) => item._id}
           horizontal={true}
-          renderItem={({ item }) => <PartnerCardAdvertisement partner={item} />}
+          renderItem={({ item }) => <HomeScreenAdvertisementCard data={item} type="item" />}
         />
       </View>
     ) : null

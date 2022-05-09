@@ -17,6 +17,7 @@ import { BASEURL, Colors, OfferTypes, UserTypeConstants } from '../utils/constan
 // component
 import Loader from '../components/Loader';
 import CartItem from '../components/CartItem';
+import ExpandedView from '../components/ExpandedView';
 import i18n from 'i18n-js';
 
 const OrderDetailsScreen = ({ route }) => {
@@ -102,7 +103,7 @@ const OrderDetailsScreen = ({ route }) => {
     <View style={styles.container}>
       {orderDetails && (
         <>
-          <View>
+          <ExpandedView title={i18n.t('order-details')}>
             <View style={styles.row}>
               <Text style={styles.label}>{i18n.t('pharmacy-name')}</Text>
               <Text style={styles.value}>{orderDetails.pharmacy.name}</Text>
@@ -119,11 +120,11 @@ const OrderDetailsScreen = ({ route }) => {
               <Text style={styles.label}>{i18n.t('warehouse-name')}</Text>
               <Text style={styles.value}>{orderDetails.warehouse.name}</Text>
             </View>
-            <View style={styles.row}>
+            <View style={{ ...styles.row, borderBottomWidth: 0 }}>
               <Text style={styles.label}>{i18n.t('total-invoice-price')}</Text>
               <Text style={styles.value}>{computeTotalPrice()}</Text>
             </View>
-          </View>
+          </ExpandedView>
 
           <View style={styles.topActionsView}>
             {user.type === UserTypeConstants.PHARMACY && (
@@ -193,6 +194,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.WHITE_COLOR,
+    paddingHorizontal: 10,
+    paddingVertical: 10,
   },
   row: {
     flexDirection: 'row',
@@ -210,7 +213,7 @@ const styles = StyleSheet.create({
   value: {
     flex: 1,
     color: Colors.MAIN_COLOR,
-    fontSize: 18,
+    fontSize: 14,
     textAlign: 'left',
   },
   topActionsView: {

@@ -17,6 +17,7 @@ import { selectUserData } from '../redux/auth/authSlice';
 import ItemFavoriteRow from './ItemFavoriteRow';
 import PartnerRow from './PartnerRow';
 import Scanner from './Scanner';
+import ItemRow from './ItemRow';
 
 let CancelToken;
 let source;
@@ -169,7 +170,7 @@ const SearchHome = () => {
                 <>
                   {data.length > 0 && <Text style={styles.header}>{i18n.t('items')}</Text>}
                   {data.map((item, index) => (
-                    <ItemFavoriteRow key={index} favorite={item} />
+                    <ItemRow key={index} item={item} />
                   ))}
                   {companiesData.length > 0 && <Text style={styles.header}>{i18n.t('companies')}</Text>}
                   {companiesData.map((company) => (
@@ -189,6 +190,7 @@ const SearchHome = () => {
           <></>
         )}
       </View>
+
       {showScanner && <Scanner onScannerDone={scannerDoneHandler} close={() => setShowScanner(false)} />}
     </>
   );

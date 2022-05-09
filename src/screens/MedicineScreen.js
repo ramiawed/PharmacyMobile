@@ -193,6 +193,9 @@ const MedicineScreen = ({ route }) => {
           <UserInfoRow label={i18n.t('item-formula')} value={item.formula} editable={false} />
           <UserInfoRow label={i18n.t('item-caliber')} value={item.caliber} editable={false} />
           <UserInfoRow label={i18n.t('item-packing')} value={item.packing} editable={false} />
+          {user.type === UserTypeConstants.ADMIN && (
+            <UserInfoRow label={i18n.t('item-barcode')} value={item.barcode} editable={false} />
+          )}
         </ExpandedView>
 
         <ExpandedView title={i18n.t('item-price')}>

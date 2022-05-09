@@ -2,9 +2,6 @@ import React, { memo, useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableWithoutFeedback, Animated, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-// icons
-import { AntDesign } from '@expo/vector-icons';
-
 // redux stuff
 import { resetMedicines, setSearchWarehouseId, setSearchCompanyId } from '../redux/medicines/medicinesSlices';
 import { useDispatch, useSelector } from 'react-redux';
@@ -16,7 +13,7 @@ import { selectSettings } from '../redux/settings/settingsSlice';
 // constants
 import { Colors, UserTypeConstants, SERVER_URL } from '../utils/constants';
 
-const PartnerCardAdvertisement = ({ partner }) => {
+const HomeScreenAdvertisementCard = ({ data, type, rect }) => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
 
@@ -27,12 +24,12 @@ const PartnerCardAdvertisement = ({ partner }) => {
 
   const allowShowingWarehouseMedicines =
     user?.type === UserTypeConstants.ADMIN ||
-    partner.type === UserTypeConstants.COMPANY ||
-    (partner.type === UserTypeConstants.WAREHOUSE && showWarehouseItem && partner.allowShowingMedicines);
+    data.type === UserTypeConstants.COMPANY ||
+    (data.type === UserTypeConstants.WAREHOUSE && showWarehouseItem && data.allowShowingMedicines);
 
   const dispatchPartnerSelected = () => {
     if (
-      partner.type === UserTypeConstants.WAREHOUSE &&
+      data.type === UserTypeConstants.WAREHOUSE &&
       (user.type === UserTypeConstants.WAREHOUSE ||
         user.type === UserTypeConstants.COMPANY ||
         user.type === UserTypeConstants.GUEST)
@@ -48,7 +45,7 @@ const PartnerCardAdvertisement = ({ partner }) => {
           addStatistics({
             obj: {
               sourceUser: user._id,
-              targetUser: partner._id,
+              targetUser: data._id,
               action: 'choose-company',
             },
             token,
@@ -59,16 +56,16 @@ const PartnerCardAdvertisement = ({ partner }) => {
 
     dispatch(resetMedicines());
 
-    if (partner.type === UserTypeConstants.COMPANY) {
-      dispatch(setSearchCompanyId(partner._id));
+    if (data.type === UserTypeConstants.COMPANY) {
+      dispatch(setSearchCompanyId(data._id));
     }
 
-    if (partner.type === UserTypeConstants.WAREHOUSE) {
-      dispatch(setSearchWarehouseId(partner._id));
+    if (data.type === UserTypeConstants.WAREHOUSE) {
+      dispatch(setSearchWarehouseId(data._id));
     }
 
-    if (partner.type === UserTypeConstants.WAREHOUSE && user.type === UserTypeConstants.PHARMACY) {
-      dispatch(setSelectedWarehouse(partner._id));
+    if (data.type === UserTypeConstants.WAREHOUSE && user.type === UserTypeConstants.PHARMACY) {
+      dispatch(setSelectedWarehouse(data._id));
     } else {
       dispatch(setSelectedWarehouse(null));
     }
@@ -78,25 +75,63 @@ const PartnerCardAdvertisement = ({ partner }) => {
     });
   };
 
+  const dispatchItemSelected = () => {
+    if (user.type === UserTypeConstants.PHARMACY || user.type === UserTypeConstants.GUEST) {
+      dispatch(
+        addStatistics({
+          obj: {
+            sourceUser: user._id,
+            targetItem: data._id,
+            action: 'choose-item',
+          },
+          token,
+        }),
+      );
+    }
+
+    navigation.navigate('Medicines', {
+      screen: 'Medicine',
+      params: {
+        medicineId: data._id,
+      },
+    });
+  };
+
   return (
-    <TouchableWithoutFeedback onPress={dispatchPartnerSelected}>
+    <TouchableWithoutFeedback
+      onPress={() => {
+        if (type === 'item') {
+          dispatchItemSelected();
+        } else {
+          dispatchPartnerSelected();
+        }
+      }}
+    >
       <Animated.View
         style={{
           ...styles.animatedView,
           flex: 1,
           marginHorizontal: 4,
+          height: rect === 'rect' ? 250 : 170,
         }}
       >
-        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-          {partner.logo_url && partner.logo_url.length !== 0 ? (
-            <Image source={{ uri: `${SERVER_URL}/profiles/${partner.logo_url}` }} style={styles.logo} />
+        <View
+          style={{
+            ...styles.logoView,
+            height: rect === 'rect' ? 170 : 100,
+            width: rect === 'rect' ? 125 : 100,
+            borderRadius: rect === 'rect' ? 12 : 50,
+          }}
+        >
+          {data.logo_url && data.logo_url.length !== 0 ? (
+            <Image source={{ uri: `${SERVER_URL}/profiles/${data.logo_url}` }} style={{ ...styles.logo }} />
           ) : (
-            <Image source={require('../../assets/logo.png')} style={styles.logo} />
+            <Image source={require('../../assets/logo.png')} style={{ ...styles.logo }} />
           )}
         </View>
 
         <View>
-          <Text style={styles.title}>{partner.name}</Text>
+          <Text style={styles.title}>{data.name}</Text>
         </View>
       </Animated.View>
     </TouchableWithoutFeedback>
@@ -108,26 +143,37 @@ const styles = StyleSheet.create({
     padding: 10,
     marginHorizontal: 10,
     backgroundColor: '#f3f3f3',
-    height: 300,
-    width: 300,
+    // height: 170,
+    width: 170,
     marginVertical: 10,
     alignItems: 'center',
     justifyContent: 'space-around',
-    borderRadius: 12,
+    borderRadius: 15,
   },
   title: {
-    fontSize: 20,
+    fontSize: 10,
     fontWeight: '700',
     color: Colors.MAIN_COLOR,
     textAlign: 'center',
   },
-
+  logoView: {
+    // width: 100,
+    // height: 100,
+    // borderRadius: 50,
+    borderColor: 'red',
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+    backgroundColor: '#d3d3d3',
+    borderWidth: 2,
+    borderColor: '#d3d3d3',
+  },
   logo: {
-    width: 200,
-    height: 200,
-    borderRadius: 12,
+    width: '100%',
+    height: '100%',
+    // borderRadius: 45,
     resizeMode: 'contain',
   },
 });
 
-export default memo(PartnerCardAdvertisement);
+export default memo(HomeScreenAdvertisementCard);

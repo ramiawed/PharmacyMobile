@@ -2,6 +2,9 @@ import React, { memo, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { View, Text, StyleSheet, TouchableWithoutFeedback, ActivityIndicator } from 'react-native';
 
+// libraries
+import { BottomSheet } from 'react-native-btr';
+
 // redux stuff
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useDispatch, useSelector } from 'react-redux';
@@ -18,6 +21,7 @@ import { AntDesign, Ionicons } from '@expo/vector-icons';
 
 // components
 import SwipeableRow from './SwipeableRow';
+import AddToCart from './AddToCart';
 
 // if logged user is
 // 1- ADMIN: highlight the row by green color if the medicine has an offer.
@@ -62,7 +66,7 @@ const checkOffer = (item, user) => {
   return result;
 };
 
-const ItemCard = ({ item, addToCart }) => {
+const ItemRow = ({ item, addToCart }) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
@@ -71,9 +75,9 @@ const ItemCard = ({ item, addToCart }) => {
   const favorites = useSelector(selectFavoritesItems);
 
   // own state
-  const [expanded, setExpanded] = useState(false);
   const [changeFavoriteLoading, setChangeFavoriteLoading] = useState(false);
   const [changeAddToWarehouseLoading, setChangeAddToWarehouseLoading] = useState(false);
+  const [showAddToCartModal, setShowAddToCartModal] = useState(false);
 
   const canAddToCart = user?.type === UserTypeConstants.PHARMACY && checkItemExistsInWarehouse(item, user);
   const isInWarehouse = item.warehouses.map((w) => w.warehouse._id).includes(user._id);
@@ -173,23 +177,8 @@ const ItemCard = ({ item, addToCart }) => {
     }
   };
 
-  const addToCartHandler = (item) => {
-    addToCart(item);
-  };
-
   return user ? (
-    <SwipeableRow
-      user={user}
-      addItemToWarehouse={addItemToWarehouseHandler}
-      removeItemFromWarehouse={removeItemFromWarehouseHandler}
-      addItemToFavorite={addItemToFavoriteItems}
-      removeItemFromFavorite={removeItemFromFavoritesItems}
-      canAddToCart={canAddToCart}
-      isInWarehouse={isInWarehouse}
-      isFavorite={isFavorite}
-      addToCart={() => addToCartHandler(item)}
-      item={item}
-    >
+    <>
       <View
         style={{
           ...styles.container,
@@ -197,25 +186,6 @@ const ItemCard = ({ item, addToCart }) => {
         }}
       >
         <View style={styles.header}>
-          {expanded ? (
-            <AntDesign
-              name="caretup"
-              size={20}
-              color={Colors.MAIN_COLOR}
-              onPress={() => {
-                setExpanded(!expanded);
-              }}
-            />
-          ) : (
-            <AntDesign
-              name="caretdown"
-              size={20}
-              color={Colors.MAIN_COLOR}
-              onPress={() => {
-                setExpanded(!expanded);
-              }}
-            />
-          )}
           <TouchableWithoutFeedback
             onPress={() => {
               dispatchStatisticsHandler();
@@ -238,7 +208,7 @@ const ItemCard = ({ item, addToCart }) => {
               size={24}
               color={Colors.SUCCEEDED_COLOR}
               style={{ paddingHorizontal: 2 }}
-              onPress={() => addToCart(item)}
+              onPress={() => setShowAddToCartModal(true)}
             />
           )}
 
@@ -288,26 +258,22 @@ const ItemCard = ({ item, addToCart }) => {
         <View style={styles.subHeader}>
           <View style={styles.fullWidth}>
             <Text style={styles.companyName}>{item.company.name}</Text>
+            <Text style={styles.caliber}>{item.caliber}</Text>
           </View>
           {user.type !== UserTypeConstants.GUEST && (
             <Text style={{ ...styles.priceValue, color: Colors.SUCCEEDED_COLOR }}>{item.price}</Text>
           )}
           <Text style={{ ...styles.priceValue, color: Colors.FAILED_COLOR }}>{item.customer_price}</Text>
         </View>
-        {expanded && (
-          <View>
-            <View style={styles.separator}></View>
-            <View style={{ ...styles.fullWidth, ...styles.moreData }}>
-              {item.packing ? <Text style={styles.moreDataText}>{item.packing}</Text> : null}
-              {item.caliber ? <Text style={styles.moreDataText}>{item.caliber}</Text> : null}
-              {item.composition ? (
-                <Text style={styles.moreDataText}>{item.composition?.split('+').join(' ')}</Text>
-              ) : null}
-            </View>
-          </View>
-        )}
       </View>
-    </SwipeableRow>
+      <BottomSheet
+        visible={showAddToCartModal}
+        onBackButtonPress={() => setShowAddToCartModal(false)}
+        onBackdropPress={() => setShowAddToCartModal(false)}
+      >
+        <AddToCart item={item} close={() => setShowAddToCartModal(false)} />
+      </BottomSheet>
+    </>
   ) : null;
 };
 
@@ -315,12 +281,10 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'column',
     padding: 5,
-    margin: 5,
     backgroundColor: Colors.WHITE_COLOR,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#e3e3e3',
-    width: '95%',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e3e3e3',
+    width: '100%',
   },
   header: {
     flexDirection: 'row',
@@ -338,12 +302,6 @@ const styles = StyleSheet.create({
   subHeader: {
     flexDirection: 'row',
   },
-  separator: {
-    height: 1,
-    width: '100%',
-    backgroundColor: Colors.SECONDARY_COLOR,
-    marginVertical: 10,
-  },
   priceValue: {
     fontSize: 12,
     paddingHorizontal: 6,
@@ -355,31 +313,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
   },
   companyName: {
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: 'bold',
     color: Colors.SECONDARY_COLOR,
-    marginStart: 20,
   },
   caliber: {
-    textAlign: 'left',
     fontSize: 10,
     fontWeight: 'bold',
-    color: Colors.SECONDARY_COLOR,
-  },
-  moreData: {
-    flexDirection: 'column',
-  },
-  moreDataText: {
     color: Colors.GREY_COLOR,
-    fontSize: 10,
-    fontWeight: 'bold',
-    marginBottom: 3,
     marginStart: 10,
-    flexWrap: 'wrap',
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    textAlign: 'left',
   },
 });
 
-export default memo(ItemCard);
+export default memo(ItemRow);

@@ -74,12 +74,12 @@ const CartItem = ({ item, inOrderDetails }) => {
               }}
             >
               <Text style={styles.label}>{i18n.t('item-caliber')}</Text>
-              <Text style={[styles.value]}>{item.item.caliber}</Text>
+              <Text style={{ ...styles.value, fontSize: 10 }}>{item.item.caliber}</Text>
             </View>
           </View>
           <View style={styles.row}>
             <Text style={styles.label}>{i18n.t('item-packing')}</Text>
-            <Text style={[styles.value]}>{item.item.packing}</Text>
+            <Text style={{ ...styles.value, fontSize: 10 }}>{item.item.packing}</Text>
           </View>
         </>
       )}
@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     marginVertical: 5,
     overflow: 'hidden',
-    width: '95%',
+    width: '100%',
   },
   header: {
     backgroundColor: Colors.MAIN_COLOR,
@@ -195,8 +195,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     padding: 5,
-    borderBottomWidth: 2,
-    borderBottomColor: Colors.GREY_COLOR,
   },
   name: {
     color: Colors.WHITE_COLOR,
