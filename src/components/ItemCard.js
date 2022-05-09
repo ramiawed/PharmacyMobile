@@ -18,6 +18,7 @@ import { AntDesign, Ionicons } from '@expo/vector-icons';
 
 // components
 import SwipeableRow from './SwipeableRow';
+import i18n from 'i18n-js';
 
 // if logged user is
 // 1- ADMIN: highlight the row by green color if the medicine has an offer.
@@ -298,10 +299,20 @@ const ItemCard = ({ item, addToCart }) => {
           <View>
             <View style={styles.separator}></View>
             <View style={{ ...styles.fullWidth, ...styles.moreData }}>
-              {item.packing ? <Text style={styles.moreDataText}>{item.packing}</Text> : null}
-              {item.caliber ? <Text style={styles.moreDataText}>{item.caliber}</Text> : null}
+              {item.packing ? (
+                <Text style={styles.moreDataText}>
+                  {i18n.t('item-packing')}: {item.packing}
+                </Text>
+              ) : null}
+              {item.caliber ? (
+                <Text style={styles.moreDataText}>
+                  {i18n.t('item-caliber')}: {item.caliber}
+                </Text>
+              ) : null}
               {item.composition ? (
-                <Text style={styles.moreDataText}>{item.composition?.split('+').join(' ')}</Text>
+                <Text style={styles.moreDataText}>
+                  {i18n.t('item-composition')}: {item.composition?.split('+').join(' ')}
+                </Text>
               ) : null}
             </View>
           </View>

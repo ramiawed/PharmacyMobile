@@ -1,8 +1,9 @@
+import React from 'react';
 import i18n from '../i18n/index';
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Button } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+
+// constants
 import { Colors } from '../utils/constants';
-import ChangeInputModal from './ChangeInputModal';
 
 const UserInfoRow = ({ label, value, action, editable, withoutBottomBorder }) => {
   return (
@@ -30,16 +31,16 @@ const styles = StyleSheet.create({
   value: {
     flex: 1,
     color: Colors.MAIN_COLOR,
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: 'bold',
     marginStart: 5,
     writingDirection: 'rtl',
     textAlign: 'left',
   },
   label: {
-    width: 80,
+    width: 70,
     color: Colors.GREY_COLOR,
-    fontSize: 12,
+    fontSize: 10,
   },
   button: {
     backgroundColor: Colors.SUCCEEDED_COLOR,
