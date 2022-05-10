@@ -65,62 +65,66 @@ export const getOrders = createAsyncThunk('orders/getOrders', async ({ token }, 
 
     // One Day
     if (pageState.dateOption === DateOptions.ONE_DAY && pageState.date !== '') {
-      let nextDay = new Date(pageState.date);
+      let nextDay = new Date(JSON.parse(pageState.date).split('T')[0]);
       nextDay.setDate(nextDay.getDate() + 1);
-      buildUrl = buildUrl + `&date=${new Date(pageState.date)}&date1=${nextDay}`;
+      let date = JSON.parse(pageState.date).split('T')[0];
+      buildUrl = buildUrl + `&date=${date}&date1=${nextDay}`;
     }
 
     // Three Days
     if (pageState.dateOption === DateOptions.THREE_DAY && pageState.date !== '') {
-      let nextThreeDays = new Date(pageState.date);
+      let nextThreeDays = new Date(JSON.parse(pageState.date).split('T')[0]);
       nextThreeDays.setDate(nextThreeDays.getDate() + 3);
-      buildUrl = buildUrl + `&date=${new Date(pageState.date)}&date1=${nextThreeDays}`;
+      let date = JSON.parse(pageState.date).split('T')[0];
+      buildUrl = buildUrl + `&date=${date}&date1=${nextThreeDays}`;
     }
 
     // One Week
     if (pageState.dateOption === DateOptions.ONE_WEEK && pageState.date !== '') {
-      let nextWeek = new Date(pageState.date);
+      let nextWeek = new Date(JSON.parse(pageState.date).split('T')[0]);
       nextWeek.setDate(nextWeek.getDate() + 7);
-      buildUrl = buildUrl + `&date=${new Date(pageState.date)}&date1=${nextWeek}`;
+      let date = JSON.parse(pageState.date).split('T')[0];
+      buildUrl = buildUrl + `&date=${date}&date1=${nextWeek}`;
     }
 
     // Two Week
     if (pageState.dateOption === DateOptions.TWO_WEEK && pageState.date !== '') {
-      let nextTwoWeek = new Date(pageState.date);
+      let nextTwoWeek = new Date(JSON.parse(pageState.date).split('T')[0]);
       nextTwoWeek.setDate(nextTwoWeek.getDate() + 14);
-      buildUrl = buildUrl + `&date=${new Date(pageState.date)}&date1=${nextTwoWeek}`;
+      let date = JSON.parse(pageState.date).split('T')[0];
+      buildUrl = buildUrl + `&date=${date}&date1=${nextTwoWeek}`;
     }
 
     // One Month
     if (pageState.dateOption === DateOptions.ONE_MONTH && pageState.date !== '') {
-      let nextMonth = new Date(pageState.date);
+      let nextMonth = new Date(JSON.parse(pageState.date).split('T')[0]);
       nextMonth.setMonth(nextMonth.getMonth() + 1);
-
-      buildUrl = buildUrl + `&date=${new Date(pageState.date)}&date1=${nextMonth}`;
+      let date = JSON.parse(pageState.date).split('T')[0];
+      buildUrl = buildUrl + `&date=${date}&date1=${nextMonth}`;
     }
 
     // Two Month
     if (pageState.dateOption === DateOptions.TWO_MONTH && pageState.date !== '') {
-      let nextTwoMonth = new Date(pageState.date);
+      let nextTwoMonth = new Date(JSON.parse(pageState.date).split('T')[0]);
       nextTwoMonth.setMonth(nextTwoMonth.getMonth() + 2);
-
-      buildUrl = buildUrl + `&date=${new Date(pageState.date)}&date1=${nextTwoMonth}`;
+      let date = JSON.parse(pageState.date).split('T')[0];
+      buildUrl = buildUrl + `&date=${date}&date1=${nextTwoMonth}`;
     }
 
     // Six Month
     if (pageState.dateOption === DateOptions.SIX_MONTH && pageState.date !== '') {
-      let nextSixMonth = new Date(pageState.date);
+      let nextSixMonth = new Date(JSON.parse(pageState.date).split('T')[0]);
       nextSixMonth.setMonth(nextSixMonth.getMonth() + 6);
-
-      buildUrl = buildUrl + `&date=${new Date(pageState.date)}&date1=${nextSixMonth}`;
+      let date = JSON.parse(pageState.date).split('T')[0];
+      buildUrl = buildUrl + `&date=${date}&date1=${nextSixMonth}`;
     }
 
     // One Year
     if (pageState.dateOption === DateOptions.ONE_YEAR && pageState.date !== '') {
-      let nextYear = new Date(pageState.date);
+      let nextYear = new Date(JSON.parse(pageState.date).split('T')[0]);
       nextYear.setFullYear(nextYear.getFullYear() + 1);
-
-      buildUrl = buildUrl + `&date=${new Date(pageState.date)}&date1=${nextYear}`;
+      let date = JSON.parse(pageState.date).split('T')[0];
+      buildUrl = buildUrl + `&date=${date}&date1=${nextYear}`;
     }
 
     const response = await axios.get(buildUrl, {

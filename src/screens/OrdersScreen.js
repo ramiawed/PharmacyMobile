@@ -12,7 +12,9 @@ import {
   ActivityIndicator,
   FlatList,
   TouchableOpacity,
+  Button,
 } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 // components
 import SearchContainer from '../components/SearchContainer';
@@ -66,13 +68,34 @@ const OrdersScreen = () => {
 
   // selectors
   const { user, token } = useSelector(selectUserData);
-  const { status, error, count, orders, refresh, pageState, forceRefresh } = useSelector(selectOrders);
+  const { status, count, orders, pageState, forceRefresh } = useSelector(selectOrders);
   const selectedOrdersCount = calculateSelectedOrdersCount(orders);
+
+  const [date, setDate] = useState(new Date());
+  const [mode, setMode] = useState('date');
+  const [show, setShow] = useState(false);
+
+  const onChange = (event, selectedDate) => {
+    const currentDate = selectedDate ? selectedDate : date;
+    setShow(false);
+    setDate(currentDate);
+    dispatch(setSearchDate(JSON.stringify(currentDate)));
+    onSearchSubmit();
+  };
+
+  const showMode = (currentMode) => {
+    setShow(true);
+    setMode(currentMode);
+  };
+
+  const showDatepicker = () => {
+    showMode('date');
+  };
 
   // own states
   const [refreshing, setRefreshing] = useState(false);
 
-  const handleSearch = (page) => {
+  const handleSearch = () => {
     dispatch(
       getOrders({
         token,
@@ -108,6 +131,17 @@ const OrdersScreen = () => {
         orderId,
       }),
     );
+  };
+
+  const formatDate = (d) => {
+    if (d) {
+      let dd = String(d.getDate()).padStart(2, '0');
+      let mm = String(d.getMonth() + 1).padStart(2, '0'); //January is 0!
+      let yyyy = d.getFullYear();
+
+      let selectedDate = dd + '/' + mm + '/' + yyyy;
+      return selectedDate;
+    }
   };
 
   // handle to change the status of the order
@@ -233,6 +267,7 @@ const OrdersScreen = () => {
 
   const handleDateOptions = (val) => {
     dispatch(setDateOption(val));
+    onSearchSubmit();
   };
 
   useEffect(() => {
@@ -319,10 +354,11 @@ const OrdersScreen = () => {
         />
 
         <View style={styles.date}>
-          <Text>{i18n.t('date-label')}</Text>
-          <TextInput style={styles.dateInput} keyboardType="number-pad" />
-          <TextInput style={styles.dateInput} />
-          <TextInput style={styles.dateInput} />
+          <Button onPress={showDatepicker} title={i18n.t('date-label')} />
+          <Text>{formatDate(date)}</Text>
+          {show && (
+            <DateTimePicker testID="dateTimePicker" value={date} mode={mode} is24Hour={true} onChange={onChange} />
+          )}
         </View>
       </SearchContainer>
 
