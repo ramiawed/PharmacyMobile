@@ -1,19 +1,18 @@
 import React, { useEffect } from 'react';
 import i18n from '../i18n';
 import { View, StyleSheet, Text } from 'react-native';
-import { useSafeAreaInsets, SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // Screens
-import MainScreen from './MainScreen';
 import ProfileScreen from './ProfileScreens';
 import CompaniesScreen from './CompaniesScreen';
 import WarehousesScreen from './WarehousesScreen';
 import ProfileImage from '../components/ProfileImage';
-import MedicinesStack from './MedicinesStack';
+import MedicinesStack from '../stacks/MedicinesStack';
 import CartScreen from './CartScreen';
 import FavoriteScreen from './FavoriteScreen';
 import HomeScreen from './HomeScreen';
-import NotificationsStack from './NotificationsStack';
+import NotificationsStack from '../stacks/NotificationsStack';
 import OrdersStack from '../stacks/OrdersStack';
 
 // navigation stuff
@@ -42,22 +41,20 @@ import { setSearchCompanyId, setSearchWarehouseId } from '../redux/medicines/med
 import { selectCartItemCount } from '../redux/cart/cartSlice';
 import { selectSettings } from '../redux/settings/settingsSlice';
 import { selectAdvertisements } from '../redux/advertisements/advertisementsSlice';
+
+// components
 import Loader from '../components/Loader';
 
 const Drawer = createDrawerNavigator();
 
 const DrawerScreen = () => {
   const dispatch = useDispatch();
-  const { user, token } = useSelector(selectUserData);
+  const { user } = useSelector(selectUserData);
   const { completed: settingsCompleted } = useSelector(selectSettings);
   const { completed: favoritesCompleted } = useSelector(selectFavorites);
   const { completed: advertisementsCompleted } = useSelector(selectAdvertisements);
 
   useEffect(() => {
-    // dispatch(getAllSettings({ token }));
-    // dispatch(getFavorites({ token }));
-    // dispatch(statisticsSignin({ token }));
-
     return () => {
       dispatch(resetCompanies());
       dispatch(resetFavorites());

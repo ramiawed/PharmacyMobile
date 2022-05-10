@@ -3,8 +3,8 @@ import React from 'react';
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
 
 // screens
-import MedicinesScreen from './MedicinesScreen';
-import MedicineScreen from './MedicineScreen';
+import MedicinesScreen from '../screens/MedicinesScreen';
+import MedicineScreen from '../screens/MedicineScreen';
 
 const medicineStack = createStackNavigator();
 

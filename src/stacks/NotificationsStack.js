@@ -3,8 +3,8 @@ import React from 'react';
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
 
 // screens
-import NotificationsScreen from './NotificationsScreen';
-import NotificationDetailsScreen from './NotificationDetailsScreen';
+import NotificationsScreen from '../screens/NotificationsScreen';
+import NotificationDetailsScreen from '../screens/NotificationDetailsScreen';
 
 const notificationsStack = createStackNavigator();
 
