@@ -12,15 +12,15 @@ import {
   ActivityIndicator,
   FlatList,
   TouchableOpacity,
-  Button,
-  Platform,
 } from 'react-native';
 
 // components
 import SearchContainer from '../components/SearchContainer';
 import CustomPicker from '../components/CustomPicker';
+import OrderRow from '../components/OrderRow';
 
 // redux stuff
+import { unwrapResult } from '@reduxjs/toolkit';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectUserData } from '../redux/auth/authSlice';
 import {
@@ -39,7 +39,10 @@ import {
   setDateOption,
   setSearchDate,
 } from '../redux/orders/ordersSlice';
+
+// icons
 import { Ionicons, FontAwesome, MaterialIcons } from '@expo/vector-icons';
+
 // constants
 import {
   AdminOrderStatus,
@@ -49,10 +52,6 @@ import {
   UserTypeConstants,
   WarehouseOrderStatus,
 } from '../utils/constants';
-
-// components
-import OrderRow from '../components/OrderRow';
-import { unwrapResult } from '@reduxjs/toolkit';
 
 const calculateSelectedOrdersCount = (orders) => {
   let count = 0;
@@ -65,10 +64,12 @@ const calculateSelectedOrdersCount = (orders) => {
 const OrdersScreen = () => {
   const dispatch = useDispatch();
 
+  // selectors
   const { user, token } = useSelector(selectUserData);
   const { status, error, count, orders, refresh, pageState, forceRefresh } = useSelector(selectOrders);
   const selectedOrdersCount = calculateSelectedOrdersCount(orders);
 
+  // own states
   const [refreshing, setRefreshing] = useState(false);
 
   const handleSearch = (page) => {
@@ -316,6 +317,13 @@ const OrdersScreen = () => {
           label={i18n.t('dates-within')}
           forSearch={true}
         />
+
+        <View style={styles.date}>
+          <Text>{i18n.t('date-label')}</Text>
+          <TextInput style={styles.dateInput} keyboardType="number-pad" />
+          <TextInput style={styles.dateInput} />
+          <TextInput style={styles.dateInput} />
+        </View>
       </SearchContainer>
 
       {selectedOrdersCount > 0 && (
@@ -466,9 +474,23 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     paddingHorizontal: 10,
   },
-  datePickerStyle: {
-    width: 200,
-    marginTop: 20,
+  date: {
+    backgroundColor: Colors.WHITE_COLOR,
+    width: '100%',
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+    borderRadius: 6,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  dateInput: {
+    width: 60,
+    backgroundColor: Colors.SECONDARY_COLOR,
+    color: Colors.WHITE_COLOR,
+    padding: 5,
+    borderRadius: 6,
+    marginHorizontal: 5,
+    textAlign: 'center',
   },
 });
 
