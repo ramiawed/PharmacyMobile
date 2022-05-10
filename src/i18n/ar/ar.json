@@ -457,6 +457,8 @@
   "save-order-tooltip": "حفظ الطلب",
   "add-order": "يوجد طلبية جديدة",
   "delete-order": "تم حذف طلبية",
+  "delete-order-success": "تم حذف الطلبية بنجاح",
+  "delete-order-failed": "حدث خطأ أثناء حذف الطلبية",
   "add-item-to-cart": "تم إضافة المنتج إلى الحافظة",
   "add-notification": "يوجد إشعار جديد",
   "delete-notification-admin": "تم حذف الإشعار من قبل الموقع",

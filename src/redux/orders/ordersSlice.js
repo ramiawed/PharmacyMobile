@@ -17,6 +17,7 @@ const initialState = {
   error: '',
   forceRefresh: false,
   refresh: true,
+  deleteStatus: 'idle',
   pageState: {
     searchPharmacyName: '',
     searchWarehouseName: '',
@@ -475,6 +476,7 @@ export const ordersSlice = createSlice({
       state.unreadCount = 0;
       state.forceRefresh = false;
       state.refresh = true;
+      state.deleteStatus = 'idle';
       state.pageState = {
         searchPharmacyName: '',
         searchWarehouseName: '',
@@ -535,15 +537,15 @@ export const ordersSlice = createSlice({
     },
 
     [deleteOrder.pending]: (state) => {
-      state.status = 'loading';
+      state.deleteStatus = 'loading';
     },
     [deleteOrder.fulfilled]: (state, action) => {
-      state.status = 'succeeded';
+      state.deleteStatus = 'succeeded';
       state.orders = state.orders.filter((o) => o._id !== action.payload.data.orderId);
       state.error = '';
     },
     [deleteOrder.rejected]: (state, { payload }) => {
-      state.status = 'failed';
+      state.deleteStatus = 'failed';
 
       if (payload === 'timeout') {
         state.error = 'timeout-msg';

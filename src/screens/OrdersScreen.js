@@ -20,6 +20,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import SearchContainer from '../components/SearchContainer';
 import CustomPicker from '../components/CustomPicker';
 import OrderRow from '../components/OrderRow';
+import Loader from '../components/Loader';
 
 // redux stuff
 import { unwrapResult } from '@reduxjs/toolkit';
@@ -43,7 +44,7 @@ import {
 } from '../redux/orders/ordersSlice';
 
 // icons
-import { Ionicons, FontAwesome, MaterialIcons } from '@expo/vector-icons';
+import { Ionicons, FontAwesome, MaterialIcons, Fontisto } from '@expo/vector-icons';
 
 // constants
 import {
@@ -54,6 +55,7 @@ import {
   UserTypeConstants,
   WarehouseOrderStatus,
 } from '../utils/constants';
+import Toast from 'react-native-toast-message';
 
 const calculateSelectedOrdersCount = (orders) => {
   let count = 0;
@@ -68,7 +70,7 @@ const OrdersScreen = () => {
 
   // selectors
   const { user, token } = useSelector(selectUserData);
-  const { status, count, orders, pageState, forceRefresh } = useSelector(selectOrders);
+  const { status, count, orders, pageState, forceRefresh, deleteStatus } = useSelector(selectOrders);
   const selectedOrdersCount = calculateSelectedOrdersCount(orders);
 
   const [date, setDate] = useState(new Date());
@@ -130,7 +132,22 @@ const OrdersScreen = () => {
         token,
         orderId,
       }),
-    );
+    )
+      .then(unwrapResult)
+      .then(() => {
+        Toast.show({
+          type: 'success',
+          text1: i18n.t('delete-order-confirm-header'),
+          text2: i18n.t('delete-order-success'),
+        });
+      })
+      .catch((err) => {
+        Toast.show({
+          type: 'error',
+          text1: i18n.t('delete-order-confirm-header'),
+          text2: i18n.t('delete-order-failed'),
+        });
+      });
   };
 
   const formatDate = (d) => {
@@ -354,8 +371,13 @@ const OrdersScreen = () => {
         />
 
         <View style={styles.date}>
-          <Button onPress={showDatepicker} title={i18n.t('date-label')} />
-          <Text>{formatDate(date)}</Text>
+          <Text>{i18n.t('date-label')}</Text>
+          {/* <Button onPress={showDatepicker} title={i18n.t('date-label')} /> */}
+
+          <Text style={{ color: Colors.MAIN_COLOR, flex: 1, textAlign: 'left', paddingHorizontal: 10 }}>
+            {formatDate(date)}
+          </Text>
+          <Fontisto name="date" size={24} color={Colors.MAIN_COLOR} onPress={showDatepicker} />
           {show && (
             <DateTimePicker testID="dateTimePicker" value={date} mode={mode} is24Hour={true} onChange={onChange} />
           )}
@@ -469,6 +491,8 @@ const OrdersScreen = () => {
           </Text>
         </View>
       )}
+
+      {deleteStatus === 'loading' && <Loader />}
     </View>
   );
 };
@@ -513,7 +537,7 @@ const styles = StyleSheet.create({
   date: {
     backgroundColor: Colors.WHITE_COLOR,
     width: '100%',
-    paddingVertical: 4,
+    paddingVertical: 10,
     paddingHorizontal: 10,
     borderRadius: 6,
     flexDirection: 'row',
