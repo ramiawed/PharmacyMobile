@@ -115,7 +115,7 @@ const OrdersScreen = () => {
   };
 
   const handleMoreResult = () => {
-    if (orders.length < count) {
+    if (orders.length < count && status !== 'loading') {
       handleSearch();
     }
   };

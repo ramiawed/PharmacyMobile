@@ -79,7 +79,7 @@ const MedicinesScreen = ({ navigation }) => {
   };
 
   const handleMoreResult = () => {
-    if (medicines.length < count) {
+    if (medicines.length < count && status !== 'loading') {
       handleSearch();
     }
   };

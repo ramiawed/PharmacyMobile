@@ -31,7 +31,7 @@ const NotificationsScreen = () => {
   };
 
   const handleMoreResult = () => {
-    if (userNotifications.length < count) {
+    if (userNotifications.length < count && status !== 'loading') {
       handleSearch();
     }
   };

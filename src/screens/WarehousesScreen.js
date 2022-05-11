@@ -76,7 +76,7 @@ const WarehousesScreen = ({ navigation }) => {
   };
 
   const handleMoreResult = () => {
-    if (warehouses.length < count) handleSearch();
+    if (warehouses.length < count && status !== 'loading') handleSearch();
   };
 
   const keyUpHandler = (event) => {

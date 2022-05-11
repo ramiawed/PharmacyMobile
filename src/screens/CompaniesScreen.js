@@ -66,7 +66,7 @@ const CompaniesScreen = ({ navigation }) => {
   };
 
   const handleMoreResult = () => {
-    if (companies.length < count) handleSearch();
+    if (companies.length < count && status !== 'loading') handleSearch();
   };
 
   const keyUpHandler = (event) => {
