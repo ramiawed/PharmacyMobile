@@ -33,8 +33,8 @@ const SearchHome = () => {
   const [loading, setLoading] = useState(false);
   const [showResult, setShowResult] = useState(false);
 
-  const searchHandler = async () => {
-    if (searchName.trim().length === 0) {
+  const searchHandler = async (val) => {
+    if (val.trim().length === 0) {
       setData([]);
       setCompaniesData([]);
       setWarehousesData([]);
@@ -52,12 +52,12 @@ const SearchHome = () => {
     let companiesBuildUrl = `${BASEURL}`;
     let warehousesBuildUrl = `${BASEURL}`;
 
-    buildUrl = buildUrl + `/items?page=1&limit=25&isActive=true&itemName=${searchName}`;
+    buildUrl = buildUrl + `/items?page=1&limit=25&isActive=true&itemName=${val}`;
 
     companiesBuildUrl =
-      companiesBuildUrl + `/users?type=company&page=1&limit=25&isActive=true&isApproved=true&name=${searchName}`;
+      companiesBuildUrl + `/users?type=company&page=1&limit=25&isActive=true&isApproved=true&name=${val}`;
 
-    let queryString = `/users?type=warehouse&page=1&limit=25&isActive=true&isApproved=true&name=${searchName}`;
+    let queryString = `/users?type=warehouse&page=1&limit=25&isActive=true&isApproved=true&name=${val}`;
     if (user.type === UserTypeConstants.PHARMACY) {
       queryString = queryString + `&city=${user.city}`;
     }
@@ -131,13 +131,13 @@ const SearchHome = () => {
       source.cancel('cancel');
     }
     setSearchName(val);
-    searchHandler();
+    searchHandler(val);
   };
 
   const scannerDoneHandler = (val) => {
     setSearchName(val);
     setShowScanner(false);
-    searchHandler();
+    searchHandler(val);
   };
 
   return (
