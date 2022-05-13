@@ -19,8 +19,8 @@ import PartnerRow from './PartnerRow';
 import Scanner from './Scanner';
 import ItemRow from './ItemRow';
 
-let CancelToken;
-let source;
+let CancelToken = null;
+let source = null;
 
 const SearchHome = () => {
   const { token, user } = useSelector(selectUserData);
@@ -33,8 +33,9 @@ const SearchHome = () => {
   const [loading, setLoading] = useState(false);
   const [showResult, setShowResult] = useState(false);
 
-  const searchHandler = async (val) => {
-    if (val.trim().length === 0) {
+  const searchHandler = async () => {
+    console.log(searchName);
+    if (searchName.trim().length === 0) {
       setData([]);
       setCompaniesData([]);
       setWarehousesData([]);
@@ -52,12 +53,12 @@ const SearchHome = () => {
     let companiesBuildUrl = `${BASEURL}`;
     let warehousesBuildUrl = `${BASEURL}`;
 
-    buildUrl = buildUrl + `/items?page=1&limit=25&isActive=true&itemName=${val}`;
+    buildUrl = buildUrl + `/items?page=1&limit=25&isActive=true&itemName=${searchName}`;
 
     companiesBuildUrl =
-      companiesBuildUrl + `/users?type=company&page=1&limit=25&isActive=true&isApproved=true&name=${val}`;
+      companiesBuildUrl + `/users?type=company&page=1&limit=25&isActive=true&isApproved=true&name=${searchName}`;
 
-    let queryString = `/users?type=warehouse&page=1&limit=25&isActive=true&isApproved=true&name=${val}`;
+    let queryString = `/users?type=warehouse&page=1&limit=25&isActive=true&isApproved=true&name=${searchName}`;
     if (user.type === UserTypeConstants.PHARMACY) {
       queryString = queryString + `&city=${user.city}`;
     }
@@ -126,10 +127,18 @@ const SearchHome = () => {
     setShowResult(false);
   };
 
+  const onTextChangeHandler = (val) => {
+    if (source !== null) {
+      source.cancel('cancel');
+    }
+    setSearchName(val);
+    searchHandler();
+  };
+
   const scannerDoneHandler = (val) => {
     setSearchName(val);
     setShowScanner(false);
-    searchHandler(val);
+    searchHandler();
   };
 
   return (
@@ -141,8 +150,7 @@ const SearchHome = () => {
             placeholder={i18n.t('search-home-placeholder')}
             value={searchName}
             onChangeText={(val) => {
-              setSearchName(val);
-              searchHandler(val);
+              onTextChangeHandler(val);
             }}
             onSubmitEditing={() => searchHandler(searchName)}
             // onKeyPress={searchHandler}
