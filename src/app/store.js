@@ -3,7 +3,6 @@ import { persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } fro
 
 import authSlice from '../redux/auth/authSlice';
 import AdvertisementsSlice from '../redux/advertisements/advertisementsSlice';
-import usersSlice from '../redux/users/usersSlice';
 import companiesSlice from '../redux/company/companySlice';
 import favoritesSlice from '../redux/favorites/favoritesSlice';
 import warehousesSlice from '../redux/warehouse/warehousesSlice';
@@ -17,13 +16,12 @@ import itemsSectionTwoSlice from '../redux/advertisements/itemsSectionTwoSlice';
 import itemsSectionThreeSlice from '../redux/advertisements/itemsSectionThreeSlice';
 import settingsSlice from '../redux/settings/settingsSlice';
 import userNotificationsSlice from '../redux/userNotifications/userNotificationsSlice';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import ordersSlice from '../redux/orders/ordersSlice';
 import warehousesSectionOneSlice from '../redux/advertisements/warehousesSectionOneSlice';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const rootReducer = combineReducers({
   auth: authSlice,
-  users: usersSlice,
   companies: companiesSlice,
   warehouses: warehousesSlice,
   favorites: favoritesSlice,

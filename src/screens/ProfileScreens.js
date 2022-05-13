@@ -20,16 +20,12 @@ import ProfileImage from '../components/ProfileImage';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useDispatch, useSelector } from 'react-redux';
 import { authSliceSignOut, changeLogoURL, selectUserData, updateUserInfo } from '../redux/auth/authSlice';
-import { usersSliceSignOut } from '../redux/users/usersSlice';
 import { favoritesSliceSignOut } from '../redux/favorites/favoritesSlice';
 import { companySliceSignOut } from '../redux/company/companySlice';
 import { warehouseSliceSignOut } from '../redux/warehouse/warehousesSlice';
-import { itemsSliceSignOut } from '../redux/items/itemsSlices';
 import { cartSliceSignOut } from '../redux/cart/cartSlice';
 import { orderSliceSignOut } from '../redux/orders/ordersSlice';
 import { medicinesSliceSignOut, resetMedicines } from '../redux/medicines/medicinesSlices';
-import { statisticsSliceSignOut } from '../redux/statistics/statisticsSlice';
-import { warehouseItemsSliceSignOut } from '../redux/warehouseItems/warehouseItemsSlices';
 import { advertisementsSignOut } from '../redux/advertisements/advertisementsSlice';
 import { companiesSectionOneSignOut } from '../redux/advertisements/companiesSectionOneSlice';
 import { companiesSectionTwoSignOut } from '../redux/advertisements/companiesSectionTwoSlice';
@@ -37,7 +33,6 @@ import { itemsSectionOneSignOut } from '../redux/advertisements/itemsSectionOneS
 import { itemsSectionThreeSignOut } from '../redux/advertisements/itemsSectionThreeSlice';
 import { itemsSectionTwoSignOut } from '../redux/advertisements/itemsSectionTwoSlice';
 import { warehousesSectionOneSignOut } from '../redux/advertisements/warehousesSectionOneSlice';
-import { notificationsSignOut } from '../redux/notifications/notificationsSlice';
 import { settingsSignOut } from '../redux/settings/settingsSlice';
 import { usersNotificationsSignOut } from '../redux/userNotifications/userNotificationsSlice';
 
@@ -53,11 +48,7 @@ const ProfileScreen = () => {
     dispatch(cartSliceSignOut());
     dispatch(companySliceSignOut());
     dispatch(favoritesSliceSignOut());
-    dispatch(itemsSliceSignOut());
-    dispatch(statisticsSliceSignOut());
-    dispatch(usersSliceSignOut());
     dispatch(warehouseSliceSignOut());
-    dispatch(warehouseItemsSliceSignOut());
     dispatch(orderSliceSignOut());
     dispatch(resetMedicines());
     dispatch(advertisementsSignOut());
@@ -68,7 +59,6 @@ const ProfileScreen = () => {
     dispatch(itemsSectionTwoSignOut());
     dispatch(warehousesSectionOneSignOut());
     dispatch(medicinesSliceSignOut());
-    dispatch(notificationsSignOut());
     dispatch(settingsSignOut());
     dispatch(usersNotificationsSignOut());
   };

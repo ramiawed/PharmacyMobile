@@ -10,7 +10,7 @@ import { unwrapResult } from '@reduxjs/toolkit';
 import { resetMedicines, setSearchWarehouseId, setSearchCompanyId } from '../redux/medicines/medicinesSlices';
 import { useDispatch, useSelector } from 'react-redux';
 import { addFavorite, removeFavorite, selectFavoritesPartners } from '../redux/favorites/favoritesSlice';
-import { addStatistics, statisticsCompanySelected, statisticsUserFavorites } from '../redux/statistics/statisticsSlice';
+import { addStatistics } from '../redux/statistics/statisticsSlice';
 import { selectUserData } from '../redux/auth/authSlice';
 import { setSelectedWarehouse } from '../redux/warehouse/warehousesSlice';
 import { selectSettings } from '../redux/settings/settingsSlice';
@@ -45,7 +45,16 @@ const PartnerCard = ({ partner, advertisement }) => {
       .then(unwrapResult)
       .then(() => {
         setChangeFavoriteLoading(false);
-        dispatch(statisticsUserFavorites({ obj: { userId: user._id }, token }));
+        dispatch(
+          addStatistics({
+            obj: {
+              sourceUser: user._id,
+              targetUser: partner._id,
+              action: 'user-added-to-favorite',
+            },
+            token,
+          }),
+        );
       })
       .catch(() => {
         setChangeFavoriteLoading(false);

@@ -1,15 +1,11 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-import axios from "axios";
-import { BASEURL } from "../../utils/constants";
+import axios from 'axios';
+import { BASEURL } from '../../utils/constants';
 
 const initialState = {
-  companiesSectionTwoStatus: "idle",
-  companiesSectionTwoError: "",
-  addCompanyToSectionTwoStatus: "idle",
-  addCompanyToSectionTwoError: "",
-  removeCompanyFromSectionTwoStatus: "idle",
-  removeCompanyFromSectionTwoError: "",
+  companiesSectionTwoStatus: 'idle',
+  companiesSectionTwoError: '',
   companiesSectionTwo: [],
   count: 0,
   refresh: true,
@@ -19,7 +15,7 @@ let CancelToken;
 let source;
 
 export const getCompaniesSectionTwo = createAsyncThunk(
-  "advertisement/companiesSectionTwo",
+  'advertisement/companiesSectionTwo',
   async ({ token }, { rejectWithValue }) => {
     try {
       CancelToken = axios.CancelToken;
@@ -33,172 +29,59 @@ export const getCompaniesSectionTwo = createAsyncThunk(
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
-      );
-
-      return response.data;
-    } catch (err) {
-      if (err.code === "ECONNABORTED" && err.message.startsWith("timeout")) {
-        return rejectWithValue("timeout");
-      }
-      if (axios.isCancel(err)) {
-        return rejectWithValue("cancel");
-      }
-
-      if (!err.response) {
-        return rejectWithValue("network failed");
-      }
-
-      return rejectWithValue(err.response.data);
-    }
-  }
-);
-
-export const addCompanyToSectionTwo = createAsyncThunk(
-  "advertisement/addCompanyToSectionTwo",
-  async ({ token, id }, { rejectWithValue }) => {
-    try {
-      CancelToken = axios.CancelToken;
-      source = CancelToken.source();
-
-      const response = await axios.post(
-        `${BASEURL}/users/update/${id}`,
-        {
-          inSectionTwo: true,
         },
-        {
-          // timeout: 10000,
-          cancelToken: source.token,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
       );
 
       return response.data;
     } catch (err) {
-      if (err.code === "ECONNABORTED" && err.message.startsWith("timeout")) {
-        return rejectWithValue("timeout");
+      if (err.code === 'ECONNABORTED' && err.message.startsWith('timeout')) {
+        return rejectWithValue('timeout');
       }
       if (axios.isCancel(err)) {
-        return rejectWithValue("cancel");
+        return rejectWithValue('cancel');
       }
 
       if (!err.response) {
-        return rejectWithValue("network failed");
+        return rejectWithValue('network failed');
       }
 
       return rejectWithValue(err.response.data);
     }
-  }
-);
-
-export const removeCompanyFromSectionTwo = createAsyncThunk(
-  "advertisement/removeCompanyFromSectionTwo",
-  async ({ token, id }, { rejectWithValue }) => {
-    try {
-      CancelToken = axios.CancelToken;
-      source = CancelToken.source();
-
-      const response = await axios.post(
-        `${BASEURL}/users/update/${id}`,
-        {
-          inSectionTwo: false,
-        },
-        {
-          // timeout: 10000,
-          cancelToken: source.token,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      return response.data;
-    } catch (err) {
-      if (err.code === "ECONNABORTED" && err.message.startsWith("timeout")) {
-        return rejectWithValue("timeout");
-      }
-      if (axios.isCancel(err)) {
-        return rejectWithValue("cancel");
-      }
-
-      if (!err.response) {
-        return rejectWithValue("network failed");
-      }
-
-      return rejectWithValue(err.response.data);
-    }
-  }
+  },
 );
 
 export const companiesSectionTwoSlice = createSlice({
-  name: "companiesSectionTwo",
+  name: 'companiesSectionTwo',
   initialState,
   reducers: {
     resetCompaniesSectionTwoStatus: (state) => {
-      state.companiesSectionTwoStatus = "idle";
-      state.companiesSectionTwoError = "";
+      state.companiesSectionTwoStatus = 'idle';
+      state.companiesSectionTwoError = '';
     },
 
     resetCompaniesSectionTwoError: (state) => {
-      state.companiesSectionTwoError = "";
-    },
-
-    resetAddCompanyToSectionTwoStatus: (state) => {
-      state.addCompanyToSectionTwoStatus = "idle";
-      state.addCompanyToSectionTwoError = "";
-    },
-
-    resetAddCompanyToSectionTwoError: (state) => {
-      state.addCompanyToSectionTwoError = "";
-    },
-
-    resetRemoveCompanyFromSectionTwoStatus: (state) => {
-      state.removeCompanyFromSectionTwoStatus = "idle";
-      state.removeCompanyFromSectionTwoError = "";
-    },
-
-    resetRemoveCompanyFromSectionTwoError: (state) => {
-      state.removeCompanyFromSectionTwoError = "";
-    },
-
-    setRefreshCompaniesSliceTwo: (state, action) => {
-      state.refresh = action.payload;
+      state.companiesSectionTwoError = '';
     },
 
     addCompanyToSectionTwoSocket: (state, action) => {
-      state.companiesSectionTwo = [
-        ...state.companiesSectionTwo,
-        action.payload,
-      ];
+      state.companiesSectionTwo = [...state.companiesSectionTwo, action.payload];
     },
 
     removeCompanyFromSectionTwoSocket: (state, action) => {
-      state.companiesSectionTwo = state.companiesSectionTwo.filter(
-        (c) => c._id !== action.payload
-      );
+      state.companiesSectionTwo = state.companiesSectionTwo.filter((c) => c._id !== action.payload);
     },
 
     resetCompaniesSectionTwo: (state) => {
-      state.companiesSectionTwoStatus = "idle";
-      state.companiesSectionTwoError = "";
-      state.addCompanyToSectionTwoStatus = "idle";
-      state.addCompanyToSectionTwoError = "";
-      state.removeCompanyFromSectionTwoStatus = "idle";
-      state.removeCompanyFromSectionTwoError = "";
+      state.companiesSectionTwoStatus = 'idle';
+      state.companiesSectionTwoError = '';
       state.companiesSectionTwo = [];
       state.count = 0;
       state.refresh = true;
     },
 
     companiesSectionTwoSignOut: (state) => {
-      state.companiesSectionTwoStatus = "idle";
-      state.companiesSectionTwoError = "";
-      state.addCompanyToSectionTwoStatus = "idle";
-      state.addCompanyToSectionTwoError = "";
-      state.removeCompanyFromSectionTwoStatus = "idle";
-      state.removeCompanyFromSectionTwoError = "";
+      state.companiesSectionTwoStatus = 'idle';
+      state.companiesSectionTwoError = '';
       state.companiesSectionTwo = [];
       state.count = 0;
       state.refresh = true;
@@ -207,69 +90,24 @@ export const companiesSectionTwoSlice = createSlice({
 
   extraReducers: {
     [getCompaniesSectionTwo.pending]: (state) => {
-      state.companiesSectionTwoStatus = "loading";
+      state.companiesSectionTwoStatus = 'loading';
     },
     [getCompaniesSectionTwo.fulfilled]: (state, action) => {
-      state.companiesSectionTwoStatus = "succeeded";
+      state.companiesSectionTwoStatus = 'succeeded';
       state.companiesSectionTwo = action.payload.data.users;
-      state.companiesSectionTwoError = "";
+      state.companiesSectionTwoError = '';
       state.refresh = false;
     },
     [getCompaniesSectionTwo.rejected]: (state, { payload }) => {
-      state.companiesSectionTwoStatus = "failed";
+      state.companiesSectionTwoStatus = 'failed';
 
-      if (payload === "timeout") {
-        state.companiesSectionTwoError = "timeout-msg";
-      } else if (payload === "cancel") {
-        state.companiesSectionTwoError = "cancel-operation-msg";
-      } else if (payload === "network failed") {
-        state.companiesSectionTwoError = "network failed";
+      if (payload === 'timeout') {
+        state.companiesSectionTwoError = 'timeout-msg';
+      } else if (payload === 'cancel') {
+        state.companiesSectionTwoError = 'cancel-operation-msg';
+      } else if (payload === 'network failed') {
+        state.companiesSectionTwoError = 'network failed';
       } else state.companiesSectionTwoError = payload.message;
-    },
-
-    [addCompanyToSectionTwo.pending]: (state) => {
-      state.addCompanyToSectionTwoStatus = "loading";
-    },
-    [addCompanyToSectionTwo.fulfilled]: (state, action) => {
-      state.addCompanyToSectionTwoStatus = "succeeded";
-      state.addCompanyToSectionTwoError = "";
-      state.companiesSectionTwo = [
-        ...state.companiesSectionTwo,
-        action.payload.data.user,
-      ];
-    },
-    [addCompanyToSectionTwo.rejected]: (state, { payload }) => {
-      state.addCompanyToSectionTwoStatus = "failed";
-
-      if (payload === "timeout") {
-        state.addCompanyToSectionTwoError = "timeout-msg";
-      } else if (payload === "cancel") {
-        state.addCompanyToSectionTwoError = "cancel-operation-msg";
-      } else if (payload === "network failed") {
-        state.addCompanyToSectionTwoError = "network failed";
-      } else state.addCompanyToSectionTwoError = payload.message;
-    },
-
-    [removeCompanyFromSectionTwo.pending]: (state) => {
-      state.removeCompanyFromSectionTwoStatus = "loading";
-    },
-    [removeCompanyFromSectionTwo.fulfilled]: (state, action) => {
-      state.removeCompanyFromSectionTwoStatus = "succeeded";
-      state.removeCompanyFromSectionTwoError = "";
-      state.companiesSectionTwo = state.companiesSectionTwo.filter(
-        (company) => company._id !== action.payload.data.user._id
-      );
-    },
-    [removeCompanyFromSectionTwo.rejected]: (state, { payload }) => {
-      state.removeCompanyFromSectionTwoStatus = "failed";
-
-      if (payload === "timeout") {
-        state.removeCompanyFromSectionTwoError = "timeout-msg";
-      } else if (payload === "cancel") {
-        state.removeCompanyFromSectionTwoError = "cancel-operation-msg";
-      } else if (payload === "network failed") {
-        state.removeCompanyFromSectionTwoError = "network failed";
-      } else state.removeCompanyFromSectionTwoError = payload.message;
     },
   },
 });
@@ -280,12 +118,6 @@ export const {
   companiesSectionTwoSignOut,
   resetCompaniesSectionTwoStatus,
   resetCompaniesSectionTwoError,
-  resetAddCompanyToSectionTwoStatus,
-  resetAddCompanyToSectionTwoError,
-  resetRemoveCompanyFromSectionTwoStatus,
-  resetRemoveCompanyFromSectionTwoError,
-  resetFavoritesCompanies,
-  setRefreshCompaniesSliceTwo,
   addCompanyToSectionTwoSocket,
   removeCompanyFromSectionTwoSocket,
 } = companiesSectionTwoSlice.actions;
