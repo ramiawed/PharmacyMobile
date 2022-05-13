@@ -132,7 +132,7 @@ const MedicinesScreen = ({ navigation }) => {
           value={pageState.searchName}
         />
 
-        {pageState.searchCompanyId === null && (
+        {user.type !== UserTypeConstants.GUEST && pageState.searchCompanyId === null && (
           <TextInput
             style={styles.searchTextInput}
             placeholder={i18n.t('search-by-company-name')}
@@ -145,7 +145,7 @@ const MedicinesScreen = ({ navigation }) => {
           />
         )}
 
-        {pageState.searchWarehouseId === null && (
+        {user.type !== UserTypeConstants.GUEST && pageState.searchWarehouseId === null && (
           <TextInput
             style={styles.searchTextInput}
             placeholder={i18n.t('search-by-warehouse-name')}
