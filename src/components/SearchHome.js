@@ -34,7 +34,6 @@ const SearchHome = () => {
   const [showResult, setShowResult] = useState(false);
 
   const searchHandler = async () => {
-    console.log(searchName);
     if (searchName.trim().length === 0) {
       setData([]);
       setCompaniesData([]);
