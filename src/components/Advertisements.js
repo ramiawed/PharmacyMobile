@@ -8,6 +8,7 @@ import { unwrapResult } from '@reduxjs/toolkit';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectUserData } from '../redux/auth/authSlice';
 import { selectAdvertisements } from '../redux/advertisements/advertisementsSlice';
+import { setSearchCompanyId, setSearchWarehouseId } from '../redux/medicines/medicinesSlices';
 
 // images
 import LogoWithDotsImage from '../../assets/sign-in-out-image.jpg';
@@ -15,10 +16,11 @@ import OrderOnlineImage from '../../assets/order-online.jpg';
 import WarehouseWithOffersImage from '../../assets/warehouses-with-offers.jpg';
 import FreeServicesImage from '../../assets/free-services.jpg';
 
+// components
+import AdvertisementCard from './AdvertisementCard';
+
 // constants
 import { Colors, SERVER_URL } from '../utils/constants';
-import { setSearchCompanyId, setSearchWarehouseId } from '../redux/medicines/medicinesSlices';
-import AdvertisementCard from './AdvertisementCard';
 
 const Advertisements = () => {
   const navigation = useNavigation();
@@ -73,10 +75,9 @@ const Advertisements = () => {
   return (
     <View
       style={{
-        height: 370,
+        height: 320,
       }}
     >
-      <Text style={styles.header}>{i18n.t('nav-advertise')}</Text>
       <FlatList
         data={backgrounds}
         keyExtractor={(item, index) => index + ''}

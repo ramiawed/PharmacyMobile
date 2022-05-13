@@ -9,15 +9,15 @@ const GuestIntroduce = () => {
     <View style={styles.container}>
       <Text style={styles.header}>الضيوف</Text>
       <View style={styles.row}>
-        <FontAwesome name="dot-circle-o" size={16} color={Colors.SECONDARY_COLOR} />
+        <FontAwesome name="dot-circle-o" size={16} color={Colors.SECONDARY_COLOR} style={styles.icon} />
         <Text style={styles.body}>التعرف على منتجات الشركات وتركيباتها واستطباباتها</Text>
       </View>
       <View style={styles.row}>
-        <FontAwesome name="dot-circle-o" size={16} color={Colors.SECONDARY_COLOR} />
+        <FontAwesome name="dot-circle-o" size={16} color={Colors.SECONDARY_COLOR} style={styles.icon} />
         <Text style={styles.body}>معرفة أسعار العموم</Text>
       </View>
       <View style={styles.row}>
-        <FontAwesome name="dot-circle-o" size={16} color={Colors.SECONDARY_COLOR} />
+        <FontAwesome name="dot-circle-o" size={16} color={Colors.SECONDARY_COLOR} style={styles.icon} />
         <Text style={styles.body}>التعرف على المنتجات الجديدة المطروحة بالسوق اضافة الى اهم الاخبار</Text>
       </View>
     </View>
@@ -47,8 +47,11 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     flexWrap: 'wrap',
+  },
+  icon: {
+    paddingTop: 5,
   },
 });
 

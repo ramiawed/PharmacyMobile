@@ -9,25 +9,25 @@ const PharmacyIntroduce = () => {
     <View style={styles.container}>
       <Text style={styles.header}>الصيدليات</Text>
       <View style={styles.row}>
-        <FontAwesome name="dot-circle-o" size={16} color={Colors.SECONDARY_COLOR} />
+        <FontAwesome name="dot-circle-o" size={16} color={Colors.SECONDARY_COLOR} style={styles.icon} />
         <Text style={styles.body}>امكانية التعرف والوصول الى أكثر من 12 ألف منتج</Text>
       </View>
       <View style={styles.row}>
-        <FontAwesome name="dot-circle-o" size={16} color={Colors.SECONDARY_COLOR} />
+        <FontAwesome name="dot-circle-o" size={16} color={Colors.SECONDARY_COLOR} style={styles.icon} />
         <Text style={styles.body}>البحث والتسوق والطلب بسلاسة وسهولة على مدار 24 ساعة وخلال أيام الأسبوع.</Text>
       </View>
       <View style={styles.row}>
-        <FontAwesome name="dot-circle-o" size={16} color={Colors.SECONDARY_COLOR} />
+        <FontAwesome name="dot-circle-o" size={16} color={Colors.SECONDARY_COLOR} style={styles.icon} />
         <Text style={styles.body}>خيارات بحث متعددة لتسهيل إمكانية الوصول لاحتياجك</Text>
       </View>
 
       <View style={styles.row}>
-        <FontAwesome name="dot-circle-o" size={16} color={Colors.SECONDARY_COLOR} />
+        <FontAwesome name="dot-circle-o" size={16} color={Colors.SECONDARY_COLOR} style={styles.icon} />
         <Text style={styles.body}>مراقبة حالة الطلبات من المستودعات.</Text>
       </View>
 
       <View style={styles.row}>
-        <FontAwesome name="dot-circle-o" size={16} color={Colors.SECONDARY_COLOR} />
+        <FontAwesome name="dot-circle-o" size={16} color={Colors.SECONDARY_COLOR} style={styles.icon} />
         <Text style={styles.body}>التعرف على المنتجات الجديدة وتحديثات الاسعار إضافة الى اهم الاخبار</Text>
       </View>
     </View>
@@ -57,8 +57,11 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     flexWrap: 'wrap',
+  },
+  icon: {
+    paddingTop: 5,
   },
 });
 

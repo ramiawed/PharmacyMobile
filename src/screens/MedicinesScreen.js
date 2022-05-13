@@ -33,10 +33,10 @@ import {
 // components
 import ItemCard from '../components/ItemCard';
 import SearchContainer from '../components/SearchContainer';
+import AddToCart from '../components/AddToCart';
 
 // constants
 import { Colors, UserTypeConstants } from '../utils/constants';
-import AddToCart from '../components/AddToCart';
 
 let timer;
 
@@ -132,8 +132,7 @@ const MedicinesScreen = ({ navigation }) => {
           value={pageState.searchName}
         />
 
-        {(user.type === UserTypeConstants.ADMIN ||
-          (user.type === UserTypeConstants.PHARMACY && pageState.searchCompanyId === null)) && (
+        {pageState.searchCompanyId === null && (
           <TextInput
             style={styles.searchTextInput}
             placeholder={i18n.t('search-by-company-name')}
@@ -146,8 +145,7 @@ const MedicinesScreen = ({ navigation }) => {
           />
         )}
 
-        {(user.type === UserTypeConstants.ADMIN ||
-          (user.type === UserTypeConstants.PHARMACY && pageState.searchWarehouseId === null)) && (
+        {pageState.searchWarehouseId === null && (
           <TextInput
             style={styles.searchTextInput}
             placeholder={i18n.t('search-by-warehouse-name')}

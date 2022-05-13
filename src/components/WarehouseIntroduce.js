@@ -9,15 +9,15 @@ const WarehouseIntroduce = () => {
     <View style={styles.container}>
       <Text style={styles.header}>المستودعات</Text>
       <View style={styles.row}>
-        <FontAwesome name="dot-circle-o" size={16} color={Colors.SECONDARY_COLOR} />
+        <FontAwesome name="dot-circle-o" size={16} color={Colors.SECONDARY_COLOR} style={styles.icon} />
         <Text style={styles.body}>مراقبة ومتابعة الطلبات القادمة من الصيدليات</Text>
       </View>
       <View style={styles.row}>
-        <FontAwesome name="dot-circle-o" size={16} color={Colors.SECONDARY_COLOR} />
+        <FontAwesome name="dot-circle-o" size={16} color={Colors.SECONDARY_COLOR} style={styles.icon} />
         <Text style={styles.body}>إضافة عروض او حسومات على المنتجات المتوفرة لديك.</Text>
       </View>
       <View style={styles.row}>
-        <FontAwesome name="dot-circle-o" size={16} color={Colors.SECONDARY_COLOR} />
+        <FontAwesome name="dot-circle-o" size={16} color={Colors.SECONDARY_COLOR} style={styles.icon} />
         <Text style={styles.body}>التحكم الكامل بإضافة منتجات الشركات المتوفرة لديك الى قائمتك او حذفها.</Text>
       </View>
     </View>
@@ -47,8 +47,11 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     flexWrap: 'wrap',
+  },
+  icon: {
+    paddingTop: 5,
   },
 });
 

@@ -109,7 +109,7 @@ const WarehousesScreen = ({ navigation }) => {
       <SearchContainer>
         <TextInput
           style={styles.searchWarehousesName}
-          placeholder={i18n.t('search-by-company-name')}
+          placeholder={i18n.t('search-by-warehouse-name')}
           onChangeText={(val) => {
             dispatch(changeSearchName(val));
           }}
