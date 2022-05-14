@@ -38,6 +38,11 @@ import AddToCart from '../components/AddToCart';
 // constants
 import { Colors, UserTypeConstants } from '../utils/constants';
 
+// icons
+import { AntDesign } from '@expo/vector-icons';
+import { backgroundColor } from 'react-native/Libraries/Components/View/ReactNativeStyleAttributes';
+import Scanner from '../components/Scanner';
+
 let timer;
 
 const MedicinesScreen = ({ navigation }) => {
@@ -52,6 +57,7 @@ const MedicinesScreen = ({ navigation }) => {
   const [showAddToCartModal, setShowAddToCartModal] = useState(false);
   const [itemToAddToCart, setItemToAddToCart] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [showScanner, setShowScanner] = useState(false);
 
   // search handler
   const handleSearch = () => {
@@ -85,7 +91,6 @@ const MedicinesScreen = ({ navigation }) => {
   };
 
   const keyUpHandler = (event) => {
-    if (event.keyCode === 13) return;
     cancelOperation();
 
     if (timer) {
@@ -95,6 +100,12 @@ const MedicinesScreen = ({ navigation }) => {
     timer = setTimeout(() => {
       onSearchSubmit();
     }, 200);
+  };
+
+  const scannerDoneHandler = (val) => {
+    dispatch(setSearchName(val));
+    setShowScanner(false);
+    onSearchSubmit();
   };
 
   const setTheItemToAddToCartHandler = (item) => {
@@ -121,16 +132,32 @@ const MedicinesScreen = ({ navigation }) => {
   return user ? (
     <View style={styles.container}>
       <SearchContainer>
-        <TextInput
-          style={styles.searchTextInput}
-          placeholder={i18n.t('search-by-name-composition-barcode')}
-          onChangeText={(val) => {
-            dispatch(setSearchName(val));
+        <View
+          style={{
+            flexDirection: 'row',
+            backgroundColor: Colors.WHITE_COLOR,
+            alignItems: 'center',
+            borderRadius: 6,
           }}
-          onSubmitEditing={onSearchSubmit}
-          onKeyPress={keyUpHandler}
-          value={pageState.searchName}
-        />
+        >
+          <TextInput
+            style={styles.searchTextInput}
+            placeholder={i18n.t('search-by-name-composition-barcode')}
+            onChangeText={(val) => {
+              dispatch(setSearchName(val));
+            }}
+            onSubmitEditing={onSearchSubmit}
+            onKeyPress={keyUpHandler}
+            value={pageState.searchName}
+          />
+          <AntDesign
+            name="barcode"
+            size={32}
+            color={Colors.MAIN_COLOR}
+            onPress={() => setShowScanner(true)}
+            style={{ marginStart: 10 }}
+          />
+        </View>
 
         {user.type !== UserTypeConstants.GUEST && pageState.searchCompanyId === null && (
           <TextInput
@@ -210,6 +237,8 @@ const MedicinesScreen = ({ navigation }) => {
           </Text>
         </View>
       )}
+
+      {showScanner && <Scanner onScannerDone={scannerDoneHandler} close={() => setShowScanner(false)} />}
 
       <BottomSheet
         visible={showAddToCartModal}

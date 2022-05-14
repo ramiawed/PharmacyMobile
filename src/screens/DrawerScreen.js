@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import i18n from '../i18n';
-import { View, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet, Text, Linking } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // Screens
@@ -34,13 +34,27 @@ import { Colors, BASEURL, UserTypeConstants } from '../utils/constants';
 
 // redux stuff
 import { useDispatch, useSelector } from 'react-redux';
-import { selectUser, selectUserData, signOut } from '../redux/auth/authSlice';
-import { resetFavorites, selectFavorites } from '../redux/favorites/favoritesSlice';
-import { resetCompanies } from '../redux/company/companySlice';
-import { setSearchCompanyId, setSearchWarehouseId } from '../redux/medicines/medicinesSlices';
-import { selectCartItemCount } from '../redux/cart/cartSlice';
-import { selectSettings } from '../redux/settings/settingsSlice';
-import { selectAdvertisements } from '../redux/advertisements/advertisementsSlice';
+import { authSliceSignOut, selectUser, selectUserData, signOut } from '../redux/auth/authSlice';
+import { favoritesSliceSignOut, resetFavorites, selectFavorites } from '../redux/favorites/favoritesSlice';
+import { companySliceSignOut, resetCompanies } from '../redux/company/companySlice';
+import {
+  medicinesSliceSignOut,
+  resetMedicines,
+  setSearchCompanyId,
+  setSearchWarehouseId,
+} from '../redux/medicines/medicinesSlices';
+import { cartSliceSignOut, selectCartItemCount } from '../redux/cart/cartSlice';
+import { selectSettings, settingsSignOut } from '../redux/settings/settingsSlice';
+import { advertisementsSignOut, selectAdvertisements } from '../redux/advertisements/advertisementsSlice';
+import { warehouseSliceSignOut } from '../redux/warehouse/warehousesSlice';
+import { orderSliceSignOut } from '../redux/orders/ordersSlice';
+import { companiesSectionOneSignOut } from '../redux/advertisements/companiesSectionOneSlice';
+import { companiesSectionTwoSignOut } from '../redux/advertisements/companiesSectionTwoSlice';
+import { itemsSectionOneSignOut } from '../redux/advertisements/itemsSectionOneSlice';
+import { itemsSectionThreeSignOut } from '../redux/advertisements/itemsSectionThreeSlice';
+import { itemsSectionTwoSignOut } from '../redux/advertisements/itemsSectionTwoSlice';
+import { warehousesSectionOneSignOut } from '../redux/advertisements/warehousesSectionOneSlice';
+import { usersNotificationsSignOut } from '../redux/userNotifications/userNotificationsSlice';
 
 // components
 import Loader from '../components/Loader';
@@ -107,6 +121,34 @@ const DrawerScreen = () => {
 };
 
 function CustomDrawerContent(props) {
+  const openApp = (url) => {
+    Linking.openURL(url)
+      .then((data) => {})
+      .catch(() => {
+        alert('تأكد من تنزيل البرنامج المحدد.');
+      });
+  };
+
+  const signOutHandler = () => {
+    dispatch(authSliceSignOut());
+    dispatch(cartSliceSignOut());
+    dispatch(companySliceSignOut());
+    dispatch(favoritesSliceSignOut());
+    dispatch(warehouseSliceSignOut());
+    dispatch(orderSliceSignOut());
+    dispatch(resetMedicines());
+    dispatch(advertisementsSignOut());
+    dispatch(companiesSectionOneSignOut());
+    dispatch(companiesSectionTwoSignOut());
+    dispatch(itemsSectionOneSignOut());
+    dispatch(itemsSectionThreeSignOut());
+    dispatch(itemsSectionTwoSignOut());
+    dispatch(warehousesSectionOneSignOut());
+    dispatch(medicinesSliceSignOut());
+    dispatch(settingsSignOut());
+    dispatch(usersNotificationsSignOut());
+  };
+
   const dispatch = useDispatch();
 
   const { user } = props;
@@ -193,11 +235,7 @@ function CustomDrawerContent(props) {
                 dispatch(setSearchCompanyId(null));
                 props.navigation.navigate('Warehouses');
               }}
-              labelStyle={{
-                color: Colors.WHITE_COLOR,
-                fontSize: 16,
-                fontWeight: 'bold',
-              }}
+              labelStyle={styles.drawerItemLabel}
             />
           </View>
         )}
@@ -219,11 +257,7 @@ function CustomDrawerContent(props) {
                 dispatch(setSearchCompanyId(null));
                 props.navigation.navigate('Orders');
               }}
-              labelStyle={{
-                color: Colors.WHITE_COLOR,
-                fontSize: 16,
-                fontWeight: 'bold',
-              }}
+              labelStyle={styles.drawerItemLabel}
             />
           </View>
         )}
@@ -243,11 +277,7 @@ function CustomDrawerContent(props) {
                 dispatch(setSearchCompanyId(null));
                 props.navigation.navigate('Cart');
               }}
-              labelStyle={{
-                color: Colors.WHITE_COLOR,
-                fontSize: 16,
-                fontWeight: 'bold',
-              }}
+              labelStyle={styles.drawerItemLabel}
             />
           </View>
         )}
@@ -305,6 +335,63 @@ function CustomDrawerContent(props) {
               props.navigation.navigate('Profile');
             }}
             labelStyle={styles.drawerItemLabel}
+          />
+        </View>
+
+        <View
+          style={{
+            backgroundColor: props.state.index === 9 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
+            ...styles.option,
+          }}
+        >
+          <DrawerItem
+            label={i18n.t('nav-sign-out')}
+            icon={({}) => <Ionicons name="exit" size={24} color={Colors.WHITE_COLOR} />}
+            onPress={() => {
+              signOutHandler();
+            }}
+            labelStyle={styles.drawerItemLabel}
+          />
+        </View>
+
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'flex-start',
+            paddingVertical: 10,
+          }}
+        >
+          <FontAwesome5
+            name="facebook"
+            size={24}
+            color="white"
+            style={{ marginHorizontal: 5 }}
+            onPress={() => {
+              // openApp('https://www.facebook.com/Smart-Pharma-106820748580558/');
+              openApp('fb://Smart-Pharma-106820748580558/');
+              // Linking.openURL();
+            }}
+          />
+          <FontAwesome5
+            name="whatsapp"
+            size={24}
+            color="white"
+            style={{ marginHorizontal: 5 }}
+            onPress={() => openApp('whatsapp://send?text=' + '' + '&phone=+963956660333')}
+          />
+          <FontAwesome5
+            name="instagram"
+            size={24}
+            color="white"
+            style={{ marginHorizontal: 5 }}
+            onPress={() => openApp('https://www.instagram.com/p/CZsAC7Rrocc/?utm_medium=copy_link')}
+          />
+          <FontAwesome5
+            name="telegram"
+            size={24}
+            color="white"
+            style={{ marginHorizontal: 5 }}
+            onPress={() => openApp('https://t.me/+8SM-2Zfg8fcyNDdk')}
           />
         </View>
       </View>
@@ -382,9 +469,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.MAIN_COLOR,
   },
   menuContainer: {
-    flex: 1,
     flexDirection: 'column',
-    // justifyContent: 'space-evenly',
     alignItems: 'center',
     backgroundColor: Colors.MAIN_COLOR,
   },
