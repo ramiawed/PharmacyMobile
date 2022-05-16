@@ -58,6 +58,7 @@ import { usersNotificationsSignOut } from '../redux/userNotifications/userNotifi
 
 // components
 import Loader from '../components/Loader';
+import AboutScreen from './AboutScreen';
 
 const Drawer = createDrawerNavigator();
 
@@ -115,6 +116,7 @@ const DrawerScreen = () => {
           options={{ title: i18n.t('notifications-screen') }}
         />
         <Drawer.Screen name="Profile" component={ProfileScreen} options={{ title: i18n.t('profile-screen') }} />
+        <Drawer.Screen name="About" component={AboutScreen} options={{ title: i18n.t('about-screen') }} />
       </Drawer.Navigator>
     )
   ) : null;
@@ -123,7 +125,7 @@ const DrawerScreen = () => {
 function CustomDrawerContent(props) {
   const openApp = (url) => {
     Linking.openURL(url)
-      .then((data) => {})
+      .then(() => {})
       .catch(() => {
         alert('تأكد من تنزيل البرنامج المحدد.');
       });
@@ -345,6 +347,24 @@ function CustomDrawerContent(props) {
           }}
         >
           <DrawerItem
+            label={i18n.t('about-screen')}
+            icon={({}) => <Entypo name="info-with-circle" size={24} color={Colors.WHITE_COLOR} />}
+            onPress={() => {
+              dispatch(setSearchWarehouseId(null));
+              dispatch(setSearchCompanyId(null));
+              props.navigation.navigate('About');
+            }}
+            labelStyle={styles.drawerItemLabel}
+          />
+        </View>
+
+        <View
+          style={{
+            backgroundColor: props.state.index === 10 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
+            ...styles.option,
+          }}
+        >
+          <DrawerItem
             label={i18n.t('nav-sign-out')}
             icon={({}) => <Ionicons name="exit" size={24} color={Colors.WHITE_COLOR} />}
             onPress={() => {
@@ -481,7 +501,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-around',
     width: '100%',
-    height: 250,
+    height: 180,
     marginHorizontal: 'auto',
     marginBottom: 10,
     marginTop: -5,

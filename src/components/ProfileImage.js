@@ -21,7 +21,7 @@ const ProfileImage = ({ withDetails }) => {
           {user.logo_url && user.logo_url.length !== 0 ? (
             <Image
               source={{ uri: `${SERVER_URL}profiles/${user.logo_url}` }}
-              style={{ width: 150, height: 150, resizeMode: 'contain' }}
+              style={{ width: 100, height: 100, resizeMode: 'contain' }}
             />
           ) : (
             <Image
@@ -44,13 +44,13 @@ const ProfileImage = ({ withDetails }) => {
 const styles = StyleSheet.create({
   name: {
     color: Colors.WHITE_COLOR,
-    fontSize: 24,
-    fontWeight: '700',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
   type: {
     color: Colors.FAILED_COLOR,
-    fontWeight: '400',
-    fontSize: 16,
+    fontWeight: 'bold',
+    fontSize: 12,
   },
 });
 
