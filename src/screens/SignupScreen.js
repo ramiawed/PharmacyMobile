@@ -671,7 +671,7 @@ const SignupScreen = ({ navigation }) => {
                     email: text,
                   });
                 }}
-                placeholder={i18n.t('email')}
+                placeholder={i18n.t('user-email-optional')}
                 icon={<Entypo name="email" size={16} color={Colors.MAIN_COLOR} />}
                 border={1}
                 label={i18n.t('user-email')}
@@ -685,7 +685,7 @@ const SignupScreen = ({ navigation }) => {
                     phone: text,
                   });
                 }}
-                placeholder={i18n.t('user-phone')}
+                placeholder={i18n.t('user-phone-optional')}
                 icon={<AntDesign name="phone" size={16} color={Colors.MAIN_COLOR} />}
                 border={1}
                 label={i18n.t('user-phone')}
