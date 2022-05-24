@@ -31,8 +31,8 @@ const SignInScreen = ({ navigation }) => {
 
   // own states
   const [globalError, setGlobalError] = useState('');
-  const [username, setUsername] = useState('smart-pharma');
-  const [password, setPassword] = useState('11223344');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
   // error object contains error message and fields that has the error
   const [preSignError, setPreSignError] = useState({});

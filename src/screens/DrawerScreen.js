@@ -59,6 +59,7 @@ import { usersNotificationsSignOut } from '../redux/userNotifications/userNotifi
 // components
 import Loader from '../components/Loader';
 import AboutScreen from './AboutScreen';
+import OffersScreen from './OffersScreen';
 
 const Drawer = createDrawerNavigator();
 
@@ -107,6 +108,7 @@ const DrawerScreen = () => {
           component={WarehousesScreen}
           options={{ title: i18n.t('warehouses-screen') }}
         />
+        <Drawer.Screen name="Offers" component={OffersScreen} options={{ title: i18n.t('offers-screen') }} />
         <Drawer.Screen name="Orders" component={OrdersStack} options={{ title: i18n.t('orders-screen') }} />
         <Drawer.Screen name="Cart" component={CartScreen} options={{ title: i18n.t('cart-screen') }} />
         <Drawer.Screen name="Favorite" component={FavoriteScreen} options={{ title: i18n.t('favorites-screen') }} />
@@ -242,12 +244,32 @@ function CustomDrawerContent(props) {
           </View>
         )}
 
+        {(user.type === UserTypeConstants.ADMIN || user.type === UserTypeConstants.PHARMACY) && (
+          <View
+            style={{
+              backgroundColor: props.state.index === 4 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
+              ...styles.option,
+            }}
+          >
+            <DrawerItem
+              label={i18n.t('offers-screen')}
+              icon={({}) => <MaterialIcons name="local-offer" size={24} color={Colors.WHITE_COLOR} />}
+              onPress={() => {
+                dispatch(setSearchWarehouseId(null));
+                dispatch(setSearchCompanyId(null));
+                props.navigation.navigate('Offers');
+              }}
+              labelStyle={styles.drawerItemLabel}
+            />
+          </View>
+        )}
+
         {(user.type === UserTypeConstants.PHARMACY ||
           user.type === UserTypeConstants.ADMIN ||
           user.type === UserTypeConstants.WAREHOUSE) && (
           <View
             style={{
-              backgroundColor: props.state.index === 4 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
+              backgroundColor: props.state.index === 5 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
               ...styles.option,
             }}
           >
@@ -267,7 +289,7 @@ function CustomDrawerContent(props) {
         {user.type === UserTypeConstants.PHARMACY && (
           <View
             style={{
-              backgroundColor: props.state.index === 5 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
+              backgroundColor: props.state.index === 6 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
               ...styles.option,
             }}
           >
@@ -286,7 +308,7 @@ function CustomDrawerContent(props) {
 
         <View
           style={{
-            backgroundColor: props.state.index === 6 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
+            backgroundColor: props.state.index === 7 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
             ...styles.option,
           }}
         >
@@ -304,7 +326,7 @@ function CustomDrawerContent(props) {
 
         <View
           style={{
-            backgroundColor: props.state.index === 7 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
+            backgroundColor: props.state.index === 8 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
             ...styles.option,
           }}
         >
@@ -324,7 +346,7 @@ function CustomDrawerContent(props) {
 
         <View
           style={{
-            backgroundColor: props.state.index === 8 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
+            backgroundColor: props.state.index === 9 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
             ...styles.option,
           }}
         >
@@ -342,7 +364,7 @@ function CustomDrawerContent(props) {
 
         <View
           style={{
-            backgroundColor: props.state.index === 9 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
+            backgroundColor: props.state.index === 10 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
             ...styles.option,
           }}
         >
@@ -360,7 +382,7 @@ function CustomDrawerContent(props) {
 
         <View
           style={{
-            backgroundColor: props.state.index === 10 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
+            backgroundColor: props.state.index === 11 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
             ...styles.option,
           }}
         >

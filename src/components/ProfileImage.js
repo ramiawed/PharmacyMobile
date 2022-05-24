@@ -16,7 +16,7 @@ const ProfileImage = ({ withDetails }) => {
     user && (
       <>
         <View
-          style={{ backgroundColor: Colors.WHITE_COLOR, borderRadius: 6, overflow: 'hidden', alignItems: 'center' }}
+          style={{ backgroundColor: Colors.WHITE_COLOR, borderRadius: 50, overflow: 'hidden', alignItems: 'center' }}
         >
           {user.logo_url && user.logo_url.length !== 0 ? (
             <Image
@@ -26,7 +26,7 @@ const ProfileImage = ({ withDetails }) => {
           ) : (
             <Image
               source={require('../../assets/logo.png')}
-              style={{ width: 150, height: 150, resizeMode: 'contain' }}
+              style={{ width: 100, height: 100, resizeMode: 'contain' }}
             />
           )}
         </View>

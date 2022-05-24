@@ -19,6 +19,7 @@ import userNotificationsSlice from '../redux/userNotifications/userNotifications
 import ordersSlice from '../redux/orders/ordersSlice';
 import warehousesSectionOneSlice from '../redux/advertisements/warehousesSectionOneSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import offersSlice from '../redux/offers/offersSlices';
 
 const rootReducer = combineReducers({
   auth: authSlice,
@@ -38,6 +39,7 @@ const rootReducer = combineReducers({
   userNotifications: userNotificationsSlice,
   orders: ordersSlice,
   advertisements: AdvertisementsSlice,
+  offers: offersSlice,
 });
 
 const persistConfig = {

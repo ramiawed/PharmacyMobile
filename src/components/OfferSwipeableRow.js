@@ -19,29 +19,13 @@ export default class SwipeableRow extends Component {
         style={{
           ...styles.leftAction,
           backgroundColor:
-            this.props.user.type === UserTypeConstants.PHARMACY
-              ? Colors.SUCCEEDED_COLOR
-              : this.props.isInWarehouse
-              ? Colors.FAILED_COLOR
-              : Colors.SUCCEEDED_COLOR,
+            this.props.user.type === UserTypeConstants.PHARMACY ? Colors.SUCCEEDED_COLOR : Colors.WHITE_COLOR,
         }}
         onPress={() => {
           this.close();
 
-          if (this.props.user.type === UserTypeConstants.WAREHOUSE) {
-            if (this.props.isInWarehouse) {
-              this.props.removeItemFromWarehouse();
-            }
-
-            if (!this.props.isInWarehouse) {
-              this.props.addItemToWarehouse();
-            }
-          }
-
           if (this.props.user.type === UserTypeConstants.PHARMACY) {
-            if (this.props.canAddToCart) {
-              this.props.addToCart(this.props.item);
-            }
+            this.props.addToCart(this.props.item);
           }
         }}
       >
@@ -49,18 +33,6 @@ export default class SwipeableRow extends Component {
           <View style={styles.leftView}>
             <Ionicons name="cart" size={24} color={Colors.WHITE_COLOR} style={{ paddingHorizontal: 2 }} />
             <Animated.Text style={[styles.actionText]}>{i18n.t('add-to-cart')}</Animated.Text>
-          </View>
-        )}
-        {this.props.user.type === UserTypeConstants.WAREHOUSE && !this.props.isInWarehouse && (
-          <View style={styles.leftView}>
-            <Ionicons name="add-circle" size={24} color={Colors.WHITE_COLOR} style={{ paddingHorizontal: 2 }} />
-            <Animated.Text style={[styles.actionText]}>{i18n.t('add-to-warehouse')}</Animated.Text>
-          </View>
-        )}
-        {this.props.user.type === UserTypeConstants.WAREHOUSE && this.props.isInWarehouse && (
-          <View style={styles.leftView}>
-            <AntDesign name="delete" size={24} color={Colors.WHITE_COLOR} style={{ paddingHorizontal: 2 }} />
-            <Animated.Text style={[styles.actionText]}>{i18n.t('remove-from-warehouse')}</Animated.Text>
           </View>
         )}
       </RectButton>
@@ -119,11 +91,7 @@ export default class SwipeableRow extends Component {
         friction={2}
         leftThreshold={30}
         rightThreshold={40}
-        renderLeftActions={
-          ((this.props.user.type === UserTypeConstants.PHARMACY && this.props.canAddToCart) ||
-            this.props.user.type === UserTypeConstants.WAREHOUSE) &&
-          this.renderLeftActions
-        }
+        renderLeftActions={this.props.user.type === UserTypeConstants.PHARMACY && this.renderLeftActions}
         renderRightActions={this.renderRightActions}
       >
         {children}
