@@ -42,55 +42,32 @@ const checkOfferQty = (selectedWarehouse, qty) => {
   return 0;
 };
 
-const AddToCart = ({ item, close }) => {
+const AddToCartOffer = ({ item, close }) => {
+  const addToCartItem = {
+    ...item,
+    company: {
+      _id: item.company[0]._id,
+      name: item.company[0].name,
+    },
+    warehouses: {
+      ...item.warehouses,
+      warehouse: {
+        _id: item.warehouses.warehouse[0]._id,
+        name: item.warehouses.warehouse[0].name,
+        city: item.warehouses.warehouse[0].city,
+        isActive: item.warehouses.warehouse[0].isActive,
+        isApproved: item.warehouses.warehouse[0].isApproved,
+      },
+    },
+  };
+
   const dispatch = useDispatch();
 
   // selectors
   const { token, user } = useSelector(selectUserData);
-  // const { selectedWarehouse: sWarehouse } = useSelector(selectWarehouses);
-  const {
-    pageState: { searchWarehouseId: sWarehouse },
-  } = useSelector(selectMedicines);
 
-  // build the warehouse option array that contains this item
-  // get all the warehouse that contains this item
-  // put asterisk after warehouse name if the warehouse has an offer
-  const itemWarehousesOption = item.warehouses
-    .filter((w) => w.warehouse.city === user.city && w.warehouse.isActive && w.warehouse.isApproved)
-    .filter((w) => {
-      if (sWarehouse) {
-        return w.warehouse._id == sWarehouse;
-      }
-      return true;
-    })
-    .map((w) => {
-      const asterisk = w.offer.offers.length > 0 ? '*' : '';
-
-      return {
-        label: `${w.warehouse.name} ${asterisk}`,
-        value: w.warehouse._id,
-      };
-    });
-
-  // select the first warehouse in the list
-  const [selectedWarehouse, setSelectedWarehouse] = useState(
-    sWarehouse !== null
-      ? item.warehouses.filter((w) => w.warehouse.city === user.city).find((w) => w.warehouse._id == sWarehouse)
-      : item.warehouses.filter((w) => w.warehouse.city === user.city)[0],
-  );
-
-  const [offer, setOffer] = useState(
-    sWarehouse !== null
-      ? item.warehouses.filter((w) => w.warehouse.city === user.city).find((w) => w.warehouse._id == sWarehouse).offer
-      : item.warehouses.filter((w) => w.warehouse.city === user.city)[0].offer,
-  );
   const [qty, setQty] = useState('');
   const [qtyError, setQtyError] = useState(false);
-
-  const handleWarehouseChange = (val) => {
-    setSelectedWarehouse(item.warehouses.find((w) => w.warehouse._id == val));
-    setOffer(item.warehouses.find((w) => w.warehouse._id == val).offer);
-  };
 
   const handleAddItemToCart = () => {
     if (qty.length === 0) {
@@ -98,20 +75,20 @@ const AddToCart = ({ item, close }) => {
       return;
     }
 
-    if (selectedWarehouse.maxQty !== 0 && qty > selectedWarehouse.maxQty) {
+    if (addToCartItem.maxQty !== 0 && qty > addToCartItem.maxQty) {
       setQtyError(true);
       return;
     }
 
-    const bonusQty = checkOfferQty(selectedWarehouse, qty);
+    const bonusQty = checkOfferQty(addToCartItem.warehouses, qty);
 
     dispatch(
       addItemToCart({
-        item: item,
-        warehouse: selectedWarehouse,
+        item: addToCartItem,
+        warehouse: addToCartItem.warehouses,
         qty: qty,
         bonus: bonusQty > 0 ? bonusQty : null,
-        bonusType: bonusQty > 0 ? selectedWarehouse.offer.mode : null,
+        bonusType: bonusQty > 0 ? addToCartItem.warehouses.offer.mode : null,
       }),
     );
 
@@ -119,7 +96,7 @@ const AddToCart = ({ item, close }) => {
       addStatistics({
         obj: {
           sourceUser: user._id,
-          targetItem: item._id,
+          targetItem: addToCartItem._id,
           action: 'item-added-to-cart',
         },
         token,
@@ -137,20 +114,13 @@ const AddToCart = ({ item, close }) => {
     >
       <Text style={styles.header}>{i18n.t('add-to-cart')}</Text>
       <View style={styles.body}>
-        <CustomPicker
-          selectedValue={{
-            label: selectedWarehouse.warehouse.name,
-            value: selectedWarehouse.warehouse._id,
-          }}
-          data={itemWarehousesOption}
-          onChange={handleWarehouseChange}
-          label={i18n.t('warehouse')}
-        />
-
+        <View style={styles.row}>
+          <Text style={{ fontSize: 14, color: Colors.MAIN_COLOR }}>{addToCartItem.warehouses.warehouse.name}</Text>
+        </View>
         <View style={styles.row}>
           <Text style={styles.rowLabel}>{i18n.t('item-max-qty')}</Text>
           <Text style={{ fontSize: 14, color: Colors.MAIN_COLOR }}>
-            {selectedWarehouse.maxQty === 0 ? i18n.t('no-limit-qty') : selectedWarehouse.maxQty}
+            {addToCartItem.warehouses.maxQty === 0 ? i18n.t('no-limit-qty') : addToCartItem.warehouses.maxQty}
           </Text>
         </View>
         <View style={styles.row}>
@@ -159,27 +129,28 @@ const AddToCart = ({ item, close }) => {
         </View>
       </View>
 
-      {offer?.offers.length > 0 &&
-        offer.offers.map((o, index) => (
-          <View style={styles.offerRow} key={index}>
-            <View style={styles.offerRowFirst}>
-              <Text style={styles.label}>{i18n.t('quantity-label')}</Text>
-              <Text style={styles.value}>{o.qty}</Text>
-              <Text style={styles.label}>{i18n.t('after-quantity-label')}</Text>
-            </View>
-            <View style={styles.offerRowSecond}>
-              <Text style={styles.label}>
-                {offer.mode === OfferTypes.PIECES ? i18n.t('bonus-quantity-label') : i18n.t('bonus-percentage-label')}
-              </Text>
-              <Text style={styles.value}>{o.bonus}</Text>
-              <Text style={styles.label}>
-                {offer.mode === OfferTypes.PIECES
-                  ? i18n.t('after-bonus-quantity-label')
-                  : i18n.t('after-bonus-percentage-label')}
-              </Text>
-            </View>
+      {addToCartItem.warehouses.offer.offers.map((o, index) => (
+        <View style={styles.offerRow} key={index}>
+          <View style={styles.offerRowFirst}>
+            <Text style={styles.label}>{i18n.t('quantity-label')}</Text>
+            <Text style={styles.value}>{o.qty}</Text>
+            <Text style={styles.label}>{i18n.t('after-quantity-label')}</Text>
           </View>
-        ))}
+          <View style={styles.offerRowSecond}>
+            <Text style={styles.label}>
+              {addToCartItem.warehouses.offer.mode === OfferTypes.PIECES
+                ? i18n.t('bonus-quantity-label')
+                : i18n.t('bonus-percentage-label')}
+            </Text>
+            <Text style={styles.value}>{o.bonus}</Text>
+            <Text style={styles.label}>
+              {addToCartItem.warehouses.offer.mode === OfferTypes.PIECES
+                ? i18n.t('after-bonus-quantity-label')
+                : i18n.t('after-bonus-percentage-label')}
+            </Text>
+          </View>
+        </View>
+      ))}
 
       <View style={styles.actions}>
         <TouchableOpacity onPress={handleAddItemToCart}>
@@ -277,4 +248,4 @@ const styles = StyleSheet.create({
   selectedQty: { flex: 1, writingDirection: 'rtl', textAlign: 'right' },
 });
 
-export default AddToCart;
+export default AddToCartOffer;

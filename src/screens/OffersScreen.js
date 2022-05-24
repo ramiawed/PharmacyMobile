@@ -41,6 +41,7 @@ import { Colors, UserTypeConstants } from '../utils/constants';
 // icons
 import { AntDesign } from '@expo/vector-icons';
 import Scanner from '../components/Scanner';
+import AddToCartOffer from '../components/AddToCartOffer';
 
 let timer;
 
@@ -234,7 +235,7 @@ const OffersScreen = ({ navigation }) => {
         onBackButtonPress={() => setShowAddToCartModal(false)}
         onBackdropPress={() => setShowAddToCartModal(false)}
       >
-        <AddToCart item={itemToAddToCart} close={() => setShowAddToCartModal(false)} />
+        <AddToCartOffer item={itemToAddToCart} close={() => setShowAddToCartModal(false)} />
       </BottomSheet>
     </View>
   ) : null;
