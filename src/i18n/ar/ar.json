@@ -524,5 +524,8 @@
   "empty-value": "لا يوجد",
   "user-profile-update-error": "خطأ أثناء التعديل",
   "user-profile-update-success": "تعديل الملف الشخصي",
-  "smart-pharma-specification": "أهم ميزات سمارت فارما"
+  "smart-pharma-specification": "أهم ميزات سمارت فارما",
+  "create-user-msg": "يتم إنشاء حساب جديد، يرجى الانتظار لثواني",
+  "create-user-succeeded-msg": "تم إنشاء الحساب بنجاح",
+  "paper-loading-msg": "يتم الان تحميل الصورة، الرجاء الانتظار لثواني، زمن الانتظار متعلق بحجم الصورة"
 }

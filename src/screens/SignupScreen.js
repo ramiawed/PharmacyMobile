@@ -23,6 +23,8 @@ const SignupScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
   const [userPaperUrlLabel, setUserPaperUrlLabel] = useState('choose-paper-url-guest');
   const [showLicenseModel, setShowLicenseModal] = useState(false);
+  const [loadingSignUpMsg, setLoadingSignUpMsg] = useState('');
+  const [loadingPaperUrlMsg, setLoadingPaperUrlMsg] = useState('');
 
   // guest options and its change handler
   const guestJobOptions = [
@@ -132,8 +134,9 @@ const SignupScreen = ({ navigation }) => {
         type: type,
         paperUrl: null,
         guestDetails: {
-          ...signUpUser.guestDetails,
-          job: GuestJob.NONE,
+          job: '',
+          companyName: '',
+          jobTitle: '',
         },
       });
     }
@@ -143,17 +146,18 @@ const SignupScreen = ({ navigation }) => {
       setUserPaperUrlLabel('');
       setError({
         ...error,
+        job: '',
         companyName: '',
         jobTitle: '',
-        job: '',
       });
       setSignUpUser({
         ...signUpUser,
         type: type,
         paperUrl: null,
         guestDetails: {
-          ...signUpUser.guestDetails,
-          job: GuestJob.NONE,
+          job: '',
+          companyName: '',
+          jobTitle: '',
         },
       });
     }
@@ -172,8 +176,9 @@ const SignupScreen = ({ navigation }) => {
         type: type,
         paperUrl: signUpUser.paperUrl,
         guestDetails: {
-          ...signUpUser.guestDetails,
-          job: GuestJob.NONE,
+          job: '',
+          companyName: '',
+          jobTitle: '',
         },
       });
     }
@@ -193,6 +198,11 @@ const SignupScreen = ({ navigation }) => {
         ...signUpUser,
         type: type,
         paperUrl: signUpUser.paperUrl,
+        guestDetails: {
+          job: GuestJob.NONE,
+          companyName: '',
+          jobTitle: '',
+        },
       });
     }
   };
@@ -385,73 +395,74 @@ const SignupScreen = ({ navigation }) => {
     }
   };
 
-  const newAccountHandler = () => {
+  const newAccountHandler = async () => {
     setShowLicenseModal(false);
     setLoading(true);
+    setLoadingSignUpMsg('create-user-msg');
 
-    axios
-      .post(`${BASEURL}/users/signup`, signUpUser, {})
-      .then((response) => {
-        // if create user succeeded
-        if (signUpUser.type === UserTypeConstants.PHARMACY || signUpUser.type === UserTypeConstants.GUEST) {
-          const data = new FormData();
+    try {
+      const userResponse = await axios.post(`${BASEURL}/users/signup`, signUpUser, {});
 
-          data.append('id', response.data.data.id);
-          let localUri = signUpUser.paperUrl.uri;
-          let filename = localUri.split('/').pop();
+      if (signUpUser.type === UserTypeConstants.PHARMACY || signUpUser.type === UserTypeConstants.GUEST) {
+        setLoadingSignUpMsg('create-user-succeeded-msg');
+        setLoadingPaperUrlMsg('paper-loading-msg');
 
-          // Infer the type of the image
-          let match = /\.(\w+)$/.exec(filename);
-          let type = match ? `image/${match[1]}` : `image`;
+        const data = new FormData();
 
-          data.append('file', { uri: localUri, name: filename, type });
+        data.append('id', userResponse.data.data.id);
+        let localUri = signUpUser.paperUrl.uri;
+        let filename = localUri.split('/').pop();
 
-          const config = {
-            headers: {
-              'content-type': 'multipart/form-data',
-            },
-          };
+        // Infer the type of the image
+        let match = /\.(\w+)$/.exec(filename);
+        let type = match ? `image/${match[1]}` : `image`;
 
-          axios
-            .post(`${BASEURL}/users/upload-license`, data, config)
-            .then(() => {
-              // user type is not normal
-              // redirect to approve page
-              setLoading(false);
-              navigation.navigate('Approve');
-            })
-            .catch((err) => {});
-        } else {
-          // user type is not normal
-          // redirect to approve page
+        data.append('file', { uri: localUri, name: filename, type });
+
+        const config = {
+          headers: {
+            'content-type': 'multipart/form-data',
+          },
+        };
+
+        try {
+          await axios.post(`${BASEURL}/users/upload-license`, data, config);
+          setLoadingSignUpMsg('');
+          setLoadingPaperUrlMsg('');
           setLoading(false);
           navigation.navigate('Approve');
-        }
-      })
-      .catch((err) => {
-        let text2 = '';
-        if (err.code === 'ECONNABORTED' && err.message.startsWith('timeout')) {
-          text2 = i18n.t('timeout-msg');
-          setLoading(false);
-        } else if (!err.response) {
-          text2 = i18n.t('network failed');
-          setLoading(false);
-        } else if (err.response.data) {
-          setError({
-            [err.response.data.field[0]]: err.response.data.message,
-          });
-          setLoading(false);
-        } else {
-          text2 = i18n.t('error');
+        } catch (err) {
+          setLoadingSignUpMsg('');
+          setLoadingPaperUrlMsg('');
           setLoading(false);
         }
-
-        Toast.show({
-          type: 'error',
-          text1: i18n.t('sign-up-error'),
-          text2: text2,
+      } else {
+        setLoadingSignUpMsg('');
+        setLoading(false);
+        navigation.navigate('Approve');
+      }
+    } catch (err) {
+      let text2 = '';
+      if (err.code === 'ECONNABORTED' && err.message.startsWith('timeout')) {
+        text2 = i18n.t('timeout-msg');
+      } else if (!err.response) {
+        text2 = i18n.t('network failed');
+      } else if (err.response.data) {
+        setError({
+          [err.response.data.field[0]]: err.response.data.message,
         });
+      } else {
+        text2 = i18n.t('error');
+      }
+
+      setLoading(false);
+
+      Toast.show({
+        type: 'error',
+        text1: i18n.t('sign-up-error'),
+        text2: text2,
       });
+    }
   };
 
   return (
@@ -796,7 +807,7 @@ const SignupScreen = ({ navigation }) => {
         />
       )}
 
-      {loading && <Loader />}
+      {loading && <Loader msg1={loadingSignUpMsg} msg2={loadingPaperUrlMsg} />}
     </>
   );
 };

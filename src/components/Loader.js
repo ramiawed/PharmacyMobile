@@ -1,8 +1,9 @@
+import i18n from 'i18n-js';
 import React from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, Modal } from 'react-native';
 import { Colors } from '../utils/constants';
 
-const Loader = () => {
+const Loader = ({ msg1, msg2 }) => {
   return (
     <View style={styles.centeredView}>
       <View style={styles.background}></View>
@@ -11,6 +12,8 @@ const Loader = () => {
           <View style={styles.modalView}>
             <ActivityIndicator size="large" color={Colors.MAIN_COLOR} />
             <Text>Loading...</Text>
+            {msg1 ? <Text style={{ textAlign: 'center' }}>{i18n.t(msg1)}</Text> : null}
+            {msg2 ? <Text style={{ textAlign: 'center' }}>{i18n.t(msg2)}</Text> : null}
           </View>
         </View>
       </Modal>
