@@ -19,6 +19,11 @@ export const cancelOperation = () => {
   }
 };
 
+const resetCancelAndSource = () => {
+  CancelToken = null;
+  source = null;
+};
+
 export const getFavorites = createAsyncThunk('favorites/getFavorites', async ({ token }, { rejectWithValue }) => {
   try {
     CancelToken = axios.CancelToken;
@@ -32,8 +37,10 @@ export const getFavorites = createAsyncThunk('favorites/getFavorites', async ({ 
       },
     });
 
+    resetCancelAndSource();
     return response.data;
   } catch (err) {
+    resetCancelAndSource();
     if (err.code === 'ECONNABORTED' && err.message.startsWith('timeout')) {
       return rejectWithValue('timeout');
     }
@@ -66,8 +73,11 @@ export const addFavorite = createAsyncThunk('favorites/addFavorite', async ({ ob
       },
     );
 
+    resetCancelAndSource();
+
     return response.data;
   } catch (err) {
+    resetCancelAndSource();
     if (err.code === 'ECONNABORTED' && err.message.startsWith('timeout')) {
       return rejectWithValue('timeout');
     }
@@ -102,8 +112,10 @@ export const removeFavorite = createAsyncThunk(
         },
       );
 
+      resetCancelAndSource();
       return response.data;
     } catch (err) {
+      resetCancelAndSource();
       if (err.code === 'ECONNABORTED' && err.message.startsWith('timeout')) {
         return rejectWithValue('timeout');
       }
@@ -139,8 +151,11 @@ export const addFavoriteItem = createAsyncThunk(
         },
       );
 
+      resetCancelAndSource();
+
       return response.data;
     } catch (err) {
+      resetCancelAndSource();
       if (err.code === 'ECONNABORTED' && err.message.startsWith('timeout')) {
         return rejectWithValue('timeout');
       }
@@ -176,8 +191,10 @@ export const removeFavoriteItem = createAsyncThunk(
         },
       );
 
+      resetCancelAndSource();
       return response.data;
     } catch (err) {
+      resetCancelAndSource();
       if (err.code === 'ECONNABORTED' && err.message.startsWith('timeout')) {
         return rejectWithValue('timeout');
       }

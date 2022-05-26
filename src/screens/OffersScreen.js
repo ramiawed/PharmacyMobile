@@ -1,7 +1,7 @@
 import i18n from '../i18n/index';
 
-import React, { useEffect, useState } from 'react';
-import { useIsFocused } from '@react-navigation/native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import {
   View,
   Text,
@@ -33,7 +33,6 @@ import {
 // components
 import OfferRow from '../components/OfferRow';
 import SearchContainer from '../components/SearchContainer';
-import AddToCart from '../components/AddToCart';
 
 // constants
 import { Colors, UserTypeConstants } from '../utils/constants';
@@ -107,21 +106,17 @@ const OffersScreen = ({ navigation }) => {
     setShowAddToCartModal(true);
   };
 
-  useEffect(() => {
-    let unsubscribe;
-    if (isFocused) {
+  useFocusEffect(
+    useCallback(() => {
+      // Do something when the screen is focused
       dispatch(resetOfferItemsArray());
       handleSearch();
 
-      unsubscribe = navigation.addListener('blur', () => {
-        if (refreshing && status === 'loading') {
-          cancelOperation();
-        }
-      });
-    }
-
-    return unsubscribe;
-  }, [isFocused]);
+      return () => {
+        cancelOperation();
+      };
+    }, []),
+  );
 
   return user ? (
     <View style={styles.container}>
@@ -135,7 +130,7 @@ const OffersScreen = ({ navigation }) => {
           }}
         >
           <TextInput
-            style={styles.searchTextInput}
+            style={{ ...styles.searchTextInput, flex: 1 }}
             placeholder={i18n.t('search-by-name-composition-barcode')}
             onChangeText={(val) => {
               dispatch(setSearchName(val));
@@ -144,13 +139,15 @@ const OffersScreen = ({ navigation }) => {
             onKeyPress={keyUpHandler}
             value={pageState.searchName}
           />
-          <AntDesign
-            name="barcode"
-            size={32}
-            color={Colors.MAIN_COLOR}
-            onPress={() => setShowScanner(true)}
-            style={{ marginStart: 10 }}
-          />
+          <View
+            style={{
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 40,
+            }}
+          >
+            <AntDesign name="barcode" size={32} color={Colors.MAIN_COLOR} onPress={() => setShowScanner(true)} />
+          </View>
         </View>
 
         <TextInput

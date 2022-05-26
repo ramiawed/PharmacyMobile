@@ -1,27 +1,27 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
-import { BASEURL, CitiesName } from "../../utils/constants";
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import axios from 'axios';
+import { BASEURL, CitiesName } from '../../utils/constants';
 
 let CancelToken = null;
 let source = null;
 
 const initialState = {
-  status: "idle",
+  status: 'idle',
   companies: [],
   count: 0,
-  error: "",
+  error: '',
   pageState: {
-    searchName: "",
+    searchName: '',
     searchCity: CitiesName.ALL,
-    displayType: "list",
+    displayType: 'list',
     showFavorites: false,
     page: 1,
   },
 };
 
 export const cancelOperation = () => {
-  if (source !== null) {
-    source.cancel("operation canceled by user");
+  if (source) {
+    source.cancel('operation canceled by user');
   }
 };
 
@@ -31,7 +31,7 @@ const resetCancelAndSource = () => {
 };
 
 export const getCompanies = createAsyncThunk(
-  "companies/getCompanies",
+  'companies/getCompanies',
   async ({ token }, { rejectWithValue, getState }) => {
     const {
       companies: { pageState },
@@ -42,7 +42,7 @@ export const getCompanies = createAsyncThunk(
       source = CancelToken.source();
       let buildUrl = `${BASEURL}/users?type=company&isActive=true&isApproved=true&page=${pageState.page}&limit=15&details=some`;
 
-      if (pageState.searchName.trim() !== "") {
+      if (pageState.searchName.trim() !== '') {
         buildUrl = buildUrl + `&name=${pageState.searchName.trim()}`;
       }
 
@@ -62,26 +62,26 @@ export const getCompanies = createAsyncThunk(
 
       return response.data;
     } catch (err) {
-      if (err.code === "ECONNABORTED" && err.message.startsWith("timeout")) {
-        return rejectWithValue("timeout");
+      if (err.code === 'ECONNABORTED' && err.message.startsWith('timeout')) {
+        return rejectWithValue('timeout');
       }
 
       if (axios.isCancel(err)) {
-        return rejectWithValue("cancel");
+        return rejectWithValue('cancel');
       }
 
       if (!err.response) {
-        return rejectWithValue("network failed");
+        return rejectWithValue('network failed');
       }
 
-      resetCancelAndSource();
       return rejectWithValue(err.response.data);
+      resetCancelAndSource();
     }
-  }
+  },
 );
 
 export const companiesSlice = createSlice({
-  name: "companies",
+  name: 'companies',
   initialState,
   reducers: {
     changeSearchName: (state, action) => {
@@ -121,9 +121,9 @@ export const companiesSlice = createSlice({
 
     resetCompaniesPageState: (state) => {
       state.pageState = {
-        searchName: "",
+        searchName: '',
         searchCity: CitiesName.ALL,
-        displayType: "list",
+        displayType: 'list',
         page: 1,
       };
     },
@@ -141,12 +141,12 @@ export const companiesSlice = createSlice({
     },
 
     resetStatus: (state) => {
-      state.status = "idle";
+      state.status = 'idle';
       state.error = null;
     },
 
     resetCompanies: (state) => {
-      state.status = "idle";
+      state.status = 'idle';
       state.companies = [];
       state.count = 0;
       state.error = null;
@@ -161,14 +161,14 @@ export const companiesSlice = createSlice({
     },
 
     companySliceSignOut: (state) => {
-      state.status = "idle";
+      state.status = 'idle';
       state.companies = [];
       state.count = 0;
-      state.error = "";
+      state.error = '';
       state.pageState = {
-        searchName: "",
+        searchName: '',
         searchCity: CitiesName.ALL,
-        displayType: "list",
+        displayType: 'list',
         showFavorites: false,
         page: 1,
       };
@@ -176,11 +176,11 @@ export const companiesSlice = createSlice({
   },
   extraReducers: {
     [getCompanies.pending]: (state) => {
-      state.status = "loading";
+      state.status = 'loading';
       state.error = null;
     },
     [getCompanies.fulfilled]: (state, action) => {
-      state.status = "success";
+      state.status = 'success';
       state.companies = [...state.companies, ...action.payload.data.users];
       state.count = action.payload.count;
       state.error = null;
@@ -190,14 +190,14 @@ export const companiesSlice = createSlice({
       };
     },
     [getCompanies.rejected]: (state, { payload }) => {
-      state.status = "failed";
+      state.status = 'failed';
 
-      if (payload === "timeout") {
-        state.error = "timeout";
-      } else if (payload === "cancel") {
-        state.error = "cancel-operation-msg";
-      } else if (payload === "network failed") {
-        state.error = "network failed";
+      if (payload === 'timeout') {
+        state.error = 'timeout';
+      } else if (payload === 'cancel') {
+        state.error = 'cancel-operation-msg';
+      } else if (payload === 'network failed') {
+        state.error = 'network failed';
       } else state.error = payload.message;
     },
   },

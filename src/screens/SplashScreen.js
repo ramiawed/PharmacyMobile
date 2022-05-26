@@ -4,7 +4,7 @@ import { View, StyleSheet, Image } from 'react-native';
 const SplashScreen = () => {
   return (
     <View style={styles.container}>
-      <Image source={require('../../assets/sign-in-out-image.jpg')} style={styles.img} />
+      <Image source={require('../../assets/1.png')} style={styles.img} />
     </View>
   );
 };

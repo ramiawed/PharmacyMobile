@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { ScrollView, View, StyleSheet, RefreshControl } from 'react-native';
 
@@ -6,19 +6,14 @@ import { ScrollView, View, StyleSheet, RefreshControl } from 'react-native';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectToken } from '../redux/auth/authSlice';
-import {
-  cancelOperation,
-  getFavorites,
-  selectFavorites,
-  selectFavoritesItems,
-  selectFavoritesPartners,
-} from '../redux/favorites/favoritesSlice';
+import { cancelOperation, getFavorites, selectFavorites } from '../redux/favorites/favoritesSlice';
 
 // components
 import CollapseSection from '../components/CollapseSection';
 
 // constants
 import { Colors, UserTypeConstants } from '../utils/constants';
+import { useFocusEffect } from '@react-navigation/native';
 
 const FavoriteScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -51,15 +46,15 @@ const FavoriteScreen = ({ navigation }) => {
       });
   };
 
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('blur', () => {
-      if (refreshing && status === 'loading') {
-        cancelOperation();
-      }
-    });
+  useFocusEffect(
+    useCallback(() => {
+      // Do something when the screen is focused
 
-    return unsubscribe;
-  });
+      return () => {
+        cancelOperation();
+      };
+    }, []),
+  );
 
   return (
     <>

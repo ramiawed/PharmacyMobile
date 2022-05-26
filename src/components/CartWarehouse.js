@@ -112,7 +112,7 @@ const CartWarehouse = ({ warehouse, index }) => {
           style={{ ...styles.container, backgroundColor: index % 2 === 0 ? Colors.WHITE_COLOR : Colors.WHITE_COLOR }}
         >
           <View style={styles.headerView}>
-            <View style={styles.header}>
+            <View style={{ marginBottom: 5 }}>
               <TouchableOpacity
                 style={{
                   flexDirection: 'row',
@@ -132,21 +132,29 @@ const CartWarehouse = ({ warehouse, index }) => {
                 </View>
               </TouchableOpacity>
             </View>
-            <TouchableOpacity
-              style={styles.sendBtn}
-              onPress={() => {
-                setShowConfirmSaveOrder(true);
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'flex-end',
+                alignItems: 'center',
               }}
             >
-              <Text
-                style={{
-                  color: Colors.WHITE_COLOR,
+              <TouchableOpacity
+                style={styles.sendBtn}
+                onPress={() => {
+                  setShowConfirmSaveOrder(true);
                 }}
               >
-                {i18n.t('send-order')}
-              </Text>
-            </TouchableOpacity>
-            <Text style={styles.totalPrice}>{computeTotalPrice()}</Text>
+                <Text
+                  style={{
+                    color: Colors.WHITE_COLOR,
+                  }}
+                >
+                  {i18n.t('send-order')}
+                </Text>
+              </TouchableOpacity>
+              <Text style={styles.totalPrice}>{computeTotalPrice()}</Text>
+            </View>
           </View>
           {expanded &&
             cartItems
@@ -183,7 +191,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     paddingHorizontal: 5,
     paddingVertical: 10,
-    alignItems: 'center',
     borderBottomWidth: 20,
     borderBottomColor: Colors.SECONDARY_COLOR,
   },
@@ -201,13 +208,8 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   headerView: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  header: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
   },
   bottomNavigationView: {
     backgroundColor: '#fff',

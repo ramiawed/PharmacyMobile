@@ -1,21 +1,19 @@
 import { useFocusEffect } from '@react-navigation/native';
 import i18n from 'i18n-js';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, Image, RefreshControl, ActivityIndicator, ScrollView } from 'react-native';
 
 // redux stuff
 import { useDispatch, useSelector } from 'react-redux';
 import NotificationRow from '../components/NotificationRow';
-import { selectToken, selectUserData } from '../redux/auth/authSlice';
+import { selectUserData } from '../redux/auth/authSlice';
 import {
   getAllNotifications,
-  getUnreadNotification,
+  cancelOperation,
   resetNotifications,
-  resetNotificationsData,
   selectUserNotifications,
-  setPage,
-  setRefresh,
 } from '../redux/userNotifications/userNotificationsSlice';
+
 import { Colors } from '../utils/constants';
 
 const NotificationsScreen = () => {
@@ -42,9 +40,15 @@ const NotificationsScreen = () => {
     handleSearch();
   };
 
-  useEffect(() => {
-    handleSearch();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      // Do something when the screen is focused
+      if (userNotifications?.length === 0) handleSearch();
+      return () => {
+        cancelOperation();
+      };
+    }, []),
+  );
 
   return user ? (
     <View style={styles.container}>

@@ -191,6 +191,7 @@ const MedicineScreen = ({ route }) => {
           ))}
         <ExpandedView title={i18n.t('item-main-info')}>
           <UserInfoRow label={i18n.t('item-trade-name')} value={item.name} editable={false} />
+          <UserInfoRow label={i18n.t('item-trade-name-ar')} value={item.nameAr} editable={false} />
           <UserInfoRow label={i18n.t('item-formula')} value={item.formula} editable={false} />
           <UserInfoRow label={i18n.t('item-caliber')} value={item.caliber} editable={false} />
           <UserInfoRow label={i18n.t('item-packing')} value={item.packing} editable={false} />

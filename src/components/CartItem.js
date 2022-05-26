@@ -7,7 +7,7 @@ import { useDispatch } from 'react-redux';
 import { decreaseItemQty, increaseItemQty, removeItemFromCart } from '../redux/cart/cartSlice';
 
 // icons
-import { AntDesign, Ionicons } from '@expo/vector-icons';
+import { AntDesign, Ionicons, MaterialIcons } from '@expo/vector-icons';
 
 // constants
 import { Colors, OfferTypes } from '../utils/constants';
@@ -24,6 +24,7 @@ const CartItem = ({ item, inOrderDetails }) => {
           style={{
             flex: 1,
             flexDirection: 'row',
+            alignItems: 'center',
           }}
         >
           {expanded ? (
@@ -36,12 +37,31 @@ const CartItem = ({ item, inOrderDetails }) => {
               flex: 1,
             }}
           >
-            <Text style={styles.name}>{item.item.name}</Text>
+            <Text
+              style={{
+                ...styles.name,
+                fontSize: item.item.name.length >= 35 ? 12 : item.item.name.length > 25 ? 13 : 14,
+              }}
+            >
+              {item.item.name}
+            </Text>
+            {item.item.nameAr?.length > 0 ? (
+              <Text
+                style={{
+                  ...styles.name,
+                  fontSize: item.item.nameAr.length >= 35 ? 12 : item.item.nameAr.length > 25 ? 13 : 14,
+                }}
+              >
+                {item.item.nameAr}
+              </Text>
+            ) : (
+              <></>
+            )}
           </View>
         </TouchableOpacity>
 
         {!inOrderDetails && (
-          <AntDesign
+          <MaterialIcons
             name="delete"
             size={24}
             color={Colors.FAILED_COLOR}
@@ -53,33 +73,19 @@ const CartItem = ({ item, inOrderDetails }) => {
         <>
           <View style={styles.row}>
             <Text style={styles.label}>{i18n.t('item-company')}</Text>
-            <Text style={[styles.value]}>{item.item.company.name}</Text>
+            <Text style={styles.value}>{item.item.company.name}</Text>
           </View>
           <View style={styles.row}>
-            <View
-              style={{
-                flexDirection: 'row',
-                flex: 1,
-                alignItems: 'center',
-              }}
-            >
-              <Text style={styles.label}>{i18n.t('item-formula')}</Text>
-              <Text style={[styles.value]}>{item.item.formula}</Text>
-            </View>
-            <View
-              style={{
-                flexDirection: 'row',
-                flex: 1,
-                alignItems: 'center',
-              }}
-            >
-              <Text style={styles.label}>{i18n.t('item-caliber')}</Text>
-              <Text style={{ ...styles.value, fontSize: 10 }}>{item.item.caliber}</Text>
-            </View>
+            <Text style={styles.label}>{i18n.t('item-formula')}</Text>
+            <Text style={styles.value}>{item.item.formula}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>{i18n.t('item-caliber')}</Text>
+            <Text style={styles.value}>{item.item.caliber}</Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.label}>{i18n.t('item-packing')}</Text>
-            <Text style={{ ...styles.value, fontSize: 10 }}>{item.item.packing}</Text>
+            <Text style={styles.value}>{item.item.packing}</Text>
           </View>
         </>
       )}
@@ -218,6 +224,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     color: Colors.MAIN_COLOR,
     marginStart: 10,
+    fontSize: 14,
   },
   label: {
     color: Colors.SECONDARY_COLOR,

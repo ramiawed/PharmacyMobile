@@ -12,8 +12,8 @@ const Loader = ({ msg1, msg2 }) => {
           <View style={styles.modalView}>
             <ActivityIndicator size="large" color={Colors.MAIN_COLOR} />
             <Text>Loading...</Text>
-            {msg1 ? <Text style={{ textAlign: 'center' }}>{i18n.t(msg1)}</Text> : null}
-            {msg2 ? <Text style={{ textAlign: 'center' }}>{i18n.t(msg2)}</Text> : null}
+            {msg1 ? <Text style={styles.msg}>{i18n.t(msg1)}</Text> : null}
+            {msg2 ? <Text style={styles.msg}>{i18n.t(msg2)}</Text> : null}
           </View>
         </View>
       </Modal>
@@ -29,7 +29,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    // marginTop: 22,
   },
   background: {
     position: 'absolute',
@@ -43,6 +42,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 20,
     padding: 35,
+    marginHorizontal: 40,
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
@@ -52,6 +52,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
+  },
+  msg: {
+    textAlign: 'center',
+    color: Colors.MAIN_COLOR,
+    marginVertical: 10,
   },
 });
 

@@ -1,6 +1,6 @@
 import i18n from '../i18n/index';
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -33,6 +33,7 @@ import SearchContainer from '../components/SearchContainer';
 
 // constatns
 import { Colors, UserTypeConstants } from '../utils/constants';
+import { useFocusEffect } from '@react-navigation/native';
 
 const SPACING = 20;
 
@@ -92,17 +93,16 @@ const WarehousesScreen = ({ navigation }) => {
     }, 500);
   };
 
-  useEffect(() => {
-    handleSearch();
+  useFocusEffect(
+    useCallback(() => {
+      // Do something when the screen is focused
+      if (warehouses?.length === 0) handleSearch();
 
-    const unsubscribe = navigation.addListener('blur', () => {
-      if (refreshing && status === 'loading') {
+      return () => {
         cancelOperation();
-      }
-    });
-
-    return unsubscribe;
-  }, []);
+      };
+    }, []),
+  );
 
   return (
     <View style={styles.container}>

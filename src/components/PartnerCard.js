@@ -130,21 +130,6 @@ const PartnerCard = ({ partner, advertisement }) => {
           marginHorizontal: 4,
         }}
       >
-        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-          {partner.logo_url && partner.logo_url.length !== 0 ? (
-            <Image
-              source={{ uri: `${SERVER_URL}/profiles/${partner.logo_url}` }}
-              style={advertisement ? styles.logoLarge : styles.logo}
-            />
-          ) : (
-            <Image source={require('../../assets/logo.png')} style={advertisement ? styles.logoLarge : styles.logo} />
-          )}
-        </View>
-
-        <View>
-          <Text style={styles.title}>{partner.name}</Text>
-        </View>
-
         <TouchableWithoutFeedback onPress={() => {}}>
           <View style={styles.favoriteIcon}>
             {changeFavoriteLoading ? (
@@ -166,6 +151,20 @@ const PartnerCard = ({ partner, advertisement }) => {
             )}
           </View>
         </TouchableWithoutFeedback>
+        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+          {partner.logo_url && partner.logo_url.length !== 0 ? (
+            <Image
+              source={{ uri: `${SERVER_URL}/profiles/${partner.logo_url}` }}
+              style={advertisement ? styles.logoLarge : styles.logo}
+            />
+          ) : (
+            <Image source={require('../../assets/logo.png')} style={advertisement ? styles.logoLarge : styles.logo} />
+          )}
+        </View>
+
+        <View>
+          <Text style={styles.title}>{partner.name}</Text>
+        </View>
       </Animated.View>
     </TouchableWithoutFeedback>
   );
@@ -173,7 +172,7 @@ const PartnerCard = ({ partner, advertisement }) => {
 
 const styles = StyleSheet.create({
   animatedView: {
-    padding: SPACING,
+    padding: 10,
     marginBottom: SPACING,
     backgroundColor: 'rgba(255,255,255, 1)',
     borderRadius: 12,
@@ -188,7 +187,7 @@ const styles = StyleSheet.create({
     elevation: 25,
 
     minHeight: 200,
-    justifyContent: 'space-around',
+    justifyContent: 'flex-start',
   },
   title: {
     fontSize: 20,
@@ -197,25 +196,23 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   favoriteIcon: {
-    position: 'absolute',
-    top: 0,
-    end: 0,
-    width: 48,
-    height: 48,
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
   },
   logo: {
     width: 120,
     height: 100,
     borderRadius: 12,
     resizeMode: 'contain',
+    marginVertical: 5,
   },
   logoLarge: {
     width: 130,
     height: 130,
     borderRadius: 12,
     resizeMode: 'contain',
+    marginVertical: 5,
   },
 });
 

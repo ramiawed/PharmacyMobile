@@ -11,10 +11,10 @@ import { selectAdvertisements } from '../redux/advertisements/advertisementsSlic
 import { setSearchCompanyId, setSearchWarehouseId } from '../redux/medicines/medicinesSlices';
 
 // images
-import LogoWithDotsImage from '../../assets/sign-in-out-image.jpg';
-import OrderOnlineImage from '../../assets/order-online.jpg';
-import WarehouseWithOffersImage from '../../assets/warehouses-with-offers.jpg';
-import FreeServicesImage from '../../assets/free-services.jpg';
+import LogoWithDotsImage from '../../assets/1.png';
+import OrderOnlineImage from '../../assets/2.png';
+import WarehouseWithOffersImage from '../../assets/3.png';
+import FreeServicesImage from '../../assets/4.png';
 
 // components
 import AdvertisementCard from './AdvertisementCard';

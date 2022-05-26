@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import i18n from '../i18n';
 import axios from 'axios';
 import { StyleSheet, View, ScrollView, Text, TouchableOpacity, TextInput, ActivityIndicator } from 'react-native';
@@ -18,6 +18,7 @@ import ItemFavoriteRow from './ItemFavoriteRow';
 import PartnerRow from './PartnerRow';
 import Scanner from './Scanner';
 import ItemRow from './ItemRow';
+import { useFocusEffect } from '@react-navigation/native';
 
 let CancelToken = null;
 let source = null;
@@ -139,6 +140,20 @@ const SearchHome = () => {
     setShowScanner(false);
     searchHandler(val);
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      // Do something when the screen is focused
+      return () => {
+        setSearchName('');
+        setData([]);
+        setCompaniesData([]);
+        setWarehousesData([]);
+        setShowResult(false);
+        setLoading(false);
+      };
+    }, []),
+  );
 
   return (
     <>

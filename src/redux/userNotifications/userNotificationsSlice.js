@@ -17,6 +17,17 @@ const initialState = {
 let CancelToken = null;
 let source = null;
 
+export const cancelOperation = () => {
+  if (source) {
+    source.cancel('operation canceled by user');
+  }
+};
+
+const resetCancelAndSource = () => {
+  CancelToken = null;
+  source = null;
+};
+
 export const getAllNotifications = createAsyncThunk(
   'userNotifications/getAllNotifications',
   async ({ token }, { rejectWithValue, getState }) => {
@@ -35,8 +46,10 @@ export const getAllNotifications = createAsyncThunk(
         },
       });
 
+      resetCancelAndSource();
       return response.data;
     } catch (err) {
+      resetCancelAndSource();
       if (err.code === 'ECONNABORTED' && err.message.startsWith('timeout')) {
         return rejectWithValue('timeout');
       }
@@ -68,8 +81,10 @@ export const getUnreadNotification = createAsyncThunk(
         },
       });
 
+      resetCancelAndSource();
       return response.data;
     } catch (err) {
+      resetCancelAndSource();
       if (err.code === 'ECONNABORTED' && err.message.startsWith('timeout')) {
         return rejectWithValue('timeout');
       }
@@ -105,8 +120,10 @@ export const setNotificationRead = createAsyncThunk(
         },
       );
 
+      resetCancelAndSource();
       return response.data;
     } catch (err) {
+      resetCancelAndSource();
       if (err.code === 'ECONNABORTED' && err.message.startsWith('timeout')) {
         return rejectWithValue('timeout');
       }

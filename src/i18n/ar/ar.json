@@ -199,6 +199,7 @@
   "warehouse-name": "المستودع",
   "item-name": "اسم المنتج",
   "item-trade-name": "الاسم التجاري",
+  "item-trade-name-ar": "الاسم التجاري العربي",
   "item-packing": "التعبئة",
   "item-packing-small": "ت",
   "item-barcode": "الباركود",

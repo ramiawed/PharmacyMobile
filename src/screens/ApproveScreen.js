@@ -13,11 +13,11 @@ const ApproveScreen = ({ navigation }) => {
         style={styles.background}
       />
       <View style={styles.approveView}>
-        <LinearGradient
+        {/* <LinearGradient
           // Background Linear Gradient
           colors={[Colors.WHITE_COLOR, Colors.MAIN_COLOR]}
           style={styles.background}
-        />
+        /> */}
 
         <Image style={styles.logo} source={require('../../assets/logo.png')} />
         <View style={styles.textView}>
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
   },
   header: {
     fontSize: 30,
-    color: Colors.FAILED_COLOR,
+    color: Colors.MAIN_COLOR,
     fontWeight: 'bold',
     marginVertical: 20,
   },

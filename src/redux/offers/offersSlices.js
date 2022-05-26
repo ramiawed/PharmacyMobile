@@ -1,26 +1,26 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
-import { BASEURL } from "../../utils/constants";
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import axios from 'axios';
+import { BASEURL } from '../../utils/constants';
 
 let CancelToken;
 let source;
 
 const initialState = {
-  status: "idle",
+  status: 'idle',
   medicines: [],
   count: 0,
-  error: "",
+  error: '',
   pageState: {
-    searchName: "",
-    searchCompanyName: "",
-    searchWarehouseName: "",
+    searchName: '',
+    searchCompanyName: '',
+    searchWarehouseName: '',
     page: 1,
   },
 };
 
 export const cancelOperation = () => {
   if (source) {
-    source.cancel("operation canceled by user");
+    source.cancel('operation canceled by user');
   }
 };
 
@@ -30,7 +30,7 @@ const resetCancelAndSource = () => {
 };
 
 export const getOffers = createAsyncThunk(
-  "offers/getOfferMedicines",
+  'offers/getOfferMedicines',
   async ({ token }, { rejectWithValue, getState }) => {
     try {
       const {
@@ -41,15 +41,15 @@ export const getOffers = createAsyncThunk(
 
       let buildUrl = `${BASEURL}/items/items-with-offer?page=${pageState.page}&limit=15`;
 
-      if (pageState.searchName.trim() !== "") {
+      if (pageState.searchName.trim() !== '') {
         buildUrl = buildUrl + `&itemName=${pageState.searchName}`;
       }
 
-      if (pageState.searchCompanyName.trim() !== "") {
+      if (pageState.searchCompanyName.trim() !== '') {
         buildUrl = buildUrl + `&companyName=${pageState.searchCompanyName}`;
       }
 
-      if (pageState.searchWarehouseName.trim() !== "") {
+      if (pageState.searchWarehouseName.trim() !== '') {
         buildUrl = buildUrl + `&warehouseName=${pageState.searchWarehouseName}`;
       }
 
@@ -67,33 +67,33 @@ export const getOffers = createAsyncThunk(
     } catch (err) {
       resetCancelAndSource();
 
-      if (err.code === "ECONNABORTED" && err.message.startsWith("timeout")) {
-        return rejectWithValue("timeout");
+      if (err.code === 'ECONNABORTED' && err.message.startsWith('timeout')) {
+        return rejectWithValue('timeout');
       }
       if (axios.isCancel(err)) {
-        return rejectWithValue("cancel");
+        return rejectWithValue('cancel');
       }
 
       if (!err.response) {
-        return rejectWithValue("network failed");
+        return rejectWithValue('network failed');
       }
 
       return rejectWithValue(err.response.data);
     }
-  }
+  },
 );
 
 export const offersSlice = createSlice({
-  name: "offersSlice",
+  name: 'offersSlice',
   initialState,
   reducers: {
     resetStatus: (state) => {
-      state.status = "idle";
-      state.error = "";
+      state.status = 'idle';
+      state.error = '';
     },
 
     resetError: (state) => {
-      state.error = "";
+      state.error = '';
     },
 
     setSearchName: (state, action) => {
@@ -135,49 +135,49 @@ export const offersSlice = createSlice({
 
     resetOfferItemsPageState: (state) => {
       state.pageState = {
-        searchName: "",
-        searchCompanyName: "",
-        searchWarehouseName: "",
+        searchName: '',
+        searchCompanyName: '',
+        searchWarehouseName: '',
         page: 1,
       };
     },
 
     offersSliceSignOut: (state) => {
-      state.status = "idle";
+      state.status = 'idle';
       state.medicines = [];
       state.count = 0;
-      state.error = "";
+      state.error = '';
       state.pageState = {
-        searchName: "",
-        searchCompanyName: "",
-        searchWarehouseName: "",
+        searchName: '',
+        searchCompanyName: '',
+        searchWarehouseName: '',
         page: 1,
       };
     },
   },
   extraReducers: {
     [getOffers.pending]: (state) => {
-      state.status = "loading";
+      state.status = 'loading';
     },
     [getOffers.fulfilled]: (state, action) => {
-      state.status = "succeeded";
+      state.status = 'succeeded';
       state.medicines = [...state.medicines, ...action.payload.data.data];
       state.count = action.payload.count;
-      state.error = "";
+      state.error = '';
       state.pageState = {
         ...state.pageState,
         page: Math.ceil(state.medicines.length / 15) + 1,
       };
     },
     [getOffers.rejected]: (state, { error, meta, payload }) => {
-      state.status = "failed";
+      state.status = 'failed';
 
-      if (payload === "timeout") {
+      if (payload === 'timeout') {
         state.error = payload;
-      } else if (payload === "cancel") {
-        state.error = "cancel-operation-msg";
-      } else if (payload === "network failed") {
-        state.error = "network failed";
+      } else if (payload === 'cancel') {
+        state.error = 'cancel-operation-msg';
+      } else if (payload === 'network failed') {
+        state.error = 'network failed';
       } else state.error = payload.message;
     },
   },

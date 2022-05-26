@@ -1,7 +1,7 @@
 import i18n from '../i18n/index';
 
-import React, { useEffect, useState } from 'react';
-import { useIsFocused } from '@react-navigation/native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import {
   View,
   Text,
@@ -113,21 +113,17 @@ const MedicinesScreen = ({ navigation }) => {
     setShowAddToCartModal(true);
   };
 
-  useEffect(() => {
-    let unsubscribe;
-    if (isFocused) {
+  useFocusEffect(
+    useCallback(() => {
+      // Do something when the screen is focused
       dispatch(resetMedicinesArray());
       handleSearch();
 
-      unsubscribe = navigation.addListener('blur', () => {
-        if (refreshing && status === 'loading') {
-          cancelOperation();
-        }
-      });
-    }
-
-    return unsubscribe;
-  }, [isFocused]);
+      return () => {
+        cancelOperation();
+      };
+    }, []),
+  );
 
   return user ? (
     <View style={styles.container}>
@@ -141,7 +137,7 @@ const MedicinesScreen = ({ navigation }) => {
           }}
         >
           <TextInput
-            style={styles.searchTextInput}
+            style={{ ...styles.searchTextInput, flex: 1 }}
             placeholder={i18n.t('search-by-name-composition-barcode')}
             onChangeText={(val) => {
               dispatch(setSearchName(val));
@@ -150,13 +146,15 @@ const MedicinesScreen = ({ navigation }) => {
             onKeyPress={keyUpHandler}
             value={pageState.searchName}
           />
-          <AntDesign
-            name="barcode"
-            size={32}
-            color={Colors.MAIN_COLOR}
-            onPress={() => setShowScanner(true)}
-            style={{ marginStart: 10 }}
-          />
+          <View
+            style={{
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 40,
+            }}
+          >
+            <AntDesign name="barcode" size={32} color={Colors.MAIN_COLOR} onPress={() => setShowScanner(true)} />
+          </View>
         </View>
 
         {user.type !== UserTypeConstants.GUEST && pageState.searchCompanyId === null && (
