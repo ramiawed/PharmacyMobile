@@ -102,86 +102,113 @@ const OfferCard = ({ item, addToCart }) => {
           ...styles.container,
         }}
       >
-        <View style={styles.header}>
-          {expanded ? (
-            <AntDesign
-              name="caretup"
-              size={20}
-              color={Colors.MAIN_COLOR}
-              onPress={() => {
-                setExpanded(!expanded);
-              }}
-            />
-          ) : (
-            <AntDesign
-              name="caretdown"
-              size={20}
-              color={Colors.MAIN_COLOR}
-              onPress={() => {
-                setExpanded(!expanded);
-              }}
-            />
-          )}
-          <TouchableWithoutFeedback
-            onPress={() => {
-              dispatchStatisticsHandler();
-              navigation.navigate('Medicines', {
-                screen: 'Medicine',
-                params: {
-                  medicineId: item._id,
-                },
-              });
-            }}
-          >
-            <View style={styles.fullWidth}>
-              <Text style={{ ...styles.title, fontSize: item.name.length < 25 ? 14 : 12 }}>{item.name}</Text>
+        <View style={{ flexDirection: 'row' }}>
+          <View style={{ flex: 1 }}>
+            <View style={{ flexDirection: 'row' }}>
+              {expanded ? (
+                <AntDesign
+                  name="caretup"
+                  size={20}
+                  color={Colors.MAIN_COLOR}
+                  onPress={() => {
+                    setExpanded(!expanded);
+                  }}
+                />
+              ) : (
+                <AntDesign
+                  name="caretdown"
+                  size={20}
+                  color={Colors.MAIN_COLOR}
+                  onPress={() => {
+                    setExpanded(!expanded);
+                  }}
+                />
+              )}
+              <TouchableWithoutFeedback
+                onPress={() => {
+                  dispatchStatisticsHandler();
+                  navigation.navigate('Medicines', {
+                    screen: 'Medicine',
+                    params: {
+                      medicineId: item._id,
+                    },
+                  });
+                }}
+              >
+                <View style={{ ...styles.fullWidth, flexDirection: 'column' }}>
+                  <Text
+                    style={{ ...styles.title, fontSize: item.name.length >= 35 ? 12 : item.name.length > 25 ? 13 : 14 }}
+                  >
+                    {item.name}
+                  </Text>
+                </View>
+              </TouchableWithoutFeedback>
             </View>
-          </TouchableWithoutFeedback>
+            {item.nameAr?.length > 0 ? (
+              <View style={styles.subHeader}>
+                <View style={styles.fullWidth}>
+                  <Text
+                    style={{
+                      ...styles.nameAr,
+                      fontSize: item.nameAr.length >= 35 ? 12 : item.nameAr.length > 25 ? 13 : 14,
+                    }}
+                  >
+                    {item.nameAr}
+                  </Text>
+                </View>
+              </View>
+            ) : (
+              <View style={{ height: 5 }}></View>
+            )}
+            <View style={styles.subHeader}>
+              <View style={styles.fullWidth}>
+                <Text style={styles.companyName}>{item.company[0].name}</Text>
+              </View>
+              {user.type !== UserTypeConstants.GUEST && (
+                <Text style={{ ...styles.priceValue, color: Colors.SUCCEEDED_COLOR }}>{item.price}</Text>
+              )}
+              <Text style={{ ...styles.priceValue, color: Colors.FAILED_COLOR }}>{item.customer_price}</Text>
+            </View>
 
-          {user.type === UserTypeConstants.PHARMACY && (
-            <Ionicons
-              name="cart"
-              size={24}
-              color={Colors.SUCCEEDED_COLOR}
-              style={{ paddingHorizontal: 2 }}
-              onPress={() => addToCart(item)}
-            />
-          )}
+            <View style={styles.subHeader}>
+              <View style={styles.fullWidth}>
+                <Text style={styles.warehouseName}>{item.warehouses.warehouse[0].name}</Text>
+              </View>
+            </View>
+          </View>
+          <View style={styles.actionsView}>
+            {user.type === UserTypeConstants.PHARMACY && (
+              <Ionicons
+                name="cart"
+                size={24}
+                color={Colors.SUCCEEDED_COLOR}
+                style={{ paddingHorizontal: 2 }}
+                onPress={() => addToCart(item)}
+              />
+            )}
 
-          {changeFavoriteLoading ? (
-            <ActivityIndicator size="small" color={Colors.YELLOW_COLOR} />
-          ) : isFavorite ? (
-            <AntDesign
-              name="star"
-              size={24}
-              color={Colors.YELLOW_COLOR}
-              style={{ paddingHorizontal: 2 }}
-              onPress={removeItemFromFavoritesItems}
-            />
-          ) : (
-            <AntDesign
-              name="staro"
-              size={24}
-              color={Colors.YELLOW_COLOR}
-              style={{ paddingHorizontal: 2 }}
-              onPress={addItemToFavoriteItems}
-            />
-          )}
-        </View>
-        <View style={styles.subHeader}>
-          <View style={styles.fullWidth}>
-            <Text style={styles.companyName}>{item.company[0].name}</Text>
-          </View>
-          {user.type !== UserTypeConstants.GUEST && (
-            <Text style={{ ...styles.priceValue, color: Colors.SUCCEEDED_COLOR }}>{item.price}</Text>
-          )}
-          <Text style={{ ...styles.priceValue, color: Colors.FAILED_COLOR }}>{item.customer_price}</Text>
-        </View>
-        <View style={styles.subHeader}>
-          <View style={styles.fullWidth}>
-            <Text style={styles.companyName}>{item.warehouses.warehouse[0].name}</Text>
+            {changeFavoriteLoading ? (
+              <ActivityIndicator size="small" color={Colors.YELLOW_COLOR} />
+            ) : isFavorite ? (
+              <AntDesign
+                name="star"
+                size={24}
+                color={Colors.YELLOW_COLOR}
+                style={{ paddingHorizontal: 2 }}
+                onPress={removeItemFromFavoritesItems}
+              />
+            ) : (
+              <AntDesign
+                name="staro"
+                size={24}
+                color={Colors.YELLOW_COLOR}
+                style={{ paddingHorizontal: 2 }}
+                onPress={addItemToFavoriteItems}
+              />
+            )}
           </View>
         </View>
+
         {expanded && (
           <>
             <View style={styles.separator}></View>
@@ -248,7 +275,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   priceValue: {
-    fontSize: 12,
+    fontSize: 14,
     paddingHorizontal: 6,
   },
   title: {
@@ -260,8 +287,14 @@ const styles = StyleSheet.create({
   companyName: {
     fontSize: 14,
     fontWeight: 'bold',
+    color: Colors.SUCCEEDED_COLOR,
+    marginStart: 25,
+  },
+  warehouseName: {
+    fontSize: 14,
+    fontWeight: 'bold',
     color: Colors.SECONDARY_COLOR,
-    marginStart: 20,
+    marginStart: 25,
   },
   offer: {
     flexDirection: 'row',
@@ -292,6 +325,20 @@ const styles = StyleSheet.create({
     marginHorizontal: '5%',
     marginTop: 10,
     marginBottom: 5,
+  },
+  nameAr: {
+    fontWeight: '700',
+    color: Colors.MAIN_COLOR,
+    writingDirection: 'rtl',
+    paddingHorizontal: 5,
+    marginStart: 20,
+    marginVertical: 5,
+  },
+  actionsView: {
+    justifyContent: 'space-evenly',
+    borderStartColor: '#e3e3e3',
+    borderStartWidth: 1,
+    paddingStart: 5,
   },
 });
 
