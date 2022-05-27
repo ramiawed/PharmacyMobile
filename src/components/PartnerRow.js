@@ -97,27 +97,27 @@ const PartnerRow = ({ partner, type }) => {
           }),
         );
       }
+
+      dispatch(resetMedicines());
+
+      if (partner.type === UserTypeConstants.COMPANY) {
+        dispatch(setSearchCompanyId(partner._id));
+      }
+
+      if (partner.type === UserTypeConstants.WAREHOUSE) {
+        dispatch(setSearchWarehouseId(partner._id));
+      }
+
+      if (partner.type === UserTypeConstants.WAREHOUSE && user.type === UserTypeConstants.PHARMACY) {
+        dispatch(setSelectedWarehouse(partner._id));
+      } else {
+        dispatch(setSelectedWarehouse(null));
+      }
+
+      navigation.navigate('Medicines', {
+        screen: 'AllMedicines',
+      });
     }
-
-    dispatch(resetMedicines());
-
-    if (partner.type === UserTypeConstants.COMPANY) {
-      dispatch(setSearchCompanyId(partner._id));
-    }
-
-    if (partner.type === UserTypeConstants.WAREHOUSE) {
-      dispatch(setSearchWarehouseId(partner._id));
-    }
-
-    if (partner.type === UserTypeConstants.WAREHOUSE && user.type === UserTypeConstants.PHARMACY) {
-      dispatch(setSelectedWarehouse(partner._id));
-    } else {
-      dispatch(setSelectedWarehouse(null));
-    }
-
-    navigation.navigate('Medicines', {
-      screen: 'AllMedicines',
-    });
   };
 
   return (

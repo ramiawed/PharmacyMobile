@@ -33,7 +33,7 @@ const PartnerCard = ({ partner, advertisement }) => {
   const [changeFavoriteLoading, setChangeFavoriteLoading] = useState(false);
 
   const allowShowingWarehouseMedicines =
-    user?.type === UserTypeConstants.ADMIN ||
+    user.type === UserTypeConstants.ADMIN ||
     partner.type === UserTypeConstants.COMPANY ||
     (partner.type === UserTypeConstants.WAREHOUSE && showWarehouseItem && partner.allowShowingMedicines);
 
@@ -98,27 +98,27 @@ const PartnerCard = ({ partner, advertisement }) => {
           }),
         );
       }
+
+      dispatch(resetMedicines());
+
+      if (partner.type === UserTypeConstants.COMPANY) {
+        dispatch(setSearchCompanyId(partner._id));
+      }
+
+      if (partner.type === UserTypeConstants.WAREHOUSE) {
+        dispatch(setSearchWarehouseId(partner._id));
+      }
+
+      if (partner.type === UserTypeConstants.WAREHOUSE && user.type === UserTypeConstants.PHARMACY) {
+        dispatch(setSelectedWarehouse(partner._id));
+      } else {
+        dispatch(setSelectedWarehouse(null));
+      }
+
+      navigation.navigate('Medicines', {
+        screen: 'AllMedicines',
+      });
     }
-
-    dispatch(resetMedicines());
-
-    if (partner.type === UserTypeConstants.COMPANY) {
-      dispatch(setSearchCompanyId(partner._id));
-    }
-
-    if (partner.type === UserTypeConstants.WAREHOUSE) {
-      dispatch(setSearchWarehouseId(partner._id));
-    }
-
-    if (partner.type === UserTypeConstants.WAREHOUSE && user.type === UserTypeConstants.PHARMACY) {
-      dispatch(setSelectedWarehouse(partner._id));
-    } else {
-      dispatch(setSelectedWarehouse(null));
-    }
-
-    navigation.navigate('Medicines', {
-      screen: 'AllMedicines',
-    });
   };
 
   return (
