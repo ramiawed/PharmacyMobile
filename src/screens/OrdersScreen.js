@@ -384,22 +384,24 @@ const OrdersScreen = () => {
         </View>
       </SearchContainer>
 
-      <View style={{ flexDirection: 'column' }}>
-        <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-          <Ionicons name="mail-unread-outline" size={16} color={Colors.MAIN_COLOR} />
-          <Text style={styles.highlightLabel}>{i18n.t('unread')}</Text>
-          <Ionicons name="checkmark-done" size={16} color={Colors.SUCCEEDED_COLOR} />
-          <Text style={styles.highlightLabel}>{i18n.t('received')}</Text>
-          <MaterialIcons name="local-shipping" size={16} color={Colors.SUCCEEDED_COLOR} />
-          <Text style={styles.highlightLabel}>{i18n.t('shipped')}</Text>
+      {orders?.length > 0 && (
+        <View style={{ flexDirection: 'column' }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+            <Ionicons name="mail-unread-outline" size={16} color={Colors.MAIN_COLOR} />
+            <Text style={styles.highlightLabel}>{i18n.t('unread')}</Text>
+            <Ionicons name="checkmark-done" size={16} color={Colors.SUCCEEDED_COLOR} />
+            <Text style={styles.highlightLabel}>{i18n.t('received')}</Text>
+            <MaterialIcons name="local-shipping" size={16} color={Colors.SUCCEEDED_COLOR} />
+            <Text style={styles.highlightLabel}>{i18n.t('shipped')}</Text>
+          </View>
+          <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+            <FontAwesome name="send" size={16} color={Colors.SUCCEEDED_COLOR} />
+            <Text style={styles.highlightLabel}>{i18n.t('sent')}</Text>
+            <MaterialIcons name="remove-done" size={16} color={Colors.FAILED_COLOR} />
+            <Text style={styles.highlightLabel}>{i18n.t('will-dont-serve')}</Text>
+          </View>
         </View>
-        <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-          <FontAwesome name="send" size={16} color={Colors.SUCCEEDED_COLOR} />
-          <Text style={styles.highlightLabel}>{i18n.t('sent')}</Text>
-          <MaterialIcons name="remove-done" size={16} color={Colors.FAILED_COLOR} />
-          <Text style={styles.highlightLabel}>{i18n.t('will-dont-serve')}</Text>
-        </View>
-      </View>
+      )}
 
       {selectedOrdersCount > 0 && (
         <View style={styles.topActionsView}>

@@ -22,6 +22,7 @@ import { Colors } from '../utils/constants';
 // icons
 import { AntDesign } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
+import ForgetPasswordModal from '../components/ForgetPasswordModal';
 
 const SignInScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -33,6 +34,7 @@ const SignInScreen = ({ navigation }) => {
   const [globalError, setGlobalError] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showForgetPasswordModal, setShowForgetPasswordModal] = useState(false);
 
   // error object contains error message and fields that has the error
   const [preSignError, setPreSignError] = useState({});
@@ -114,12 +116,6 @@ const SignInScreen = ({ navigation }) => {
       ) : (
         <>
           <View style={styles.signInView}>
-            {/* <LinearGradient
-              // Background Linear Gradient
-              colors={[Colors.WHITE_COLOR, Colors.MAIN_COLOR]}
-              style={styles.background}
-            /> */}
-
             <Image style={styles.logo} source={require('../../assets/logo.png')} />
             <View style={styles.inputDiv}>
               <Text style={[styles.signInLabel, styles.bigFont]}>{i18n.t('sign-in')}</Text>
@@ -165,17 +161,21 @@ const SignInScreen = ({ navigation }) => {
                 <Text style={{ color: Colors.FAILED_COLOR }}>{i18n.t(globalError)}</Text>
               ) : null}
 
+              <Text
+                style={{ alignSelf: 'flex-end', color: Colors.WHITE_COLOR }}
+                onPress={() => {
+                  setShowForgetPasswordModal(true);
+                }}
+              >
+                {i18n.t('forget-password')}
+              </Text>
+
               <TouchableOpacity style={styles.button} onPress={signinHanlder}>
                 <Text style={styles.buttonText}>{i18n.t('sign-in')}</Text>
               </TouchableOpacity>
             </View>
           </View>
-          <View style={styles.signupView}>
-            <Text style={styles.signupSentences}>{i18n.t('sign-up-sentence')}</Text>
-            <Text style={styles.signupBtn} onPress={goToSignUpHandler}>
-              {i18n.t('sign-up')}
-            </Text>
-          </View>
+          {showForgetPasswordModal && <ForgetPasswordModal cancelAction={() => setShowForgetPasswordModal(false)} />}
         </>
       )}
     </View>
