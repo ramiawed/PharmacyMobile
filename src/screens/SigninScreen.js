@@ -175,6 +175,12 @@ const SignInScreen = ({ navigation }) => {
               </TouchableOpacity>
             </View>
           </View>
+          <View style={styles.signUpView}>
+            <Text style={styles.signUpSentences}>{i18n.t('sign-up-sentence')}</Text>
+            <Text style={styles.signUpBtn} onPress={goToSignUpHandler}>
+              {i18n.t('sign-up')}
+            </Text>
+          </View>
           {showForgetPasswordModal && <ForgetPasswordModal cancelAction={() => setShowForgetPasswordModal(false)} />}
         </>
       )}
@@ -250,6 +256,24 @@ const styles = StyleSheet.create({
     color: Colors.MAIN_COLOR,
   },
   signupBtn: {
+    color: Colors.FAILED_COLOR,
+    fontWeight: 'bold',
+    paddingHorizontal: 6,
+    fontSize: 16,
+  },
+  signUpView: {
+    position: 'absolute',
+    top: 25,
+    end: 0,
+    marginTop: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  signUpSentences: {
+    color: Colors.MAIN_COLOR,
+  },
+  signUpBtn: {
     color: Colors.FAILED_COLOR,
     fontWeight: 'bold',
     paddingHorizontal: 6,
