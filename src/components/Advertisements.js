@@ -1,26 +1,23 @@
 import React from 'react';
 import { useNavigation } from '@react-navigation/native';
-import i18n from '../i18n/index';
-import { FlatList, View, Image, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { FlatList, View, StyleSheet } from 'react-native';
 
 // redux stuff
-import { unwrapResult } from '@reduxjs/toolkit';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectUserData } from '../redux/auth/authSlice';
 import { selectAdvertisements } from '../redux/advertisements/advertisementsSlice';
 import { setSearchCompanyId, setSearchWarehouseId } from '../redux/medicines/medicinesSlices';
 
 // images
-import LogoWithDotsImage from '../../assets/1.png';
-import OrderOnlineImage from '../../assets/2.png';
-import WarehouseWithOffersImage from '../../assets/3.png';
-import FreeServicesImage from '../../assets/4.png';
+// import LogoWithDotsImage from '../../assets/1.png';
+// import OrderOnlineImage from '../../assets/2.png';
+// import WarehouseWithOffersImage from '../../assets/3.png';
+// import FreeServicesImage from '../../assets/4.png';
 
 // components
 import AdvertisementCard from './AdvertisementCard';
 
 // constants
-import { Colors, SERVER_URL } from '../utils/constants';
+import { Colors } from '../utils/constants';
 
 const Advertisements = () => {
   const navigation = useNavigation();
@@ -39,10 +36,8 @@ const Advertisements = () => {
 
   const backgrounds = [
     ...adminAdvertisements,
-    { source: LogoWithDotsImage, type: 'static' },
-    { source: OrderOnlineImage, type: 'static' },
-    { source: WarehouseWithOffersImage, type: 'static' },
-    { source: FreeServicesImage, type: 'static' },
+    // { source: OrderOnlineImage, type: 'static' },
+    // { source: WarehouseWithOffersImage, type: 'static' },
   ];
 
   const onAdvertisementPressHandler = (adv) => {
@@ -72,7 +67,9 @@ const Advertisements = () => {
     }
   };
 
-  return (
+  return backgrounds?.length === 0 ? (
+    <></>
+  ) : (
     <View
       style={{
         height: 320,

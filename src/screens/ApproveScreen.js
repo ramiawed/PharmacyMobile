@@ -13,28 +13,21 @@ const ApproveScreen = ({ navigation }) => {
         style={styles.background}
       />
       <View style={styles.approveView}>
-        {/* <LinearGradient
-          // Background Linear Gradient
-          colors={[Colors.WHITE_COLOR, Colors.MAIN_COLOR]}
-          style={styles.background}
-        /> */}
-
         <Image style={styles.logo} source={require('../../assets/logo.png')} />
         <View style={styles.textView}>
           <Text style={styles.header}>{i18n.t('believed-partner')}</Text>
           <Text style={styles.text}>{i18n.t('thank-message')}</Text>
           <Text style={styles.text}>{i18n.t('approve-message')}</Text>
           <Text style={{ ...styles.text, marginVertical: 10 }}>{i18n.t('hour-serving')}</Text>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => {
+              navigation.navigate('SignIn');
+            }}
+          >
+            <Text style={styles.buttonText}>{i18n.t('sign-in')}</Text>
+          </TouchableOpacity>
         </View>
-
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => {
-            navigation.navigate('SignIn');
-          }}
-        >
-          <Text style={styles.buttonText}>{i18n.t('sign-in')}</Text>
-        </TouchableOpacity>
       </View>
     </View>
   );
@@ -56,15 +49,14 @@ const styles = StyleSheet.create({
   approveView: {
     borderRadius: 15,
     width: '80%',
-    minHeight: '50%',
+    height: 300,
     alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'hidden',
+    justifyContent: 'space-around',
   },
   textView: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'flex-start',
+    justifyContent: 'center',
   },
   logo: {
     width: 150,
@@ -77,7 +69,7 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
   text: {
-    fontSize: 20,
+    fontSize: 16,
     fontWeight: 'bold',
     color: Colors.WHITE_COLOR,
     textAlign: 'center',

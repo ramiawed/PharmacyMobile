@@ -26,9 +26,19 @@ const Input = ({ value, onTextChange, placeholder, password, icon, error, border
           style={styles.inputText}
           value={value}
           onChangeText={onTextChange}
-          placeholder={placeholder}
+          // placeholder={placeholder}
           secureTextEntry={password}
         />
+        {placeholder?.length && value.trim().length === 0 && (
+          <View
+            style={{
+              position: 'absolute',
+              start: 30,
+            }}
+          >
+            <Text style={{ color: Colors.SECONDARY_COLOR, fontSize: 12 }}>{placeholder}</Text>
+          </View>
+        )}
         {value.trim().length > 0 && (
           <TouchableOpacity>
             <AntDesign name="closecircleo" size={24} color={Colors.MAIN_COLOR} onPress={() => onTextChange('')} />
@@ -58,6 +68,7 @@ const styles = StyleSheet.create({
     textAlign: 'right',
     fontSize: 20,
     color: Colors.MAIN_COLOR,
+    zIndex: 100,
   },
   errorText: {
     color: Colors.FAILED_COLOR,

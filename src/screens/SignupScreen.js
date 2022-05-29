@@ -468,11 +468,6 @@ const SignupScreen = ({ navigation }) => {
   return (
     <>
       <View style={styles.container}>
-        {/* <LinearGradient
-          // Background Linear Gradient
-          colors={[Colors.MAIN_COLOR, Colors.WHITE_COLOR]}
-          style={styles.background}
-        /> */}
         <LinearGradient
           // Background Linear Gradient
           colors={[Colors.WHITE_COLOR, Colors.MAIN_COLOR]}

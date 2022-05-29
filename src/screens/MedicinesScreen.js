@@ -11,6 +11,7 @@ import {
   ActivityIndicator,
   TextInput,
   FlatList,
+  CheckBox,
 } from 'react-native';
 // libraries
 import { BottomSheet } from 'react-native-btr';
@@ -28,6 +29,8 @@ import {
   setSearchName,
   setSearchCompanyName,
   setSearchWarehouseName,
+  setSearchInWarehouse,
+  setSearchOutWarehouse,
 } from '../redux/medicines/medicinesSlices';
 
 // components
@@ -113,6 +116,18 @@ const MedicinesScreen = ({ navigation }) => {
     setShowAddToCartModal(true);
   };
 
+  const inWarehouseCheckBoxHandler = () => {
+    dispatch(setSearchInWarehouse(!pageState.searchInWarehouse));
+    dispatch(setSearchOutWarehouse(false));
+    onSearchSubmit();
+  };
+
+  const outWarehouseCheckBoxHandler = () => {
+    dispatch(setSearchOutWarehouse(!pageState.searchOutWarehouse));
+    dispatch(setSearchInWarehouse(false));
+    onSearchSubmit();
+  };
+
   useFocusEffect(
     useCallback(() => {
       // Do something when the screen is focused
@@ -128,14 +143,7 @@ const MedicinesScreen = ({ navigation }) => {
   return user ? (
     <View style={styles.container}>
       <SearchContainer>
-        <View
-          style={{
-            flexDirection: 'row',
-            backgroundColor: Colors.WHITE_COLOR,
-            alignItems: 'center',
-            borderRadius: 6,
-          }}
-        >
+        <View style={styles.searchNameView}>
           <TextInput
             style={{ ...styles.searchTextInput, flex: 1 }}
             placeholder={i18n.t('search-by-name-composition-barcode')}
@@ -146,13 +154,7 @@ const MedicinesScreen = ({ navigation }) => {
             onKeyPress={keyUpHandler}
             value={pageState.searchName}
           />
-          <View
-            style={{
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: 40,
-            }}
-          >
+          <View style={styles.barcodeIcon}>
             <AntDesign name="barcode" size={32} color={Colors.MAIN_COLOR} onPress={() => setShowScanner(true)} />
           </View>
         </View>
@@ -181,6 +183,20 @@ const MedicinesScreen = ({ navigation }) => {
             onKeyPress={keyUpHandler}
             value={pageState.searchWarehouseName}
           />
+        )}
+
+        {pageState.searchWarehouseId === null && (
+          <View style={styles.checkBoxView}>
+            <CheckBox value={pageState.searchInWarehouse} onValueChange={inWarehouseCheckBoxHandler} />
+            <Text style={{ color: Colors.MAIN_COLOR }}>{i18n.t('warehouse-in-warehouse')}</Text>
+          </View>
+        )}
+
+        {pageState.searchWarehouseId === null && (
+          <View style={styles.checkBoxView}>
+            <CheckBox value={pageState.searchOutWarehouse} onValueChange={outWarehouseCheckBoxHandler} />
+            <Text style={{ color: Colors.MAIN_COLOR }}>{i18n.t('warehouse-out-warehouse')}</Text>
+          </View>
         )}
       </SearchContainer>
 
@@ -265,6 +281,24 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '500',
     color: Colors.SECONDARY_COLOR,
+  },
+  checkBoxView: {
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    flexDirection: 'row',
+    backgroundColor: Colors.WHITE_COLOR,
+    borderRadius: 6,
+  },
+  searchNameView: {
+    flexDirection: 'row',
+    backgroundColor: Colors.WHITE_COLOR,
+    alignItems: 'center',
+    borderRadius: 6,
+  },
+  barcodeIcon: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 40,
   },
 });
 
