@@ -15,6 +15,7 @@ import { getAllAdvertisements } from '../redux/advertisements/advertisementsSlic
 // components
 import Input from '../components/Input';
 import Loader from '../components/Loader';
+import ForgetPasswordModal from '../components/ForgetPasswordModal';
 
 // constants
 import { Colors } from '../utils/constants';
@@ -22,7 +23,6 @@ import { Colors } from '../utils/constants';
 // icons
 import { AntDesign } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
-import ForgetPasswordModal from '../components/ForgetPasswordModal';
 
 const SignInScreen = ({ navigation }) => {
   const dispatch = useDispatch();

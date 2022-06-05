@@ -13,9 +13,10 @@ const CustomPicker = ({ selectedValue, onChange, data, label, error, forSearch }
         marginBottom: forSearch ? 0 : 10,
         width: forSearch ? '100%' : '90%',
         borderRadius: forSearch ? 6 : 15,
-        padding: forSearch ? 5 : 10,
+        paddingStart: forSearch ? 5 : 5,
         borderWidth: forSearch ? 0 : 1,
         borderColor: error ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
+        overflow: 'hidden',
       }}
     >
       <Text>{label}</Text>
@@ -23,10 +24,11 @@ const CustomPicker = ({ selectedValue, onChange, data, label, error, forSearch }
         selectedValue={selectedValue}
         onValueChange={(itemValue, itemIndex) => onChange(itemValue)}
         style={{
-          width: '90%',
           height: 30,
+          flex: 1,
           backgroundColor: Colors.WHITE_COLOR,
           color: Colors.MAIN_COLOR,
+          borderRadius: 6,
         }}
         itemStyle={{
           color: Colors.MAIN_COLOR,

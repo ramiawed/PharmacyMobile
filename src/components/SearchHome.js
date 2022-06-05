@@ -288,6 +288,7 @@ const styles = StyleSheet.create({
     color: Colors.MAIN_COLOR,
     fontSize: 12,
     paddingHorizontal: 10,
+    textAlign: 'right',
   },
 });
 

@@ -1,19 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import i18n from 'i18n-js';
 
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  ScrollView,
-  RefreshControl,
-  Image,
-  ActivityIndicator,
-  FlatList,
-  TouchableOpacity,
-  Button,
-} from 'react-native';
+import { View, Text, StyleSheet, RefreshControl, FlatList, TouchableOpacity } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 // components
@@ -21,6 +9,10 @@ import SearchContainer from '../components/SearchContainer';
 import CustomPicker from '../components/CustomPicker';
 import OrderRow from '../components/OrderRow';
 import Loader from '../components/Loader';
+import Toast from 'react-native-toast-message';
+import NoContent from '../components/NoContent';
+import SearchInput from '../components/SearchInput';
+import LoadingData from '../components/LoadingData';
 
 // redux stuff
 import { unwrapResult } from '@reduxjs/toolkit';
@@ -55,7 +47,6 @@ import {
   UserTypeConstants,
   WarehouseOrderStatus,
 } from '../utils/constants';
-import Toast from 'react-native-toast-message';
 
 const calculateSelectedOrdersCount = (orders) => {
   let count = 0;
@@ -76,6 +67,7 @@ const OrdersScreen = () => {
   const [date, setDate] = useState(new Date());
   const [mode, setMode] = useState('date');
   const [show, setShow] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate ? selectedDate : date;
@@ -95,7 +87,6 @@ const OrdersScreen = () => {
   };
 
   // own states
-  const [refreshing, setRefreshing] = useState(false);
 
   const handleSearch = () => {
     dispatch(
@@ -299,10 +290,9 @@ const OrdersScreen = () => {
     <View style={styles.container}>
       <SearchContainer>
         {user.type !== UserTypeConstants.PHARMACY && (
-          <TextInput
-            style={styles.searchTextInput}
+          <SearchInput
             placeholder={i18n.t('search-by-pharmacy-name')}
-            onChangeText={(val) => {
+            onTextChange={(val) => {
               dispatch(setSearchPharmacyName(val));
             }}
             onSubmitEditing={onSearchSubmit}
@@ -312,10 +302,9 @@ const OrdersScreen = () => {
         )}
 
         {user.type !== UserTypeConstants.WAREHOUSE && (
-          <TextInput
-            style={styles.searchTextInput}
+          <SearchInput
             placeholder={i18n.t('search-by-warehouse-name')}
-            onChangeText={(val) => {
+            onTextChange={(val) => {
               dispatch(setSearchWarehouseName(val));
             }}
             onSubmitEditing={onSearchSubmit}
@@ -451,24 +440,7 @@ const OrdersScreen = () => {
       )}
 
       {orders?.length === 0 && status !== 'loading' && (
-        <ScrollView
-          contentContainerStyle={{
-            width: '100%',
-            height: '100%',
-          }}
-          refreshControl={
-            <RefreshControl
-              //refresh control used for the Pull to Refresh
-              refreshing={refreshing}
-              onRefresh={onRefreshing}
-            />
-          }
-        >
-          <View style={styles.noContentContainer}>
-            <Image source={require('../../assets/no-content.jpeg')} style={styles.noContentImage} />
-            <Text style={styles.noContent}>{i18n.t('no-orders-found')}</Text>
-          </View>
-        </ScrollView>
+        <NoContent refreshing={refreshing} onRefreshing={onRefreshing} msg="no-orders-found" />
       )}
 
       {orders?.length > 0 && (
@@ -495,21 +467,7 @@ const OrdersScreen = () => {
         />
       )}
 
-      {status === 'loading' && (
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <ActivityIndicator size="large" color={Colors.SECONDARY_COLOR} />
-          <Text
-            style={{
-              fontSize: 18,
-              fontWeight: '700',
-              color: Colors.SECONDARY_COLOR,
-              marginTop: 20,
-            }}
-          >
-            {i18n.t('loading-data')}
-          </Text>
-        </View>
-      )}
+      {status === 'loading' && <LoadingData />}
 
       {deleteStatus === 'loading' && <Loader />}
     </View>
@@ -520,16 +478,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.WHITE_COLOR,
-  },
-  noContentContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  noContentImage: {
-    width: 200,
-    height: 200,
-    resizeMode: 'contain',
   },
   topActionsView: {
     flexDirection: 'row',
@@ -547,12 +495,6 @@ const styles = StyleSheet.create({
     marginEnd: 10,
   },
   actionText: { color: Colors.WHITE_COLOR, marginEnd: 10 },
-  searchTextInput: {
-    backgroundColor: Colors.WHITE_COLOR,
-    borderRadius: 6,
-    paddingVertical: 4,
-    paddingHorizontal: 10,
-  },
   date: {
     backgroundColor: Colors.WHITE_COLOR,
     width: '100%',

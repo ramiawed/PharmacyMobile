@@ -1,17 +1,8 @@
 import i18n from '../i18n/index';
 
-import React, { useCallback, useEffect, useState } from 'react';
-import { useFocusEffect, useIsFocused } from '@react-navigation/native';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  RefreshControl,
-  ActivityIndicator,
-  TextInput,
-  FlatList,
-} from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import { View, StyleSheet, RefreshControl, FlatList } from 'react-native';
 // libraries
 import { BottomSheet } from 'react-native-btr';
 
@@ -27,26 +18,27 @@ import {
   setSearchCompanyName,
   setSearchWarehouseName,
   resetOfferItemsArray,
-  resetOfferItemsPageState,
 } from '../redux/offers/offersSlices';
 
 // components
 import OfferRow from '../components/OfferRow';
 import SearchContainer from '../components/SearchContainer';
+import Scanner from '../components/Scanner';
+import AddToCartOffer from '../components/AddToCartOffer';
+import NoContent from '../components/NoContent';
+import SearchInput from '../components/SearchInput';
+import LoadingData from '../components/LoadingData';
 
 // constants
-import { Colors, UserTypeConstants } from '../utils/constants';
+import { Colors } from '../utils/constants';
 
 // icons
 import { AntDesign } from '@expo/vector-icons';
-import Scanner from '../components/Scanner';
-import AddToCartOffer from '../components/AddToCartOffer';
 
 let timer;
 
 const OffersScreen = ({ navigation }) => {
   const dispatch = useDispatch();
-  const isFocused = useIsFocused();
 
   // selectors
   const { token, user } = useSelector(selectUserData);
@@ -121,39 +113,24 @@ const OffersScreen = ({ navigation }) => {
   return user ? (
     <View style={styles.container}>
       <SearchContainer>
-        <View
-          style={{
-            flexDirection: 'row',
-            backgroundColor: Colors.WHITE_COLOR,
-            alignItems: 'center',
-            borderRadius: 6,
-          }}
-        >
-          <TextInput
-            style={{ ...styles.searchTextInput, flex: 1 }}
+        <>
+          <SearchInput
             placeholder={i18n.t('search-by-name-composition-barcode')}
-            onChangeText={(val) => {
+            on={(val) => {
               dispatch(setSearchName(val));
             }}
             onSubmitEditing={onSearchSubmit}
             onKeyPress={keyUpHandler}
             value={pageState.searchName}
           />
-          <View
-            style={{
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: 40,
-            }}
-          >
+          <View style={styles.barcodeIcon}>
             <AntDesign name="barcode" size={32} color={Colors.MAIN_COLOR} onPress={() => setShowScanner(true)} />
           </View>
-        </View>
+        </>
 
-        <TextInput
-          style={styles.searchTextInput}
+        <SearchInput
           placeholder={i18n.t('search-by-company-name')}
-          onChangeText={(val) => {
+          onTextChange={(val) => {
             dispatch(setSearchCompanyName(val));
           }}
           onSubmitEditing={onSearchSubmit}
@@ -161,10 +138,9 @@ const OffersScreen = ({ navigation }) => {
           value={pageState.searchCompanyName}
         />
 
-        <TextInput
-          style={styles.searchTextInput}
+        <SearchInput
           placeholder={i18n.t('search-by-warehouse-name')}
-          onChangeText={(val) => {
+          onTextChange={(val) => {
             dispatch(setSearchWarehouseName(val));
           }}
           onSubmitEditing={onSearchSubmit}
@@ -174,17 +150,13 @@ const OffersScreen = ({ navigation }) => {
       </SearchContainer>
 
       {medicines?.length === 0 && status !== 'loading' && (
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefreshing} />}>
-            <Text style={styles.noContent}>{i18n.t('no-offers-at-all')}</Text>
-          </ScrollView>
-        </View>
+        <NoContent refreshing={refreshing} onRefreshing={onRefreshing} msg="no-offers-at-all" />
       )}
 
       {medicines?.length > 0 && (
         <FlatList
           data={medicines}
-          keyExtractor={(item) => item._id}
+          keyExtractor={(item, index) => index}
           refreshControl={
             <RefreshControl
               //refresh control used for the Pull to Refresh
@@ -209,21 +181,7 @@ const OffersScreen = ({ navigation }) => {
         />
       )}
 
-      {status === 'loading' && (
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <ActivityIndicator size="large" color={Colors.SECONDARY_COLOR} />
-          <Text
-            style={{
-              fontSize: 18,
-              fontWeight: '700',
-              color: Colors.SECONDARY_COLOR,
-              marginTop: 20,
-            }}
-          >
-            {i18n.t('loading-data')}
-          </Text>
-        </View>
-      )}
+      {status === 'loading' && <LoadingData />}
 
       {showScanner && <Scanner onScannerDone={scannerDoneHandler} close={() => setShowScanner(false)} />}
 
@@ -243,17 +201,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.WHITE_COLOR,
   },
-  searchTextInput: {
-    backgroundColor: Colors.WHITE_COLOR,
-    borderRadius: 6,
-    paddingVertical: 4,
-    paddingHorizontal: 10,
-  },
-  noContent: {
-    paddingTop: 25,
-    fontSize: 18,
-    fontWeight: '500',
-    color: Colors.SECONDARY_COLOR,
+  barcodeIcon: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 40,
+    position: 'absolute',
+    right: 30,
+    top: 3,
   },
 });
 

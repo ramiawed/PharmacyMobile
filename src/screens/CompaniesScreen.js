@@ -1,17 +1,8 @@
 import i18n from '../i18n/index';
 
-import React, { useCallback, useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  Animated,
-  RefreshControl,
-  ActivityIndicator,
-  TextInput,
-  Image,
-} from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { View, StyleSheet, Animated, RefreshControl } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 
 // redux stuff
 import { unwrapResult } from '@reduxjs/toolkit';
@@ -28,22 +19,24 @@ import {
 // components
 import PartnerCard from '../components/PartnerCard';
 import SearchContainer from '../components/SearchContainer';
+import NoContent from '../components/NoContent';
+import SearchInput from '../components/SearchInput';
+import LoadingData from '../components/LoadingData';
 
 // constants
 import { Colors } from '../utils/constants';
-import { useFocusEffect } from '@react-navigation/native';
 
 const SPACING = 20;
 
 let timer;
 
-const CompaniesScreen = ({ navigation }) => {
+const CompaniesScreen = ({}) => {
   const scrollY = React.useRef(new Animated.Value(0)).current;
 
   const dispatch = useDispatch();
 
   const { token } = useSelector(selectUserData);
-  const { companies, status, count } = useSelector(selectCompanies);
+  const { companies, status, count, pageState } = useSelector(selectCompanies);
 
   const [refreshing, setRefreshing] = useState(false);
 
@@ -97,32 +90,19 @@ const CompaniesScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <SearchContainer>
-        <TextInput
-          style={styles.searchCompaniesName}
+        <SearchInput
           placeholder={i18n.t('search-by-company-name')}
-          onChangeText={(val) => {
+          onTextChange={(val) => {
             dispatch(changeSearchName(val));
           }}
           onSubmitEditing={onSearchSubmit}
           onKeyPress={keyUpHandler}
+          value={pageState.searchName}
         />
       </SearchContainer>
 
       {companies?.length === 0 && status !== 'loading' && (
-        <View
-          style={{
-            height: '100%',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefreshing} />}>
-            <View style={styles.noContentContainer}>
-              <Image source={require('../../assets/no-content.jpeg')} style={styles.noContentImage} />
-              <Text style={styles.noContent}>{i18n.t('no-companies')}</Text>
-            </View>
-          </ScrollView>
-        </View>
+        <NoContent refreshing={refreshing} onRefreshing={onRefreshing} msg="no-companies" />
       )}
 
       {companies?.length > 0 && (
@@ -149,12 +129,7 @@ const CompaniesScreen = ({ navigation }) => {
         />
       )}
 
-      {status === 'loading' && (
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <ActivityIndicator size="large" color={Colors.SECONDARY_COLOR} />
-          <Text style={styles.loadingText}>{i18n.t('loading-data')}</Text>
-        </View>
-      )}
+      {status === 'loading' && <LoadingData />}
     </View>
   );
 };
@@ -169,22 +144,6 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     paddingVertical: 4,
     paddingHorizontal: 10,
-  },
-  noContentContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  noContent: {
-    paddingTop: 25,
-    fontSize: 18,
-    fontWeight: '500',
-    color: Colors.SECONDARY_COLOR,
-  },
-  noContentImage: {
-    width: 200,
-    height: 200,
-    resizeMode: 'contain',
   },
   loadingText: {
     fontSize: 18,

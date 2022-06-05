@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { Colors } from '../utils/constants';
 import { Feather } from '@expo/vector-icons';
 
-const SearchContainer = ({ children, searchAction }) => {
+const SearchContainer = ({ children }) => {
   let childrenArray = React.Children.toArray(children);
   const [moreSearchOptions, setMoreSearchOptions] = useState(false);
 
@@ -29,11 +29,9 @@ const SearchContainer = ({ children, searchAction }) => {
       </View>
       {childrenArray.length > 1 && (
         <Feather
-          style={{
-            marginTop: 5,
-          }}
+          style={styles.moreOptionsIcons}
           name="more-vertical"
-          size={24}
+          size={32}
           color={Colors.WHITE_COLOR}
           onPress={() => {
             setMoreSearchOptions(!moreSearchOptions);
@@ -50,6 +48,12 @@ const styles = StyleSheet.create({
     padding: 10,
     flexDirection: 'row',
     alignItems: 'flex-start',
+    justifyContent: 'center',
+  },
+  moreOptionsIcons: {
+    marginTop: 3,
+    width: 32,
+    alignItems: 'center',
     justifyContent: 'center',
   },
 });

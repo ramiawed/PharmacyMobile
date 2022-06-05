@@ -1,18 +1,9 @@
 import i18n from '../i18n/index';
 
-import React, { useCallback, useEffect, useState } from 'react';
-import { useFocusEffect, useIsFocused } from '@react-navigation/native';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  RefreshControl,
-  ActivityIndicator,
-  TextInput,
-  FlatList,
-  CheckBox,
-} from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import { View, Text, StyleSheet, RefreshControl, FlatList } from 'react-native';
+import CheckBox from 'expo-checkbox';
 // libraries
 import { BottomSheet } from 'react-native-btr';
 
@@ -37,20 +28,21 @@ import {
 import ItemCard from '../components/ItemCard';
 import SearchContainer from '../components/SearchContainer';
 import AddToCart from '../components/AddToCart';
+import Scanner from '../components/Scanner';
+import NoContent from '../components/NoContent';
+import SearchInput from '../components/SearchInput';
+import LoadingData from '../components/LoadingData';
 
 // constants
 import { Colors, UserTypeConstants } from '../utils/constants';
 
 // icons
 import { AntDesign } from '@expo/vector-icons';
-import { backgroundColor } from 'react-native/Libraries/Components/View/ReactNativeStyleAttributes';
-import Scanner from '../components/Scanner';
 
 let timer;
 
 const MedicinesScreen = ({ navigation }) => {
   const dispatch = useDispatch();
-  const isFocused = useIsFocused();
 
   // selectors
   const { token, user } = useSelector(selectUserData);
@@ -143,69 +135,63 @@ const MedicinesScreen = ({ navigation }) => {
   return user ? (
     <View style={styles.container}>
       <SearchContainer>
-        <View style={styles.searchNameView}>
-          <TextInput
-            style={{ ...styles.searchTextInput, flex: 1 }}
+        <>
+          <SearchInput
             placeholder={i18n.t('search-by-name-composition-barcode')}
-            onChangeText={(val) => {
+            onTextChange={(val) => {
               dispatch(setSearchName(val));
             }}
             onSubmitEditing={onSearchSubmit}
             onKeyPress={keyUpHandler}
             value={pageState.searchName}
           />
+
           <View style={styles.barcodeIcon}>
             <AntDesign name="barcode" size={32} color={Colors.MAIN_COLOR} onPress={() => setShowScanner(true)} />
           </View>
-        </View>
+        </>
 
         {user.type !== UserTypeConstants.GUEST && pageState.searchCompanyId === null && (
-          <TextInput
-            style={styles.searchTextInput}
-            placeholder={i18n.t('search-by-company-name')}
-            onChangeText={(val) => {
-              dispatch(setSearchCompanyName(val));
+          <SearchInput
+            value={pageState.searchCompanyName}
+            onTextChange={(text) => {
+              dispatch(setSearchCompanyName(text));
             }}
+            placeholder={i18n.t('search-by-company-name')}
             onSubmitEditing={onSearchSubmit}
             onKeyPress={keyUpHandler}
-            value={pageState.searchCompanyName}
           />
         )}
 
         {user.type !== UserTypeConstants.GUEST && pageState.searchWarehouseId === null && (
-          <TextInput
-            style={styles.searchTextInput}
-            placeholder={i18n.t('search-by-warehouse-name')}
-            onChangeText={(val) => {
-              dispatch(setSearchWarehouseName(val));
+          <SearchInput
+            value={pageState.searchWarehouseName}
+            onTextChange={(text) => {
+              dispatch(setSearchWarehouseName(text));
             }}
+            placeholder={i18n.t('search-by-warehouse-name')}
             onSubmitEditing={onSearchSubmit}
             onKeyPress={keyUpHandler}
-            value={pageState.searchWarehouseName}
           />
         )}
 
         {pageState.searchWarehouseId === null && (
           <View style={styles.checkBoxView}>
             <CheckBox value={pageState.searchInWarehouse} onValueChange={inWarehouseCheckBoxHandler} />
-            <Text style={{ color: Colors.MAIN_COLOR }}>{i18n.t('warehouse-in-warehouse')}</Text>
+            <Text style={{ color: Colors.MAIN_COLOR, marginStart: 8 }}>{i18n.t('warehouse-in-warehouse')}</Text>
           </View>
         )}
 
         {pageState.searchWarehouseId === null && (
           <View style={styles.checkBoxView}>
             <CheckBox value={pageState.searchOutWarehouse} onValueChange={outWarehouseCheckBoxHandler} />
-            <Text style={{ color: Colors.MAIN_COLOR }}>{i18n.t('warehouse-out-warehouse')}</Text>
+            <Text style={{ color: Colors.MAIN_COLOR, marginStart: 8 }}>{i18n.t('warehouse-out-warehouse')}</Text>
           </View>
         )}
       </SearchContainer>
 
       {medicines?.length === 0 && status !== 'loading' && (
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefreshing} />}>
-            <Text style={styles.noContent}>{i18n.t('no-medicines')}</Text>
-          </ScrollView>
-        </View>
+        <NoContent refreshing={refreshing} onRefreshing={onRefreshing} msg="no-medicines" />
       )}
 
       {medicines?.length > 0 && (
@@ -236,21 +222,7 @@ const MedicinesScreen = ({ navigation }) => {
         />
       )}
 
-      {status === 'loading' && (
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <ActivityIndicator size="large" color={Colors.SECONDARY_COLOR} />
-          <Text
-            style={{
-              fontSize: 18,
-              fontWeight: '700',
-              color: Colors.SECONDARY_COLOR,
-              marginTop: 20,
-            }}
-          >
-            {i18n.t('loading-data')}
-          </Text>
-        </View>
-      )}
+      {status === 'loading' && <LoadingData />}
 
       {showScanner && <Scanner onScannerDone={scannerDoneHandler} close={() => setShowScanner(false)} />}
 
@@ -270,35 +242,21 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.WHITE_COLOR,
   },
-  searchTextInput: {
-    backgroundColor: Colors.WHITE_COLOR,
-    borderRadius: 6,
-    paddingVertical: 4,
-    paddingHorizontal: 10,
-  },
-  noContent: {
-    paddingTop: 25,
-    fontSize: 18,
-    fontWeight: '500',
-    color: Colors.SECONDARY_COLOR,
-  },
   checkBoxView: {
     alignItems: 'center',
     justifyContent: 'flex-start',
     flexDirection: 'row',
     backgroundColor: Colors.WHITE_COLOR,
     borderRadius: 6,
-  },
-  searchNameView: {
-    flexDirection: 'row',
-    backgroundColor: Colors.WHITE_COLOR,
-    alignItems: 'center',
-    borderRadius: 6,
+    padding: 8,
   },
   barcodeIcon: {
     alignItems: 'center',
     justifyContent: 'center',
     width: 40,
+    position: 'absolute',
+    right: 30,
+    top: 3,
   },
 });
 
