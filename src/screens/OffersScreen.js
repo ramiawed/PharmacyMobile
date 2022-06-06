@@ -116,7 +116,7 @@ const OffersScreen = ({ navigation }) => {
         <>
           <SearchInput
             placeholder={i18n.t('search-by-name-composition-barcode')}
-            on={(val) => {
+            onTextChange={(val) => {
               dispatch(setSearchName(val));
             }}
             onSubmitEditing={onSearchSubmit}
