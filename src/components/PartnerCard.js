@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Image, TouchableWithoutFeedback, Animated, Acti
 import { useNavigation } from '@react-navigation/native';
 
 // icons
-import { AntDesign } from '@expo/vector-icons';
+import { AntDesign, FontAwesome5 } from '@expo/vector-icons';
 
 // redux stuff
 import { unwrapResult } from '@reduxjs/toolkit';
@@ -11,7 +11,7 @@ import { resetMedicines, setSearchWarehouseId, setSearchCompanyId } from '../red
 import { useDispatch, useSelector } from 'react-redux';
 import { addFavorite, removeFavorite, selectFavoritesPartners } from '../redux/favorites/favoritesSlice';
 import { addStatistics } from '../redux/statistics/statisticsSlice';
-import { selectUserData } from '../redux/auth/authSlice';
+import { addCompanyToOurCompanies, removeCompanyFromOurCompanies, selectUserData } from '../redux/auth/authSlice';
 import { setSelectedWarehouse } from '../redux/warehouse/warehousesSlice';
 import { selectSettings } from '../redux/settings/settingsSlice';
 
@@ -31,6 +31,7 @@ const PartnerCard = ({ partner, advertisement }) => {
   } = useSelector(selectSettings);
 
   const [changeFavoriteLoading, setChangeFavoriteLoading] = useState(false);
+  const [changeLinkCompanyToWarehouse, setChangeLinkCompanyToWarehouse] = useState(false);
 
   const allowShowingWarehouseMedicines =
     user.type === UserTypeConstants.ADMIN ||
@@ -71,6 +72,32 @@ const PartnerCard = ({ partner, advertisement }) => {
         setChangeFavoriteLoading(false);
       })
       .catch(() => setChangeFavoriteLoading(false));
+  };
+
+  const addCompanyToOurCompaniesHandler = (e) => {
+    setChangeLinkCompanyToWarehouse(true);
+
+    dispatch(addCompanyToOurCompanies({ companyId: partner._id, token }))
+      .then(unwrapResult)
+      .then(() => {
+        setChangeLinkCompanyToWarehouse(false);
+      })
+      .catch(() => {
+        setChangeLinkCompanyToWarehouse(false);
+      });
+  };
+
+  const removeCompanyFromOurCompaniesHandler = (e) => {
+    setChangeLinkCompanyToWarehouse(true);
+
+    dispatch(removeCompanyFromOurCompanies({ companyId: partner._id, token }))
+      .then(unwrapResult)
+      .then(() => {
+        setChangeLinkCompanyToWarehouse(false);
+      })
+      .catch(() => {
+        setChangeLinkCompanyToWarehouse(false);
+      });
   };
 
   const dispatchPartnerSelected = () => {
@@ -117,6 +144,9 @@ const PartnerCard = ({ partner, advertisement }) => {
 
       navigation.navigate('Medicines', {
         screen: 'AllMedicines',
+        params: {
+          myCompanies: partner.ourCompanies,
+        },
       });
     }
   };
@@ -130,8 +160,34 @@ const PartnerCard = ({ partner, advertisement }) => {
           marginHorizontal: 4,
         }}
       >
-        <TouchableWithoutFeedback onPress={() => {}}>
+        <TouchableWithoutFeedback>
           <View style={styles.favoriteIcon}>
+            {user.type === UserTypeConstants.WAREHOUSE && partner.type === UserTypeConstants.COMPANY ? (
+              changeLinkCompanyToWarehouse ? (
+                <ActivityIndicator size="small" color={Colors.YELLOW_COLOR} />
+              ) : (
+                <>
+                  {user.ourCompanies.includes(partner._id) ? (
+                    <FontAwesome5
+                      name="handshake-slash"
+                      size={24}
+                      color={Colors.FAILED_COLOR}
+                      onPress={removeCompanyFromOurCompaniesHandler}
+                    />
+                  ) : (
+                    <FontAwesome5
+                      name="handshake"
+                      size={24}
+                      color={Colors.SUCCEEDED_COLOR}
+                      onPress={addCompanyToOurCompaniesHandler}
+                    />
+                  )}
+                </>
+              )
+            ) : (
+              <></>
+            )}
+            <View style={{ width: 5 }}></View>
             {changeFavoriteLoading ? (
               <ActivityIndicator size="small" color={Colors.YELLOW_COLOR} />
             ) : favorites && favorites.map((favorite) => favorite._id).includes(partner?._id) ? (

@@ -191,6 +191,21 @@ const OrdersScreen = () => {
     }
   };
 
+  const [selectedAdminOption, setSelectedAdminOption] = useState({
+    value: AdminOrderStatus.ALL,
+    label: i18n.t('all'),
+  });
+
+  const [selectedWarehouseOption, setSelectedWarehouseOption] = useState({
+    value: WarehouseOrderStatus.ALL,
+    label: i18n.t('all'),
+  });
+
+  const [selectedPharmacyOption, setSelectedPharmacyOption] = useState({
+    value: PharmacyOrderStatus.ALL,
+    label: i18n.t('all'),
+  });
+
   const adminOrderStatusOptions = [
     {
       value: AdminOrderStatus.ALL,
@@ -207,8 +222,9 @@ const OrdersScreen = () => {
     },
   ];
 
-  const handleAdminOrderStatusOption = (val) => {
-    dispatch(setAdminOrderStatus(val));
+  const handleAdminOrderStatusOption = (itemValue, itemIndex) => {
+    setSelectedAdminOption(itemValue);
+    dispatch(setAdminOrderStatus(itemValue));
     onSearchSubmit();
   };
 
@@ -235,8 +251,9 @@ const OrdersScreen = () => {
     },
   ];
 
-  const handleWarehouseOrderStatusOption = (val) => {
-    dispatch(setWarehouseOrderStatus(val));
+  const handleWarehouseOrderStatusOption = (itemValue, itemIndex) => {
+    setSelectedWarehouseOption(itemValue);
+    dispatch(setWarehouseOrderStatus(itemValue));
     onSearchSubmit();
   };
 
@@ -256,8 +273,9 @@ const OrdersScreen = () => {
     },
   ];
 
-  const handlePharmacyOrderStatusOption = (val) => {
-    dispatch(setPharmacyOrderStatus(val));
+  const handlePharmacyOrderStatusOption = (itemValue, itemIndex) => {
+    setSelectedPharmacyOption(itemValue);
+    dispatch(setPharmacyOrderStatus(itemValue));
     onSearchSubmit();
   };
 
@@ -315,10 +333,7 @@ const OrdersScreen = () => {
 
         {user.type === UserTypeConstants.ADMIN && (
           <CustomPicker
-            selectedValue={{
-              label: '',
-              value: pageState.adminOrderStatus,
-            }}
+            selectedValue={selectedAdminOption}
             data={adminOrderStatusOptions}
             onChange={handleAdminOrderStatusOption}
             label={i18n.t('admin-order-status')}
@@ -327,10 +342,7 @@ const OrdersScreen = () => {
         )}
 
         <CustomPicker
-          selectedValue={{
-            label: '',
-            value: pageState.warehouseOrderStatus,
-          }}
+          selectedValue={selectedWarehouseOption}
           data={warehouseOrderStatusOptions}
           onChange={handleWarehouseOrderStatusOption}
           label={i18n.t('warehouse-order-status')}
@@ -338,10 +350,7 @@ const OrdersScreen = () => {
         />
 
         <CustomPicker
-          selectedValue={{
-            label: '',
-            value: pageState.pharmacyOrderStatus,
-          }}
+          selectedValue={selectedPharmacyOption}
           data={pharmacyOrderStatusOptions}
           onChange={handlePharmacyOrderStatusOption}
           label={i18n.t('pharmacy-order-status')}

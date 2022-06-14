@@ -116,6 +116,9 @@ const PartnerRow = ({ partner, type }) => {
 
       navigation.navigate('Medicines', {
         screen: 'AllMedicines',
+        params: {
+          myCompanies: partner.ourCompanies,
+        },
       });
     }
   };

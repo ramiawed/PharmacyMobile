@@ -90,6 +90,9 @@ const PartnerFavoriteRow = ({ type, favorite }) => {
 
     navigation.navigate('Medicines', {
       screen: 'AllMedicines',
+      params: {
+        myCompanies: favorite.ourCompanies,
+      },
     });
   };
 

@@ -3,6 +3,7 @@ import i18n from '../i18n/index';
 import React, { useCallback, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, StyleSheet, RefreshControl, FlatList } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 import CheckBox from 'expo-checkbox';
 // libraries
 import { BottomSheet } from 'react-native-btr';
@@ -41,8 +42,15 @@ import { AntDesign } from '@expo/vector-icons';
 
 let timer;
 
-const MedicinesScreen = ({ navigation }) => {
+const MedicinesScreen = ({ navigation, route }) => {
   const dispatch = useDispatch();
+  const { myCompanies } = route.params;
+
+  const options = myCompanies?.map((c) => {
+    return { value: c._id, label: c.name };
+  });
+
+  const companiesOptions = [{ value: '', label: i18n.t('all-companies') }, ...options];
 
   // selectors
   const { token, user } = useSelector(selectUserData);
@@ -53,6 +61,20 @@ const MedicinesScreen = ({ navigation }) => {
   const [itemToAddToCart, setItemToAddToCart] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
+
+  const [selectedCompany, setSelectedCompany] = useState();
+
+  const changeCompanySelectedHandler = (itemValue, itemIndex) => {
+    setSelectedCompany(itemValue);
+    if (itemValue === '') {
+      dispatch(setSearchCompanyName(''));
+      onRefreshing();
+    } else {
+      const company = companiesOptions.find((c) => c.value === itemValue);
+      dispatch(setSearchCompanyName(company.label));
+      onRefreshing();
+    }
+  };
 
   // search handler
   const handleSearch = () => {
@@ -151,7 +173,7 @@ const MedicinesScreen = ({ navigation }) => {
           </View>
         </>
 
-        {user.type !== UserTypeConstants.GUEST && pageState.searchCompanyId === null && (
+        {pageState.searchCompanyId === null && pageState.searchWarehouseId === null && (
           <SearchInput
             value={pageState.searchCompanyName}
             onTextChange={(text) => {
@@ -163,7 +185,7 @@ const MedicinesScreen = ({ navigation }) => {
           />
         )}
 
-        {user.type !== UserTypeConstants.GUEST && pageState.searchWarehouseId === null && (
+        {pageState.searchWarehouseId === null && user.type !== UserTypeConstants.GUEST && (
           <SearchInput
             value={pageState.searchWarehouseName}
             onTextChange={(text) => {
@@ -173,6 +195,23 @@ const MedicinesScreen = ({ navigation }) => {
             onSubmitEditing={onSearchSubmit}
             onKeyPress={keyUpHandler}
           />
+        )}
+
+        {pageState.searchWarehouseId !== null && (
+          <View style={styles.pickerView}>
+            <Picker
+              style={styles.picker}
+              itemStyle={{
+                color: Colors.MAIN_COLOR,
+              }}
+              selectedValue={selectedCompany}
+              onValueChange={changeCompanySelectedHandler}
+            >
+              {companiesOptions.map((item) => (
+                <Picker.Item label={item.label} value={item.value} key={item.value} />
+              ))}
+            </Picker>
+          </View>
         )}
 
         {pageState.searchWarehouseId === null && (
@@ -257,6 +296,23 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 30,
     top: 3,
+  },
+  pickerView: {
+    backgroundColor: Colors.WHITE_COLOR,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 0,
+    width: '100%',
+    borderRadius: 6,
+    paddingStart: 5,
+    overflow: 'hidden',
+  },
+  picker: {
+    height: 30,
+    flex: 1,
+    backgroundColor: Colors.WHITE_COLOR,
+    color: Colors.MAIN_COLOR,
+    borderRadius: 6,
   },
 });
 

@@ -199,7 +199,7 @@ function CustomDrawerContent(props) {
               dispatch(setSearchCompanyId(null));
               props.navigation.navigate('Medicines', {
                 screen: 'AllMedicines',
-                params: { companyId: null, warehouseId: null },
+                params: { companyId: null, warehouseId: null, myCompanies: [] },
               });
             }}
             labelStyle={styles.drawerItemLabel}

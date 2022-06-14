@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Colors } from '../utils/constants';
-import { Feather } from '@expo/vector-icons';
+import { FontAwesome } from '@expo/vector-icons';
 
 const SearchContainer = ({ children }) => {
   let childrenArray = React.Children.toArray(children);
@@ -28,15 +28,24 @@ const SearchContainer = ({ children }) => {
         </>
       </View>
       {childrenArray.length > 1 && (
-        <Feather
-          style={styles.moreOptionsIcons}
-          name="more-vertical"
-          size={32}
-          color={Colors.WHITE_COLOR}
-          onPress={() => {
-            setMoreSearchOptions(!moreSearchOptions);
+        <View
+          style={{
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: 32,
+            height: 32,
           }}
-        />
+        >
+          <FontAwesome
+            style={styles.moreOptionsIcons}
+            name="filter"
+            size={24}
+            color={Colors.WHITE_COLOR}
+            onPress={() => {
+              setMoreSearchOptions(!moreSearchOptions);
+            }}
+          />
+        </View>
       )}
     </View>
   );
@@ -51,8 +60,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   moreOptionsIcons: {
-    marginTop: 3,
-    width: 32,
     alignItems: 'center',
     justifyContent: 'center',
   },

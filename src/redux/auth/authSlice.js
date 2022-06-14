@@ -226,6 +226,77 @@ export const changeLogo = createAsyncThunk('auth/changeLogo', async ({ data, tok
   //   return rejectWithValue(err.response.data);
   // }
 });
+export const addCompanyToOurCompanies = createAsyncThunk(
+  'auth/addCompanyToOurs',
+  async ({ companyId, token }, { rejectWithValue }) => {
+    try {
+      CancelToken = axios.CancelToken;
+      source = CancelToken.source();
+
+      const response = await axios.post(
+        `${BASEURL}/users/add-company-to-ours?companyId=${companyId}`,
+        {},
+        {
+          cancelToken: source.token,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      resetCancelAndSource();
+
+      return response.data;
+    } catch (err) {
+      resetCancelAndSource();
+      if (err.code === 'ECONNABORTED' && err.message.startsWith('timeout')) {
+        return rejectWithValue('timeout');
+      }
+      if (axios.isCancel(err)) {
+        return rejectWithValue('cancel');
+      }
+      if (!err.response) {
+        return rejectWithValue('network failed');
+      }
+      return rejectWithValue(err.response.data);
+    }
+  },
+);
+
+export const removeCompanyFromOurCompanies = createAsyncThunk(
+  'auth/removeCompanyFromOurs',
+  async ({ companyId, token }, { rejectWithValue }) => {
+    try {
+      CancelToken = axios.CancelToken;
+      source = CancelToken.source();
+
+      const response = await axios.post(
+        `${BASEURL}/users/remove-company-from-ours?companyId=${companyId}`,
+        {},
+        {
+          cancelToken: source.token,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      resetCancelAndSource();
+
+      return response.data;
+    } catch (err) {
+      resetCancelAndSource();
+      if (err.code === 'ECONNABORTED' && err.message.startsWith('timeout')) {
+        return rejectWithValue('timeout');
+      }
+      if (axios.isCancel(err)) {
+        return rejectWithValue('cancel');
+      }
+      if (!err.response) {
+        return rejectWithValue('network failed');
+      }
+      return rejectWithValue(err.response.data);
+    }
+  },
+);
 
 export const authSlice = createSlice({
   name: 'auth',
@@ -422,6 +493,59 @@ export const authSlice = createSlice({
     [deleteMe.rejected]: (state, { payload }) => {
       state.deleteStatus = 'failed';
 
+      try {
+        if (payload === 'timeout') {
+          state.error = 'general-error';
+        } else if (payload === 'cancel') {
+          state.error = 'general-error';
+        } else if (payload === 'network failed') {
+          state.error = 'general-error';
+        } else state.error = payload.message;
+      } catch (err) {
+        state.error = 'general-error';
+      }
+    },
+    [addCompanyToOurCompanies.pending]: (state, action) => {
+      state.status = 'loading';
+      state.error = '';
+    },
+    [addCompanyToOurCompanies.fulfilled]: (state, action) => {
+      state.status = 'succeeded';
+      state.user = {
+        ...state.user,
+        ourCompanies: [...state.user.ourCompanies, action.payload.data.companyId],
+      };
+      state.error = '';
+    },
+    [addCompanyToOurCompanies.rejected]: (state, { error, meta, payload }) => {
+      state.status = 'failed';
+      try {
+        if (payload === 'timeout') {
+          state.error = 'general-error';
+        } else if (payload === 'cancel') {
+          state.error = 'general-error';
+        } else if (payload === 'network failed') {
+          state.error = 'general-error';
+        } else state.error = payload.message;
+      } catch (err) {
+        state.error = 'general-error';
+      }
+    },
+
+    [removeCompanyFromOurCompanies.pending]: (state, action) => {
+      state.status = 'loading';
+      state.error = '';
+    },
+    [removeCompanyFromOurCompanies.fulfilled]: (state, action) => {
+      state.status = 'succeeded';
+      state.user = {
+        ...state.user,
+        ourCompanies: state.user.ourCompanies.filter((c) => c !== action.payload.data.companyId),
+      };
+      state.error = '';
+    },
+    [removeCompanyFromOurCompanies.rejected]: (state, { error, meta, payload }) => {
+      state.status = 'failed';
       try {
         if (payload === 'timeout') {
           state.error = 'general-error';
