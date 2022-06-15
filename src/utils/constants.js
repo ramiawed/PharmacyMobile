@@ -90,40 +90,6 @@ export const Colors = {
   GREY_COLOR: '#898F9C',
 };
 
-export const SideNavLinks = {
-  PARTNERS: 'partners',
-  ITEMS: 'items',
-  ORDERS: 'orders',
-  ADVERTISEMENTS: 'advertisements',
-  NOTIFICATIONS: 'notifications',
-  PROFILE: 'profile',
-  SETTINGS: 'settings',
-  STATISTICS: 'statistics',
-  BACKUP_RESTORE: 'backup-restore',
-};
-
-export const TopNavLinks = {
-  HOME: 'home',
-  COMPANIES: 'companies',
-  WAREHOUSES: 'warehouses',
-  FAVORITES: 'favorites',
-  CART: 'cart',
-  MEDICINES: 'medicines',
-  NOTIFICATIONS: 'notifications',
-  SIGNOUT: 'signout',
-};
-
-export const OrderOptions = {
-  NAME: 'name',
-  DATE_CREATED: 'createdAt',
-  DATE_UPDATED: 'updatedAt',
-  APPROVED: 'isApproved',
-  ACTIVE: 'isActive',
-  CITY: 'city',
-  DISTRICT: 'district',
-  STREET: 'street',
-};
-
 export const OfferTypes = {
   PIECES: 'pieces',
   PERCENTAGE: 'percentage',
