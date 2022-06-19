@@ -32,14 +32,14 @@ const SearchContainer = ({ children }) => {
           style={{
             alignItems: 'center',
             justifyContent: 'center',
-            width: 32,
+            width: 40,
             height: 32,
           }}
         >
           <FontAwesome
             style={styles.moreOptionsIcons}
             name="filter"
-            size={24}
+            size={32}
             color={Colors.WHITE_COLOR}
             onPress={() => {
               setMoreSearchOptions(!moreSearchOptions);

@@ -25,7 +25,7 @@ const AboutScreen = () => {
     <View style={styles.container}>
       <Image source={require('../../assets/logo.png')} style={{ width: 150, height: 150, resizeMode: 'contain' }} />
       <Text style={styles.appName}>{i18n.t('app-name')}</Text>
-      <Text style={styles.version}>Version: 1.0.0</Text>
+      <Text style={styles.version}>Version: 1.0.7</Text>
       <TouchableOpacity
         style={styles.checkBtn}
         onPress={async () => {

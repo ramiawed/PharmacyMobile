@@ -44,7 +44,7 @@ let timer;
 
 const MedicinesScreen = ({ navigation, route }) => {
   const dispatch = useDispatch();
-  const { myCompanies } = route.params;
+  const { myCompanies = [] } = route.params;
 
   const options = myCompanies?.map((c) => {
     return { value: c._id, label: c.name };

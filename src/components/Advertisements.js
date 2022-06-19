@@ -34,11 +34,7 @@ const Advertisements = () => {
     };
   });
 
-  const backgrounds = [
-    ...adminAdvertisements,
-    // { source: OrderOnlineImage, type: 'static' },
-    // { source: WarehouseWithOffersImage, type: 'static' },
-  ];
+  const backgrounds = [...adminAdvertisements];
 
   const onAdvertisementPressHandler = (adv) => {
     if (adv.type === 'static') return;
@@ -47,6 +43,9 @@ const Advertisements = () => {
       dispatch(setSearchCompanyId(adv.company._id));
       navigation.navigate('Medicines', {
         screen: 'AllMedicines',
+        params: {
+          myCompanies: [],
+        },
       });
     }
 
@@ -54,6 +53,9 @@ const Advertisements = () => {
       dispatch(setSearchWarehouseId(adv.warehouse._id));
       navigation.navigate('Medicines', {
         screen: 'AllMedicines',
+        params: {
+          myCompanies: adv.warehouse.ourCompanies,
+        },
       });
     }
 
