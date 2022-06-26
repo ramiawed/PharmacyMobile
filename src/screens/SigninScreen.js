@@ -23,6 +23,7 @@ import { Colors } from '../utils/constants';
 // icons
 import { AntDesign } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
+import { getSavedItems } from '../redux/savedItems/savedItemsSlice';
 
 const SignInScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -90,6 +91,7 @@ const SignInScreen = ({ navigation }) => {
         dispatch(getAllSettings({ token: result.token }));
         dispatch(getFavorites({ token: result.token }));
         dispatch(getAllAdvertisements({ token: result.token }));
+        dispatch(getSavedItems({ token: result.token }));
       })
       .catch((err) => {});
   };

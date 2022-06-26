@@ -198,14 +198,14 @@ const ItemRow = ({ item, addToCart }) => {
             }}
           >
             <View style={styles.fullWidth}>
-              <Text style={{ ...styles.title, fontSize: item.name.length < 25 ? 14 : 12 }}>{item.name}</Text>
+              <Text style={{ ...styles.title, fontSize: item.name.length < 25 ? 18 : 14 }}>{item.name}</Text>
             </View>
           </TouchableWithoutFeedback>
 
           {canAddToCart && (
             <Ionicons
               name="cart"
-              size={24}
+              size={32}
               color={Colors.SUCCEEDED_COLOR}
               style={{ paddingHorizontal: 2 }}
               onPress={() => setShowAddToCartModal(true)}
@@ -219,7 +219,7 @@ const ItemRow = ({ item, addToCart }) => {
             (isInWarehouse ? (
               <AntDesign
                 name="delete"
-                size={24}
+                size={32}
                 color={Colors.FAILED_COLOR}
                 style={{ paddingHorizontal: 2 }}
                 onPress={removeItemFromWarehouseHandler}
@@ -227,7 +227,7 @@ const ItemRow = ({ item, addToCart }) => {
             ) : (
               <Ionicons
                 name="add-circle"
-                size={24}
+                size={32}
                 color={Colors.SUCCEEDED_COLOR}
                 style={{ paddingHorizontal: 2 }}
                 onPress={addItemToWarehouseHandler}
@@ -240,7 +240,7 @@ const ItemRow = ({ item, addToCart }) => {
           ) : isFavorite ? (
             <AntDesign
               name="star"
-              size={24}
+              size={32}
               color={Colors.YELLOW_COLOR}
               style={{ paddingHorizontal: 2 }}
               onPress={removeItemFromFavoritesItems}
@@ -248,7 +248,7 @@ const ItemRow = ({ item, addToCart }) => {
           ) : (
             <AntDesign
               name="staro"
-              size={24}
+              size={32}
               color={Colors.YELLOW_COLOR}
               style={{ paddingHorizontal: 2 }}
               onPress={addItemToFavoriteItems}

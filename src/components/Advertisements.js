@@ -5,7 +5,7 @@ import { FlatList, View, StyleSheet } from 'react-native';
 // redux stuff
 import { useDispatch, useSelector } from 'react-redux';
 import { selectAdvertisements } from '../redux/advertisements/advertisementsSlice';
-import { setSearchCompanyId, setSearchWarehouseId } from '../redux/medicines/medicinesSlices';
+import { resetMedicines, setSearchCompanyId, setSearchWarehouseId } from '../redux/medicines/medicinesSlices';
 
 // images
 // import LogoWithDotsImage from '../../assets/1.png';
@@ -40,6 +40,7 @@ const Advertisements = () => {
     if (adv.type === 'static') return;
 
     if (adv.company !== null) {
+      dispatch(resetMedicines());
       dispatch(setSearchCompanyId(adv.company._id));
       navigation.navigate('Medicines', {
         screen: 'AllMedicines',
@@ -50,6 +51,7 @@ const Advertisements = () => {
     }
 
     if (adv.warehouse !== null) {
+      dispatch(resetMedicines());
       dispatch(setSearchWarehouseId(adv.warehouse._id));
       navigation.navigate('Medicines', {
         screen: 'AllMedicines',
@@ -60,6 +62,7 @@ const Advertisements = () => {
     }
 
     if (adv.medicine !== null) {
+      dispatch(resetMedicines());
       navigation.navigate('Medicines', {
         screen: 'Medicine',
         params: {
@@ -88,14 +91,14 @@ const Advertisements = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: Colors.MAIN_COLOR,
-    textAlign: 'center',
-    paddingTop: 10,
-  },
-});
+// const styles = StyleSheet.create({
+//   header: {
+//     fontSize: 24,
+//     fontWeight: 'bold',
+//     color: Colors.MAIN_COLOR,
+//     textAlign: 'center',
+//     paddingTop: 10,
+//   },
+// });
 
 export default Advertisements;

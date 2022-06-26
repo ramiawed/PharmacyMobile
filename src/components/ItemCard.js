@@ -9,12 +9,13 @@ import { selectUserData } from '../redux/auth/authSlice';
 import { addFavoriteItem, removeFavoriteItem, selectFavoritesItems } from '../redux/favorites/favoritesSlice';
 import { addStatistics } from '../redux/statistics/statisticsSlice';
 import { addItemToWarehouse, removeItemFromWarehouse } from '../redux/medicines/medicinesSlices';
+import { addSavedItem, removeSavedItem, selectSavedItems } from '../redux/savedItems/savedItemsSlice';
 
 // constants
 import { Colors, UserTypeConstants, checkItemExistsInWarehouse } from '../utils/constants';
 
 // icons
-import { AntDesign, Ionicons } from '@expo/vector-icons';
+import { AntDesign, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
 // components
 import SwipeableRow from './SwipeableRow';
@@ -70,11 +71,13 @@ const ItemCard = ({ item, addToCart }) => {
   // selectors
   const { user, token } = useSelector(selectUserData);
   const favorites = useSelector(selectFavoritesItems);
+  const { savedItems } = useSelector(selectSavedItems);
 
   // own state
   const [expanded, setExpanded] = useState(false);
   const [changeFavoriteLoading, setChangeFavoriteLoading] = useState(false);
   const [changeAddToWarehouseLoading, setChangeAddToWarehouseLoading] = useState(false);
+  const [changeSaveItemLoading, setChangeSaveItemLoading] = useState(false);
 
   const canAddToCart = user?.type === UserTypeConstants.PHARMACY && checkItemExistsInWarehouse(item, user);
   const isInWarehouse = item.warehouses.map((w) => w.warehouse._id).includes(user._id);
@@ -178,6 +181,32 @@ const ItemCard = ({ item, addToCart }) => {
     addToCart(item);
   };
 
+  const addItemToSavedItemsHandler = (e) => {
+    setChangeSaveItemLoading(true);
+
+    dispatch(addSavedItem({ obj: { savedItemId: item._id }, token }))
+      .then(unwrapResult)
+      .then(() => {
+        setChangeSaveItemLoading(false);
+      })
+      .catch(() => {
+        setChangeSaveItemLoading(false);
+      });
+  };
+
+  const removeItemFromSavedItemsHandler = (e) => {
+    setChangeSaveItemLoading(true);
+
+    dispatch(removeSavedItem({ obj: { savedItemId: item._id }, token }))
+      .then(unwrapResult)
+      .then(() => {
+        setChangeSaveItemLoading(false);
+      })
+      .catch(() => {
+        setChangeSaveItemLoading(false);
+      });
+  };
+
   return user ? (
     <SwipeableRow
       user={user}
@@ -198,12 +227,12 @@ const ItemCard = ({ item, addToCart }) => {
         }}
       >
         <View style={{ flexDirection: 'row' }}>
-          <View style={{ flex: 1 }}>
+          <View style={{ flex: 1, justifyContent: 'space-between' }}>
             <View style={{ flexDirection: 'row' }}>
               {expanded ? (
                 <AntDesign
                   name="caretup"
-                  size={20}
+                  size={24}
                   color={Colors.MAIN_COLOR}
                   onPress={() => {
                     setExpanded(!expanded);
@@ -212,7 +241,7 @@ const ItemCard = ({ item, addToCart }) => {
               ) : (
                 <AntDesign
                   name="caretdown"
-                  size={20}
+                  size={24}
                   color={Colors.MAIN_COLOR}
                   onPress={() => {
                     setExpanded(!expanded);
@@ -232,7 +261,7 @@ const ItemCard = ({ item, addToCart }) => {
               >
                 <View style={styles.fullWidth}>
                   <Text
-                    style={{ ...styles.title, fontSize: item.name.length >= 35 ? 12 : item.name.length > 25 ? 13 : 14 }}
+                    style={{ ...styles.title, fontSize: item.name.length >= 35 ? 14 : item.name.length > 25 ? 14 : 18 }}
                   >
                     {item.name}
                   </Text>
@@ -245,7 +274,7 @@ const ItemCard = ({ item, addToCart }) => {
                   <Text
                     style={{
                       ...styles.nameAr,
-                      fontSize: item.nameAr.length >= 35 ? 12 : item.nameAr.length > 25 ? 13 : 14,
+                      fontSize: item.nameAr.length >= 35 ? 14 : item.nameAr.length > 25 ? 14 : 18,
                     }}
                   >
                     {item.nameAr}
@@ -268,32 +297,55 @@ const ItemCard = ({ item, addToCart }) => {
           </View>
 
           <View style={styles.actionsView}>
+            {user?.type === UserTypeConstants.PHARMACY ? (
+              checkItemExistsInWarehouse(item, user) ? (
+                <Ionicons
+                  name="cart"
+                  size={32}
+                  color={Colors.SUCCEEDED_COLOR}
+                  style={{ paddingHorizontal: 2, marginVertical: 4 }}
+                  onPress={() => addToCart(item)}
+                />
+              ) : changeSaveItemLoading ? (
+                <ActivityIndicator size="small" color={Colors.YELLOW_COLOR} />
+              ) : savedItems.map((si) => si._id).includes(item._id) ? (
+                <MaterialCommunityIcons
+                  name="bookmark-minus"
+                  size={32}
+                  color={Colors.FAILED_COLOR}
+                  style={{ paddingHorizontal: 2, marginVertical: 4 }}
+                  onPress={removeItemFromSavedItemsHandler}
+                />
+              ) : (
+                <MaterialCommunityIcons
+                  name="bookmark-plus"
+                  size={32}
+                  color={Colors.SUCCEEDED_COLOR}
+                  style={{ paddingHorizontal: 2, marginVertical: 4 }}
+                  onPress={addItemToSavedItemsHandler}
+                />
+              )
+            ) : (
+              <></>
+            )}
+
             {changeFavoriteLoading ? (
               <ActivityIndicator size="small" color={Colors.YELLOW_COLOR} />
             ) : isFavorite ? (
               <AntDesign
                 name="star"
-                size={24}
+                size={32}
                 color={Colors.YELLOW_COLOR}
-                style={{ paddingHorizontal: 2 }}
+                style={{ paddingHorizontal: 2, marginVertical: 4 }}
                 onPress={removeItemFromFavoritesItems}
               />
             ) : (
               <AntDesign
                 name="staro"
-                size={24}
+                size={32}
                 color={Colors.YELLOW_COLOR}
-                style={{ paddingHorizontal: 2 }}
+                style={{ paddingHorizontal: 2, marginVertical: 4 }}
                 onPress={addItemToFavoriteItems}
-              />
-            )}
-            {canAddToCart && (
-              <Ionicons
-                name="cart"
-                size={24}
-                color={Colors.SUCCEEDED_COLOR}
-                style={{ paddingHorizontal: 2 }}
-                onPress={() => addToCart(item)}
               />
             )}
 
@@ -304,17 +356,17 @@ const ItemCard = ({ item, addToCart }) => {
               (isInWarehouse ? (
                 <AntDesign
                   name="delete"
-                  size={24}
+                  size={32}
                   color={Colors.FAILED_COLOR}
-                  style={{ paddingHorizontal: 2 }}
+                  style={{ paddingHorizontal: 2, marginVertical: 4 }}
                   onPress={removeItemFromWarehouseHandler}
                 />
               ) : (
                 <Ionicons
                   name="add-circle"
-                  size={24}
+                  size={32}
                   color={Colors.SUCCEEDED_COLOR}
-                  style={{ paddingHorizontal: 2 }}
+                  style={{ paddingHorizontal: 2, marginVertical: 4 }}
                   onPress={addItemToWarehouseHandler}
                 />
               ))

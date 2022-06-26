@@ -38,6 +38,7 @@ import { usersNotificationsSignOut } from '../redux/userNotifications/userNotifi
 
 // constants
 import { BASEURL, Colors, SERVER_URL, UserTypeConstants } from '../utils/constants';
+import { savedItemsSliceSignOut } from '../redux/savedItems/savedItemsSlice';
 
 const ProfileScreen = () => {
   const dispatch = useDispatch();
@@ -61,6 +62,7 @@ const ProfileScreen = () => {
     dispatch(medicinesSliceSignOut());
     dispatch(settingsSignOut());
     dispatch(usersNotificationsSignOut());
+    dispatch(savedItemsSliceSignOut());
   };
 
   // own state

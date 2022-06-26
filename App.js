@@ -29,12 +29,13 @@ import ApproveScreen from './src/screens/ApproveScreen';
 import SplashScreen from './src/screens/SplashScreen';
 
 // constants
-import { Colors } from './src/utils/constants';
+import { Colors, UserTypeConstants } from './src/utils/constants';
 
 // configuration for store
 import { persistStore } from 'redux-persist';
 import { PersistGate } from 'redux-persist/integration/react';
 import store from './src/app/store';
+import { getSavedItems } from './src/redux/savedItems/savedItemsSlice';
 let persistor = persistStore(store);
 
 // navigation's stuff
@@ -68,6 +69,9 @@ const App = () => {
             dispatch(getAllSettings({ token: result.token }));
             dispatch(getFavorites({ token: result.token }));
             dispatch(getAllAdvertisements({ token: result.token }));
+            if (user.type === UserTypeConstants.PHARMACY) {
+              dispatch(getSavedItems({ token }));
+            }
             setShowSplashScreen(false);
           })
           .catch(() => {

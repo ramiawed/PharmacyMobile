@@ -65,12 +65,10 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.WHITE_COLOR,
   },
   imageContainer: {
+    padding: 15,
     width: '100%',
-    backgroundColor: Colors.WHITE_COLOR,
     alignItems: 'center',
     justifyContent: 'center',
-    borderBottomWidth: 3,
-    borderBottomColor: Colors.SECONDARY_COLOR,
   },
   image: {
     width: 200,
@@ -78,19 +76,22 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   header: {
-    color: Colors.MAIN_COLOR,
-    fontSize: 18,
+    color: Colors.SUCCEEDED_COLOR,
+    textDecorationLine: 'underline',
+    fontSize: 24,
     fontWeight: 'bold',
-    textAlign: 'left',
+    textAlign: 'center',
     padding: 10,
   },
   bodyScrollView: {
-    padding: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
   },
   body: {
-    color: Colors.SECONDARY_COLOR,
-    fontSize: 14,
-    textAlign: 'left',
+    color: Colors.MAIN_COLOR,
+    fontSize: 16,
+    textAlign: 'justify',
+    lineHeight: 32,
   },
 });
 

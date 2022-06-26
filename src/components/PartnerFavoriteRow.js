@@ -106,7 +106,7 @@ const PartnerFavoriteRow = ({ type, favorite }) => {
       ) : (
         <AntDesign
           name="star"
-          size={24}
+          size={32}
           color={Colors.YELLOW_COLOR}
           onPress={() => removeCompanyFromFavorite(favorite._id)}
         />
@@ -119,6 +119,7 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     justifyContent: 'flex-start',
+    alignItems: 'center',
     writingDirection: 'rtl',
     padding: 10,
     borderBottomWidth: 1,

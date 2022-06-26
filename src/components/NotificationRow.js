@@ -73,6 +73,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
     borderRadius: 6,
     overflow: 'hidden',
+    padding: 10,
   },
   content: {
     flex: 1,

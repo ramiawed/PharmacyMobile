@@ -137,7 +137,7 @@ const OfferCard = ({ item, addToCart }) => {
               >
                 <View style={{ ...styles.fullWidth, flexDirection: 'column' }}>
                   <Text
-                    style={{ ...styles.title, fontSize: item.name.length >= 35 ? 12 : item.name.length > 25 ? 13 : 14 }}
+                    style={{ ...styles.title, fontSize: item.name.length >= 35 ? 14 : item.name.length > 25 ? 14 : 18 }}
                   >
                     {item.name}
                   </Text>
@@ -150,7 +150,7 @@ const OfferCard = ({ item, addToCart }) => {
                   <Text
                     style={{
                       ...styles.nameAr,
-                      fontSize: item.nameAr.length >= 35 ? 12 : item.nameAr.length > 25 ? 13 : 14,
+                      fontSize: item.nameAr.length >= 35 ? 14 : item.nameAr.length > 25 ? 14 : 18,
                     }}
                   >
                     {item.nameAr}
@@ -180,7 +180,7 @@ const OfferCard = ({ item, addToCart }) => {
             {user.type === UserTypeConstants.PHARMACY && (
               <Ionicons
                 name="cart"
-                size={24}
+                size={32}
                 color={Colors.SUCCEEDED_COLOR}
                 style={{ paddingHorizontal: 2 }}
                 onPress={() => addToCart(item)}
@@ -192,7 +192,7 @@ const OfferCard = ({ item, addToCart }) => {
             ) : isFavorite ? (
               <AntDesign
                 name="star"
-                size={24}
+                size={32}
                 color={Colors.YELLOW_COLOR}
                 style={{ paddingHorizontal: 2 }}
                 onPress={removeItemFromFavoritesItems}
@@ -200,7 +200,7 @@ const OfferCard = ({ item, addToCart }) => {
             ) : (
               <AntDesign
                 name="staro"
-                size={24}
+                size={32}
                 color={Colors.YELLOW_COLOR}
                 style={{ paddingHorizontal: 2 }}
                 onPress={addItemToFavoriteItems}

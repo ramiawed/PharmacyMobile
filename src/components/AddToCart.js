@@ -14,6 +14,7 @@ import { selectMedicines } from '../redux/medicines/medicinesSlices';
 
 // constants
 import { Colors, OfferTypes } from '../utils/constants';
+import { removeSavedItem } from '../redux/savedItems/savedItemsSlice';
 
 const checkOfferQty = (selectedWarehouse, qty) => {
   // check if the specified warehouse has an offer
@@ -42,7 +43,7 @@ const checkOfferQty = (selectedWarehouse, qty) => {
   return 0;
 };
 
-const AddToCart = ({ item, close }) => {
+const AddToCart = ({ item, close, fromSavedItems }) => {
   const dispatch = useDispatch();
 
   // selectors
@@ -125,6 +126,10 @@ const AddToCart = ({ item, close }) => {
         token,
       }),
     );
+
+    if (fromSavedItems) {
+      dispatch(removeSavedItem({ obj: { savedItemId: item._id }, token }));
+    }
 
     close();
   };

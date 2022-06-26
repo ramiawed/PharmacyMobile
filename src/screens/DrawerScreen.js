@@ -12,6 +12,7 @@ import MedicinesStack from '../stacks/MedicinesStack';
 import CartScreen from './CartScreen';
 import FavoriteScreen from './FavoriteScreen';
 import HomeScreen from './HomeScreen';
+import SavedItemsScreen from './SavedItemsScreen';
 import NotificationsStack from '../stacks/NotificationsStack';
 import OrdersStack from '../stacks/OrdersStack';
 
@@ -60,6 +61,7 @@ import { usersNotificationsSignOut } from '../redux/userNotifications/userNotifi
 import Loader from '../components/Loader';
 import AboutScreen from './AboutScreen';
 import OffersScreen from './OffersScreen';
+import { savedItemsSliceSignOut } from '../redux/savedItems/savedItemsSlice';
 
 const Drawer = createDrawerNavigator();
 
@@ -111,6 +113,11 @@ const DrawerScreen = () => {
         <Drawer.Screen name="Offers" component={OffersScreen} options={{ title: i18n.t('offers-screen') }} />
         <Drawer.Screen name="Orders" component={OrdersStack} options={{ title: i18n.t('orders-screen') }} />
         <Drawer.Screen name="Cart" component={CartScreen} options={{ title: i18n.t('cart-screen') }} />
+        <Drawer.Screen
+          name="SavedItems"
+          component={SavedItemsScreen}
+          options={{ title: i18n.t('saved-items-screen') }}
+        />
         <Drawer.Screen name="Favorite" component={FavoriteScreen} options={{ title: i18n.t('favorites-screen') }} />
         <Drawer.Screen
           name="Notifications"
@@ -151,6 +158,7 @@ function CustomDrawerContent(props) {
     dispatch(medicinesSliceSignOut());
     dispatch(settingsSignOut());
     dispatch(usersNotificationsSignOut());
+    dispatch(savedItemsSliceSignOut());
   };
 
   const dispatch = useDispatch();
@@ -306,9 +314,29 @@ function CustomDrawerContent(props) {
           </View>
         )}
 
+        {user.type === UserTypeConstants.PHARMACY && (
+          <View
+            style={{
+              backgroundColor: props.state.index === 7 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
+              ...styles.option,
+            }}
+          >
+            <DrawerItem
+              label={i18n.t('saved-items-screen')}
+              icon={({}) => <MaterialCommunityIcons name="bookmark" size={24} color={Colors.WHITE_COLOR} />}
+              onPress={() => {
+                dispatch(setSearchWarehouseId(null));
+                dispatch(setSearchCompanyId(null));
+                props.navigation.navigate('SavedItems');
+              }}
+              labelStyle={styles.drawerItemLabel}
+            />
+          </View>
+        )}
+
         <View
           style={{
-            backgroundColor: props.state.index === 7 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
+            backgroundColor: props.state.index === 8 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
             ...styles.option,
           }}
         >
@@ -326,7 +354,7 @@ function CustomDrawerContent(props) {
 
         <View
           style={{
-            backgroundColor: props.state.index === 8 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
+            backgroundColor: props.state.index === 9 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
             ...styles.option,
           }}
         >
@@ -346,7 +374,7 @@ function CustomDrawerContent(props) {
 
         <View
           style={{
-            backgroundColor: props.state.index === 9 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
+            backgroundColor: props.state.index === 10 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
             ...styles.option,
           }}
         >
@@ -364,7 +392,7 @@ function CustomDrawerContent(props) {
 
         <View
           style={{
-            backgroundColor: props.state.index === 10 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
+            backgroundColor: props.state.index === 11 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
             ...styles.option,
           }}
         >
@@ -382,7 +410,7 @@ function CustomDrawerContent(props) {
 
         <View
           style={{
-            backgroundColor: props.state.index === 11 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
+            backgroundColor: props.state.index === 12 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
             ...styles.option,
           }}
         >
@@ -487,6 +515,20 @@ function DrawerHeader({ navigation, route, options }) {
               }}
             />
           </View>
+
+          {user.type === UserTypeConstants.PHARMACY && (
+            <View style={styles.favoriteIcon}>
+              <MaterialCommunityIcons
+                name="bookmark"
+                size={24}
+                color={options.title === i18n.t('saved-items-screen') ? Colors.FAILED_COLOR : Colors.WHITE_COLOR}
+                onPress={() => {
+                  navigation.navigate('SavedItems');
+                }}
+              />
+            </View>
+          )}
+
           <View style={styles.favoriteIcon}>
             <AntDesign
               name="star"
