@@ -487,5 +487,8 @@
   "create-user-succeeded-msg": "تم إنشاء الحساب بنجاح",
   "paper-loading-msg": "يتم الان تحميل الصورة، الرجاء الانتظار لثواني، زمن الانتظار متعلق بحجم الصورة",
   "saved-items-screen": "المنتجات المحفوظة",
-  "no-saved-items": "لا يوجد منتجات محغوظة"
+  "no-saved-items": "لا يوجد منتجات محغوظة",
+  "baskets-screen": "العروض الخاصة",
+  "all-baskets-label": "العروض الخاصة",
+  "baskets-orders-label": "طلبات العروض الخاصة"
 }

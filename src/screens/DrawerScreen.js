@@ -15,6 +15,7 @@ import HomeScreen from './HomeScreen';
 import SavedItemsScreen from './SavedItemsScreen';
 import NotificationsStack from '../stacks/NotificationsStack';
 import OrdersStack from '../stacks/OrdersStack';
+import BasketsTabNavigator from './BasketsTabNavigator';
 
 // navigation stuff
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
@@ -56,6 +57,8 @@ import { itemsSectionThreeSignOut } from '../redux/advertisements/itemsSectionTh
 import { itemsSectionTwoSignOut } from '../redux/advertisements/itemsSectionTwoSlice';
 import { warehousesSectionOneSignOut } from '../redux/advertisements/warehousesSectionOneSlice';
 import { usersNotificationsSignOut } from '../redux/userNotifications/userNotificationsSlice';
+import { basketsSliceSignOut } from '../redux/baskets/basketsSlice';
+import { basketOrderSliceSignOut } from '../redux/basketOrdersSlice/basketOrdersSlice';
 
 // components
 import Loader from '../components/Loader';
@@ -111,6 +114,7 @@ const DrawerScreen = () => {
           options={{ title: i18n.t('warehouses-screen') }}
         />
         <Drawer.Screen name="Offers" component={OffersScreen} options={{ title: i18n.t('offers-screen') }} />
+        <Drawer.Screen name="Baskets" component={BasketsTabNavigator} options={{ title: i18n.t('baskets-screen') }} />
         <Drawer.Screen name="Orders" component={OrdersStack} options={{ title: i18n.t('orders-screen') }} />
         <Drawer.Screen name="Cart" component={CartScreen} options={{ title: i18n.t('cart-screen') }} />
         <Drawer.Screen
@@ -159,6 +163,8 @@ function CustomDrawerContent(props) {
     dispatch(settingsSignOut());
     dispatch(usersNotificationsSignOut());
     dispatch(savedItemsSliceSignOut());
+    dispatch(basketsSliceSignOut());
+    dispatch(basketOrderSliceSignOut());
   };
 
   const dispatch = useDispatch();
@@ -272,12 +278,34 @@ function CustomDrawerContent(props) {
           </View>
         )}
 
+        {(user.type === UserTypeConstants.ADMIN ||
+          user.type === UserTypeConstants.PHARMACY ||
+          user.type === UserType.WAREHOUSE) && (
+          <View
+            style={{
+              backgroundColor: props.state.index === 5 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
+              ...styles.option,
+            }}
+          >
+            <DrawerItem
+              label={i18n.t('baskets-screen')}
+              icon={({}) => <FontAwesome name="shopping-basket" size={24} color={Colors.WHITE_COLOR} />}
+              onPress={() => {
+                dispatch(setSearchWarehouseId(null));
+                dispatch(setSearchCompanyId(null));
+                props.navigation.navigate('Baskets');
+              }}
+              labelStyle={styles.drawerItemLabel}
+            />
+          </View>
+        )}
+
         {(user.type === UserTypeConstants.PHARMACY ||
           user.type === UserTypeConstants.ADMIN ||
           user.type === UserTypeConstants.WAREHOUSE) && (
           <View
             style={{
-              backgroundColor: props.state.index === 5 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
+              backgroundColor: props.state.index === 6 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
               ...styles.option,
             }}
           >
@@ -297,7 +325,7 @@ function CustomDrawerContent(props) {
         {user.type === UserTypeConstants.PHARMACY && (
           <View
             style={{
-              backgroundColor: props.state.index === 6 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
+              backgroundColor: props.state.index === 7 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
               ...styles.option,
             }}
           >
@@ -317,7 +345,7 @@ function CustomDrawerContent(props) {
         {user.type === UserTypeConstants.PHARMACY && (
           <View
             style={{
-              backgroundColor: props.state.index === 7 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
+              backgroundColor: props.state.index === 8 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
               ...styles.option,
             }}
           >
@@ -336,7 +364,7 @@ function CustomDrawerContent(props) {
 
         <View
           style={{
-            backgroundColor: props.state.index === 8 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
+            backgroundColor: props.state.index === 9 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
             ...styles.option,
           }}
         >
@@ -354,7 +382,7 @@ function CustomDrawerContent(props) {
 
         <View
           style={{
-            backgroundColor: props.state.index === 9 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
+            backgroundColor: props.state.index === 10 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
             ...styles.option,
           }}
         >
@@ -374,7 +402,7 @@ function CustomDrawerContent(props) {
 
         <View
           style={{
-            backgroundColor: props.state.index === 10 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
+            backgroundColor: props.state.index === 11 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
             ...styles.option,
           }}
         >
@@ -392,7 +420,7 @@ function CustomDrawerContent(props) {
 
         <View
           style={{
-            backgroundColor: props.state.index === 11 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
+            backgroundColor: props.state.index === 12 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
             ...styles.option,
           }}
         >
@@ -410,7 +438,7 @@ function CustomDrawerContent(props) {
 
         <View
           style={{
-            backgroundColor: props.state.index === 12 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
+            backgroundColor: props.state.index === 13 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
             ...styles.option,
           }}
         >

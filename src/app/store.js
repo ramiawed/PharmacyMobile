@@ -21,6 +21,8 @@ import warehousesSectionOneSlice from '../redux/advertisements/warehousesSection
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import offersSlice from '../redux/offers/offersSlices';
 import savedItemsSlice from '../redux/savedItems/savedItemsSlice';
+import basketsSlice from '../redux/baskets/basketsSlice';
+import basketOrdersSlice from '../redux/basketOrdersSlice/basketOrdersSlice';
 
 const rootReducer = combineReducers({
   auth: authSlice,
@@ -42,6 +44,8 @@ const rootReducer = combineReducers({
   advertisements: AdvertisementsSlice,
   offers: offersSlice,
   savedItems: savedItemsSlice,
+  baskets: basketsSlice,
+  basketOrders: basketOrdersSlice,
 });
 
 const persistConfig = {
