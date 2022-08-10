@@ -1,17 +1,14 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
-import { FlatList, View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
+
+// icons
+import { Feather } from '@expo/vector-icons';
 
 // redux stuff
 import { useDispatch, useSelector } from 'react-redux';
 import { selectAdvertisements } from '../redux/advertisements/advertisementsSlice';
 import { resetMedicines, setSearchCompanyId, setSearchWarehouseId } from '../redux/medicines/medicinesSlices';
-
-// images
-// import LogoWithDotsImage from '../../assets/1.png';
-// import OrderOnlineImage from '../../assets/2.png';
-// import WarehouseWithOffersImage from '../../assets/3.png';
-// import FreeServicesImage from '../../assets/4.png';
 
 // components
 import AdvertisementCard from './AdvertisementCard';
@@ -19,26 +16,67 @@ import AdvertisementCard from './AdvertisementCard';
 // constants
 import { Colors } from '../utils/constants';
 
+let timer = null;
+
 const Advertisements = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
+
+  // selectors
   const { advertisements } = useSelector(selectAdvertisements);
+
+  // own state
+  const [index, setIndex] = useState(0);
+  const i = useRef(0);
 
   const adminAdvertisements = advertisements?.map((adv) => {
     return {
       source: adv.logo_url,
-      type: 'url',
       company: adv.company,
       medicine: adv.medicine,
       warehouse: adv.warehouse,
     };
   });
 
+  const startTimer = () => {
+    timer = setInterval(() => {
+      i.current = i.current === advertisements.length - 1 ? 0 : i.current + 1;
+
+      setIndex(i.current);
+    }, 7000);
+  };
+
+  const nextBackground = () => {
+    clearInterval(timer);
+
+    i.current = i.current === advertisements.length - 1 ? 0 : i.current + 1;
+
+    setIndex(i.current);
+
+    startTimer();
+  }
+
+  const prevBackground = () => {
+    clearInterval(timer);
+
+    i.current = i.current === 0 ? adminAdvertisements.length - 1 : i.current - 1;
+
+    setIndex(i.current);
+
+    startTimer();
+  }
+
+  useEffect(() => {
+    startTimer();
+
+    return () => {
+      clearInterval(timer);
+    };
+  }, []);
+
   const backgrounds = [...adminAdvertisements];
 
   const onAdvertisementPressHandler = (adv) => {
-    if (adv.type === 'static') return;
-
     if (adv.company !== null) {
       dispatch(resetMedicines());
       dispatch(setSearchCompanyId(adv.company._id));
@@ -77,28 +115,17 @@ const Advertisements = () => {
   ) : (
     <View
       style={{
-        height: 320,
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexDirection: 'row'
       }}
     >
-      <FlatList
-        data={backgrounds}
-        keyExtractor={(item, index) => index + ''}
-        numColumns={1}
-        horizontal={true}
-        renderItem={({ item }) => <AdvertisementCard adv={item} onAdvertisementPress={onAdvertisementPressHandler} />}
-      />
+      <Feather name="arrow-right-circle" size={36} color={Colors.GREY_COLOR} onPress={prevBackground} />
+      <AdvertisementCard adv={backgrounds[index]} onAdvertisementPress={onAdvertisementPressHandler} />
+      <Feather name="arrow-left-circle" size={36} color={Colors.GREY_COLOR} onPress={nextBackground} />
     </View>
   );
 };
 
-// const styles = StyleSheet.create({
-//   header: {
-//     fontSize: 24,
-//     fontWeight: 'bold',
-//     color: Colors.MAIN_COLOR,
-//     textAlign: 'center',
-//     paddingTop: 10,
-//   },
-// });
 
 export default Advertisements;

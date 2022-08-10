@@ -10,7 +10,7 @@ import { Colors, SERVER_URL, UserTypeConstants } from '../utils/constants';
 
 // socket
 import socketIoClient from 'socket.io-client';
-import { authSliceSignOut, selectUserData } from '../redux/auth/authSlice';
+import {  selectUserData } from '../redux/auth/authSlice';
 import { deleteOrderSocket, getUnreadOrders, setForceRefresh, updateOrderStatus } from '../redux/orders/ordersSlice';
 import { addAdvertisementSocket } from '../redux/advertisements/advertisementsSlice';
 
@@ -24,30 +24,7 @@ function SocketObserver() {
 
   // own state
 
-  const handleSignOut = () => {
-    // dispatch(authSliceSignOut());
-    // dispatch(cartSliceSignOut());
-    // dispatch(companySliceSignOut());
-    // dispatch(favoritesSliceSignOut());
-    // dispatch(itemsSliceSignOut());
-    // dispatch(statisticsSliceSignOut());
-    // dispatch(usersSliceSignOut());
-    // dispatch(warehouseSliceSignOut());
-    // dispatch(warehouseItemsSliceSignOut());
-    // dispatch(orderSliceSignOut());
-    // dispatch(resetMedicines());
-    // dispatch(advertisementsSignOut());
-    // dispatch(companiesSectionOneSignOut());
-    // dispatch(companiesSectionTwoSignOut());
-    // dispatch(itemsSectionOneSignOut());
-    // dispatch(itemsSectionThreeSignOut());
-    // dispatch(itemsSectionTwoSignOut());
-    // dispatch(warehousesSectionOneSignOut());
-    // dispatch(medicinesSliceSignOut());
-    // dispatch(notificationsSignOut());
-    // dispatch(settingsSignOut());
-    // dispatch(usersNotificationsSignOut());
-  };
+  
 
   useEffect(() => {
     // orders observer

@@ -13,9 +13,14 @@ import CartScreen from './CartScreen';
 import FavoriteScreen from './FavoriteScreen';
 import HomeScreen from './HomeScreen';
 import SavedItemsScreen from './SavedItemsScreen';
+import OffersScreen from './OffersScreen';
+import BasketsScreen from './BasketsScreen';
+
+// stacks
 import NotificationsStack from '../stacks/NotificationsStack';
-import OrdersStack from '../stacks/OrdersStack';
-import BasketsTabNavigator from './BasketsTabNavigator';
+
+// tabs
+import OrdersTabNavigator from '../tabs/OrdersTabNavigator';
 
 // navigation stuff
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
@@ -32,39 +37,26 @@ import {
 } from '@expo/vector-icons';
 
 // constants
-import { Colors, BASEURL, UserTypeConstants } from '../utils/constants';
+import { Colors,  UserTypeConstants } from '../utils/constants';
 
 // redux stuff
 import { useDispatch, useSelector } from 'react-redux';
-import { authSliceSignOut, selectUser, selectUserData, signOut } from '../redux/auth/authSlice';
-import { favoritesSliceSignOut, resetFavorites, selectFavorites } from '../redux/favorites/favoritesSlice';
-import { companySliceSignOut, resetCompanies } from '../redux/company/companySlice';
+import {  selectUser, selectUserData, signOut } from '../redux/auth/authSlice';
+import {  resetFavorites, selectFavorites } from '../redux/favorites/favoritesSlice';
+import {  resetCompanies } from '../redux/company/companySlice';
 import {
-  medicinesSliceSignOut,
-  resetMedicines,
   setSearchCompanyId,
   setSearchWarehouseId,
 } from '../redux/medicines/medicinesSlices';
-import { cartSliceSignOut, selectCartItemCount } from '../redux/cart/cartSlice';
-import { selectSettings, settingsSignOut } from '../redux/settings/settingsSlice';
-import { advertisementsSignOut, selectAdvertisements } from '../redux/advertisements/advertisementsSlice';
-import { warehouseSliceSignOut } from '../redux/warehouse/warehousesSlice';
-import { orderSliceSignOut } from '../redux/orders/ordersSlice';
-import { companiesSectionOneSignOut } from '../redux/advertisements/companiesSectionOneSlice';
-import { companiesSectionTwoSignOut } from '../redux/advertisements/companiesSectionTwoSlice';
-import { itemsSectionOneSignOut } from '../redux/advertisements/itemsSectionOneSlice';
-import { itemsSectionThreeSignOut } from '../redux/advertisements/itemsSectionThreeSlice';
-import { itemsSectionTwoSignOut } from '../redux/advertisements/itemsSectionTwoSlice';
-import { warehousesSectionOneSignOut } from '../redux/advertisements/warehousesSectionOneSlice';
-import { usersNotificationsSignOut } from '../redux/userNotifications/userNotificationsSlice';
-import { basketsSliceSignOut } from '../redux/baskets/basketsSlice';
-import { basketOrderSliceSignOut } from '../redux/basketOrdersSlice/basketOrdersSlice';
+import {  selectCartItemCount } from '../redux/cart/cartSlice';
+import { selectSettings} from '../redux/settings/settingsSlice';
+import {  selectAdvertisements } from '../redux/advertisements/advertisementsSlice';
 
 // components
 import Loader from '../components/Loader';
 import AboutScreen from './AboutScreen';
-import OffersScreen from './OffersScreen';
-import { savedItemsSliceSignOut } from '../redux/savedItems/savedItemsSlice';
+
+import { signoutHandler } from '../utils/functions';
 
 const Drawer = createDrawerNavigator();
 
@@ -114,8 +106,8 @@ const DrawerScreen = () => {
           options={{ title: i18n.t('warehouses-screen') }}
         />
         <Drawer.Screen name="Offers" component={OffersScreen} options={{ title: i18n.t('offers-screen') }} />
-        <Drawer.Screen name="Baskets" component={BasketsTabNavigator} options={{ title: i18n.t('baskets-screen') }} />
-        <Drawer.Screen name="Orders" component={OrdersStack} options={{ title: i18n.t('orders-screen') }} />
+        <Drawer.Screen name="Baskets" component={BasketsScreen} options={{ title: i18n.t('baskets-screen') }} />
+        <Drawer.Screen name="Orders" component={OrdersTabNavigator} options={{ title: i18n.t('orders-screen') }} />
         <Drawer.Screen name="Cart" component={CartScreen} options={{ title: i18n.t('cart-screen') }} />
         <Drawer.Screen
           name="SavedItems"
@@ -144,28 +136,6 @@ function CustomDrawerContent(props) {
       });
   };
 
-  const signOutHandler = () => {
-    dispatch(authSliceSignOut());
-    dispatch(cartSliceSignOut());
-    dispatch(companySliceSignOut());
-    dispatch(favoritesSliceSignOut());
-    dispatch(warehouseSliceSignOut());
-    dispatch(orderSliceSignOut());
-    dispatch(resetMedicines());
-    dispatch(advertisementsSignOut());
-    dispatch(companiesSectionOneSignOut());
-    dispatch(companiesSectionTwoSignOut());
-    dispatch(itemsSectionOneSignOut());
-    dispatch(itemsSectionThreeSignOut());
-    dispatch(itemsSectionTwoSignOut());
-    dispatch(warehousesSectionOneSignOut());
-    dispatch(medicinesSliceSignOut());
-    dispatch(settingsSignOut());
-    dispatch(usersNotificationsSignOut());
-    dispatch(savedItemsSliceSignOut());
-    dispatch(basketsSliceSignOut());
-    dispatch(basketOrderSliceSignOut());
-  };
 
   const dispatch = useDispatch();
 
@@ -446,7 +416,7 @@ function CustomDrawerContent(props) {
             label={i18n.t('nav-sign-out')}
             icon={({}) => <Ionicons name="exit" size={24} color={Colors.WHITE_COLOR} />}
             onPress={() => {
-              signOutHandler();
+              signoutHandler(dispatch)
             }}
             labelStyle={styles.drawerItemLabel}
           />

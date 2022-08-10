@@ -265,6 +265,11 @@ const ItemRow = ({ item, addToCart }) => {
           )}
           <Text style={{ ...styles.priceValue, color: Colors.FAILED_COLOR }}>{item.customer_price}</Text>
         </View>
+        <View style={styles.subHeader}>
+          <View style={styles.fullWidth}>
+            <Text style={styles.composition}>{item.composition}</Text>
+          </View>
+        </View>
       </View>
       <BottomSheet
         visible={showAddToCartModal}
@@ -322,6 +327,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: Colors.GREY_COLOR,
     marginStart: 10,
+  },
+  composition: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: Colors.BLUE_COLOR,
   },
 });
 

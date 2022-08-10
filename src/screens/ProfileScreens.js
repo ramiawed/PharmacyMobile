@@ -19,51 +19,15 @@ import ProfileImage from '../components/ProfileImage';
 // redux stuff
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useDispatch, useSelector } from 'react-redux';
-import { authSliceSignOut, changeLogoURL, selectUserData, updateUserInfo } from '../redux/auth/authSlice';
-import { favoritesSliceSignOut } from '../redux/favorites/favoritesSlice';
-import { companySliceSignOut } from '../redux/company/companySlice';
-import { warehouseSliceSignOut } from '../redux/warehouse/warehousesSlice';
-import { cartSliceSignOut } from '../redux/cart/cartSlice';
-import { orderSliceSignOut } from '../redux/orders/ordersSlice';
-import { medicinesSliceSignOut, resetMedicines } from '../redux/medicines/medicinesSlices';
-import { advertisementsSignOut } from '../redux/advertisements/advertisementsSlice';
-import { companiesSectionOneSignOut } from '../redux/advertisements/companiesSectionOneSlice';
-import { companiesSectionTwoSignOut } from '../redux/advertisements/companiesSectionTwoSlice';
-import { itemsSectionOneSignOut } from '../redux/advertisements/itemsSectionOneSlice';
-import { itemsSectionThreeSignOut } from '../redux/advertisements/itemsSectionThreeSlice';
-import { itemsSectionTwoSignOut } from '../redux/advertisements/itemsSectionTwoSlice';
-import { warehousesSectionOneSignOut } from '../redux/advertisements/warehousesSectionOneSlice';
-import { settingsSignOut } from '../redux/settings/settingsSlice';
-import { usersNotificationsSignOut } from '../redux/userNotifications/userNotificationsSlice';
+import {  changeLogoURL, selectUserData, updateUserInfo } from '../redux/auth/authSlice';
 
 // constants
-import { BASEURL, Colors, SERVER_URL, UserTypeConstants } from '../utils/constants';
-import { savedItemsSliceSignOut } from '../redux/savedItems/savedItemsSlice';
+import { BASEURL, Colors,  UserTypeConstants } from '../utils/constants';
+import { signoutHandler } from '../utils/functions';
 
 const ProfileScreen = () => {
   const dispatch = useDispatch();
   const { user, token, updateStatus, changePasswordStatus } = useSelector(selectUserData);
-
-  const signOutHandler = () => {
-    dispatch(authSliceSignOut());
-    dispatch(cartSliceSignOut());
-    dispatch(companySliceSignOut());
-    dispatch(favoritesSliceSignOut());
-    dispatch(warehouseSliceSignOut());
-    dispatch(orderSliceSignOut());
-    dispatch(resetMedicines());
-    dispatch(advertisementsSignOut());
-    dispatch(companiesSectionOneSignOut());
-    dispatch(companiesSectionTwoSignOut());
-    dispatch(itemsSectionOneSignOut());
-    dispatch(itemsSectionThreeSignOut());
-    dispatch(itemsSectionTwoSignOut());
-    dispatch(warehousesSectionOneSignOut());
-    dispatch(medicinesSliceSignOut());
-    dispatch(settingsSignOut());
-    dispatch(usersNotificationsSignOut());
-    dispatch(savedItemsSliceSignOut());
-  };
 
   // own state
   const [refreshing, setRefreshing] = useState(false);
@@ -294,11 +258,11 @@ const ProfileScreen = () => {
         </ExpandedView>
 
         <ExpandedView title={i18n.t('delete-account')} danger={true}>
-          <DeleteMe resetStore={signOutHandler} />
+          <DeleteMe />
         </ExpandedView>
 
         {/* sign out section */}
-        <TouchableOpacity style={styles.button} onPress={signOutHandler}>
+        <TouchableOpacity style={styles.button} onPress={() => signoutHandler(dispatch)}>
           <Text style={styles.buttonText}>{i18n.t('nav-sign-out')}</Text>
         </TouchableOpacity>
       </ScrollView>

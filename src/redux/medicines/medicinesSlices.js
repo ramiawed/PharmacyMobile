@@ -22,6 +22,7 @@ const initialState = {
     searchWarehouseName: '',
     searchInWarehouse: false,
     searchOutWarehouse: false,
+    searchHaveOffer: false,
     city: '',
     displayType: 'list',
     page: 1,
@@ -77,6 +78,10 @@ export const getMedicines = createAsyncThunk(
 
       if (pageState.searchOutWarehouse) {
         buildUrl = buildUrl + `&outWarehouse=true`;
+      }
+
+      if (pageState.searchHaveOffer) {
+        buildUrl = buildUrl + `&haveOffer=true`;
       }
 
       if (pageState.city) {
@@ -275,6 +280,13 @@ export const medicinesSlice = createSlice({
       };
     },
 
+    setSearchHaveOffer: (state, action) => {
+      state.pageState = {
+        ...state.pageState,
+        searchHaveOffer: action.payload,
+      };
+    },
+
     setPage: (state, action) => {
       state.pageState = {
         ...state.pageState,
@@ -339,6 +351,7 @@ export const medicinesSlice = createSlice({
         searchCompanyId: null,
         searchInWarehouse: false,
         searchOutWarehouse: false,
+        searchHaveOffer: false,
         city: '',
         displayType: 'list',
         page: 1,
@@ -362,6 +375,7 @@ export const medicinesSlice = createSlice({
         searchCompanyId: null,
         searchInWarehouse: false,
         searchOutWarehouse: false,
+        searchHaveOffer: false,
         city: '',
         displayType: 'list',
         page: 1,
@@ -385,6 +399,7 @@ export const medicinesSlice = createSlice({
         searchCompanyId: null,
         searchInWarehouse: false,
         searchOutWarehouse: false,
+        searchHaveOffer: false,
         city: '',
         displayType: 'list',
         page: 1,
@@ -484,6 +499,7 @@ export const {
   setSearchWarehouseName,
   setSearchInWarehouse,
   setSearchOutWarehouse,
+  setSearchHaveOffer,
   setPage,
   setCity,
   setDisplayType,

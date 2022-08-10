@@ -16,7 +16,7 @@ const OrdersStack = () => {
         cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
       }}
     >
-      <ordersStack.Screen name="allOrders" component={OrdersScreen} />
+      <ordersStack.Screen name="allOrders" component={OrdersScreen} initialParams={{type: 'order'}} />
       <ordersStack.Screen name="Order" component={OrderDetailsScreen} />
     </ordersStack.Navigator>
   );

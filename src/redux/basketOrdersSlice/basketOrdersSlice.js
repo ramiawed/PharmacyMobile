@@ -53,9 +53,9 @@ export const getOrders = createAsyncThunk(
       CancelToken = axios.CancelToken;
       source = CancelToken.source();
 
-      const { page } = obj;
+      // const { page } = obj;
 
-      let buildUrl = `${BASEURL}/ordered-baskets?page=${page}&limit=15`;
+      let buildUrl = `${BASEURL}/ordered-baskets?page=${pageState.page}&limit=15`;
 
       if (pageState.searchPharmacyName.length > 0) {
         buildUrl = buildUrl + `&pharmacyName=${pageState.searchPharmacyName}`;
@@ -84,10 +84,10 @@ export const getOrders = createAsyncThunk(
         pageState.dateOption === DateOptions.ONE_DAY &&
         pageState.date !== ""
       ) {
-        let nextDay = new Date(pageState.date);
+        let nextDay = new Date(JSON.parse(pageState.date).split('T')[0]);
         nextDay.setDate(nextDay.getDate() + 1);
-        buildUrl =
-          buildUrl + `&date=${new Date(pageState.date)}&date1=${nextDay}`;
+        let date = JSON.parse(pageState.date).split('T')[0];
+        buildUrl = buildUrl + `&date=${date}&date1=${nextDay}`;
       }
 
       // Three Days
@@ -95,10 +95,10 @@ export const getOrders = createAsyncThunk(
         pageState.dateOption === DateOptions.THREE_DAY &&
         pageState.date !== ""
       ) {
-        let nextThreeDays = new Date(pageState.date);
+        let nextThreeDays = new Date(JSON.parse(pageState.date).split('T')[0]);
         nextThreeDays.setDate(nextThreeDays.getDate() + 3);
-        buildUrl =
-          buildUrl + `&date=${new Date(pageState.date)}&date1=${nextThreeDays}`;
+        let date = JSON.parse(pageState.date).split('T')[0];
+        buildUrl = buildUrl + `&date=${date}&date1=${nextThreeDays}`;
       }
 
       // One Week
@@ -106,10 +106,10 @@ export const getOrders = createAsyncThunk(
         pageState.dateOption === DateOptions.ONE_WEEK &&
         pageState.date !== ""
       ) {
-        let nextWeek = new Date(pageState.date);
+        let nextWeek = new Date(JSON.parse(pageState.date).split('T')[0]);
         nextWeek.setDate(nextWeek.getDate() + 7);
-        buildUrl =
-          buildUrl + `&date=${new Date(pageState.date)}&date1=${nextWeek}`;
+        let date = JSON.parse(pageState.date).split('T')[0];
+        buildUrl = buildUrl + `&date=${date}&date1=${nextWeek}`;
       }
 
       // Two Week
@@ -117,10 +117,10 @@ export const getOrders = createAsyncThunk(
         pageState.dateOption === DateOptions.TWO_WEEK &&
         pageState.date !== ""
       ) {
-        let nextTwoWeek = new Date(pageState.date);
+        let nextTwoWeek = new Date(JSON.parse(pageState.date).split('T')[0]);
         nextTwoWeek.setDate(nextTwoWeek.getDate() + 14);
-        buildUrl =
-          buildUrl + `&date=${new Date(pageState.date)}&date1=${nextTwoWeek}`;
+        let date = JSON.parse(pageState.date).split('T')[0];
+        buildUrl = buildUrl + `&date=${date}&date1=${nextTwoWeek}`;
       }
 
       // One Month
@@ -128,11 +128,10 @@ export const getOrders = createAsyncThunk(
         pageState.dateOption === DateOptions.ONE_MONTH &&
         pageState.date !== ""
       ) {
-        let nextMonth = new Date(pageState.date);
+        let nextMonth = new Date(JSON.parse(pageState.date).split('T')[0]);
         nextMonth.setMonth(nextMonth.getMonth() + 1);
-
-        buildUrl =
-          buildUrl + `&date=${new Date(pageState.date)}&date1=${nextMonth}`;
+        let date = JSON.parse(pageState.date).split('T')[0];
+        buildUrl = buildUrl + `&date=${date}&date1=${nextMonth}`;
       }
 
       // Two Month
@@ -140,11 +139,10 @@ export const getOrders = createAsyncThunk(
         pageState.dateOption === DateOptions.TWO_MONTH &&
         pageState.date !== ""
       ) {
-        let nextTwoMonth = new Date(pageState.date);
+        let nextTwoMonth = new Date(JSON.parse(pageState.date).split('T')[0]);
         nextTwoMonth.setMonth(nextTwoMonth.getMonth() + 2);
-
-        buildUrl =
-          buildUrl + `&date=${new Date(pageState.date)}&date1=${nextTwoMonth}`;
+        let date = JSON.parse(pageState.date).split('T')[0];
+        buildUrl = buildUrl + `&date=${date}&date1=${nextTwoMonth}`;
       }
 
       // Six Month
@@ -152,11 +150,10 @@ export const getOrders = createAsyncThunk(
         pageState.dateOption === DateOptions.SIX_MONTH &&
         pageState.date !== ""
       ) {
-        let nextSixMonth = new Date(pageState.date);
+        let nextSixMonth = new Date(JSON.parse(pageState.date).split('T')[0]);
         nextSixMonth.setMonth(nextSixMonth.getMonth() + 6);
-
-        buildUrl =
-          buildUrl + `&date=${new Date(pageState.date)}&date1=${nextSixMonth}`;
+        let date = JSON.parse(pageState.date).split('T')[0];
+        buildUrl = buildUrl + `&date=${date}&date1=${nextSixMonth}`;
       }
 
       // One Year
@@ -164,11 +161,10 @@ export const getOrders = createAsyncThunk(
         pageState.dateOption === DateOptions.ONE_YEAR &&
         pageState.date !== ""
       ) {
-        let nextYear = new Date(pageState.date);
+        let nextYear = new Date(JSON.parse(pageState.date).split('T')[0]);
         nextYear.setFullYear(nextYear.getFullYear() + 1);
-
-        buildUrl =
-          buildUrl + `&date=${new Date(pageState.date)}&date1=${nextYear}`;
+        let date = JSON.parse(pageState.date).split('T')[0];
+        buildUrl = buildUrl + `&date=${date}&date1=${nextYear}`;
       }
 
       const response = await axios.get(buildUrl, {
@@ -576,14 +572,21 @@ export const basketOrdersSlice = createSlice({
     },
     [getOrders.fulfilled]: (state, action) => {
       state.status = "succeeded";
-      state.orders = action.payload.data.basketOrders.map((o) => {
-        return {
-          ...o,
-          selected: false,
-        };
-      });
+      state.orders = [
+        ...state.orders,
+        ...action.payload.data.basketOrders.map(o => {
+          return {
+            ...o,
+            selected: false,
+          };
+        })
+      ];
       state.count = action.payload.count;
       state.error = "";
+      state.pageState = {
+        ...state.pageState,
+        page: state.pageState.page + 1,
+      };
       state.forceRefresh = false;
       state.refresh = false;
     },

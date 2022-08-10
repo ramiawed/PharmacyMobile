@@ -23,6 +23,7 @@ import {
   setSearchWarehouseName,
   setSearchInWarehouse,
   setSearchOutWarehouse,
+  setSearchHaveOffer
 } from '../redux/medicines/medicinesSlices';
 
 // components
@@ -142,6 +143,11 @@ const MedicinesScreen = ({ navigation, route }) => {
     onSearchSubmit();
   };
 
+  const haveOfferCheckBoxHandler = () => {
+    dispatch(setSearchHaveOffer(!pageState.searchHaveOffer));
+    onSearchSubmit();
+  };
+
   useFocusEffect(
     useCallback(() => {
       // Do something when the screen is focused
@@ -214,17 +220,24 @@ const MedicinesScreen = ({ navigation, route }) => {
           </View>
         )}
 
-        {pageState.searchWarehouseId === null && (
+        {user.type !== UserTypeConstants.GUEST && !pageState.searchWarehouseId && (
           <View style={styles.checkBoxView}>
             <CheckBox value={pageState.searchInWarehouse} onValueChange={inWarehouseCheckBoxHandler} />
             <Text style={{ color: Colors.MAIN_COLOR, marginStart: 8 }}>{i18n.t('warehouse-in-warehouse')}</Text>
           </View>
         )}
 
-        {pageState.searchWarehouseId === null && (
+        {user.type !== UserTypeConstants.GUEST && !pageState.searchWarehouseId && (
           <View style={styles.checkBoxView}>
             <CheckBox value={pageState.searchOutWarehouse} onValueChange={outWarehouseCheckBoxHandler} />
             <Text style={{ color: Colors.MAIN_COLOR, marginStart: 8 }}>{i18n.t('warehouse-out-warehouse')}</Text>
+          </View>
+        )}
+
+        {user.type !== UserTypeConstants.GUEST && (pageState.searchWarehouseId || pageState.searchCompanyId) && (
+          <View style={styles.checkBoxView}>
+            <CheckBox value={pageState.searchHaveOffer} onValueChange={haveOfferCheckBoxHandler} />
+            <Text style={{ color: Colors.MAIN_COLOR, marginStart: 8 }}>{i18n.t('medicies-have-offer-label')}</Text>
           </View>
         )}
       </SearchContainer>

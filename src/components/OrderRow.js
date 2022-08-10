@@ -5,6 +5,8 @@ import CheckBox from 'expo-checkbox';
 
 // libraries
 import { BottomSheet } from 'react-native-btr';
+
+// components
 import ConfirmBottomSheet from '../components/ConfirmBottomSheet';
 
 // redux stuff
@@ -12,6 +14,11 @@ import { unwrapResult } from '@reduxjs/toolkit';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectUserData } from '../redux/auth/authSlice';
 import { decrementUnreadOrder, selectedChange, updateOrder } from '../redux/orders/ordersSlice';
+import {
+  decrementUnreadOrder as basketDecrementUnreadOrder,
+  selectedChange as basketSelectedChange,
+  updateOrder as basketUpdateOrder,
+} from "../redux/basketOrdersSlice/basketOrdersSlice";
 
 // icons
 import { Ionicons, FontAwesome, MaterialIcons, AntDesign } from '@expo/vector-icons';
@@ -19,7 +26,7 @@ import { Ionicons, FontAwesome, MaterialIcons, AntDesign } from '@expo/vector-ic
 // constants
 import { Colors, UserTypeConstants } from '../utils/constants';
 
-const OrderRow = ({ order, deleteAction }) => {
+const OrderRow = ({ order, deleteAction, type }) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
@@ -44,20 +51,32 @@ const OrderRow = ({ order, deleteAction }) => {
       }
 
       if (Object.keys(obj).length > 0) {
-        dispatch(updateOrder({ id, obj, token }))
+        dispatch(type === 'order' 
+          ? updateOrder({ id, obj, token }) 
+          : basketUpdateOrder({id, obj, token}))
           .then(unwrapResult)
           .then(() => {
-            dispatch(decrementUnreadOrder({ token }));
+            dispatch(type === 'order' 
+              ? decrementUnreadOrder({ token })
+              : basketDecrementUnreadOrder({token}));
           });
       }
     }
 
-    navigation.navigate('Orders', {
-      screen: 'Order',
-      params: {
-        orderId: order._id,
-      },
-    });
+    if (type === 'order') {
+      navigation.navigate('Order', {
+        params: {
+          orderId: order._id,
+        },
+      });
+    } else {
+      navigation.navigate('BasketOrder', {
+        params: {
+          orderId: order._id,
+        },
+      });
+    }
+    
   };
 
   return order ? (
@@ -69,7 +88,7 @@ const OrderRow = ({ order, deleteAction }) => {
             justifyContent: 'center',
           }}
         >
-          <CheckBox value={order.selected} onValueChange={() => dispatch(selectedChange(order._id))} />
+          <CheckBox value={order.selected} onValueChange={() => dispatch(type === 'order' ? selectedChange(order._id) : basketSelectedChange(order._id))} />
         </View>
       )}
 

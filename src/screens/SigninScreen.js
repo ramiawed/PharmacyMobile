@@ -78,8 +78,6 @@ const SignInScreen = ({ navigation }) => {
     dispatch(authSign({ username, password }))
       .then(unwrapResult)
       .then((result) => {
-        // storeUsernamePassword();
-        // dispatch(statisticsSignin({ token }));
         dispatch(
           addStatistics({
             obj: {

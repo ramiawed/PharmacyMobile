@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import i18n from 'i18n-js';
 import axios from 'axios';
 
 import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
@@ -6,7 +7,7 @@ import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native
 // redux stuff
 import { useDispatch, useSelector } from 'react-redux';
 import { selectUserData } from '../redux/auth/authSlice';
-import { selectOrders, updateOrders } from '../redux/orders/ordersSlice';
+import { selectBasketOrders, updateOrders } from '../redux/basketOrdersSlice/basketOrdersSlice';
 
 // icons
 import { Ionicons, FontAwesome, MaterialIcons } from '@expo/vector-icons';
@@ -18,14 +19,14 @@ import { BASEURL, Colors, OfferTypes, UserTypeConstants } from '../utils/constan
 import Loader from '../components/Loader';
 import CartItem from '../components/CartItem';
 import ExpandedView from '../components/ExpandedView';
-import i18n from 'i18n-js';
+import Basket from '../components/Basket';
 
-const OrderDetailsScreen = ({ route }) => {
+const BasketOrderDetailsScreen = ({ route }) => {
   const { params :{orderId} } = route.params;
   const dispatch = useDispatch();
 
   const { token, user } = useSelector(selectUserData);
-  const { status } = useSelector(selectOrders);
+  const { status } = useSelector(selectBasketOrders);
 
   const [orderDetails, setOrderDetails] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -58,44 +59,31 @@ const OrderDetailsScreen = ({ route }) => {
     }
   };
 
-  const getOrderDetails = async () => {
-    setEmptyMsg('');
+  const getBasketOrderDetails = async () => {
+    setEmptyMsg("");
     setLoading(true);
     axios
-      .get(`${BASEURL}/orders/details?id=${orderId}`, {
+      .get(`${BASEURL}/ordered-baskets/details?id=${orderId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       })
       .then((response) => {
         if (response.data.data.order === null) {
-          setEmptyMsg('order-deleted');
+          setEmptyMsg("order-deleted");
         } else {
-          setOrderDetails(response.data.data.order);
+          setOrderDetails(response.data.data.basketOrder);
         }
       })
       .catch((err) => {
-        setEmptyMsg('order-details-error');
+        setEmptyMsg("order-details-error");
       });
 
     setLoading(false);
   };
 
-  const computeTotalPrice = () => {
-    let total = 0;
-
-    orderDetails.items.forEach((item) => {
-      total =
-        total +
-        item.qty * item.price -
-        (item.bonus && item.bonusType === OfferTypes.PERCENTAGE ? (item.qty * item.price * item.bonus) / 100 : 0);
-    });
-
-    return total;
-  };
-
   useEffect(() => {
-    getOrderDetails();
+    getBasketOrderDetails();
   }, []);
 
   return orderDetails ? (
@@ -122,10 +110,6 @@ const OrderDetailsScreen = ({ route }) => {
             <View style={styles.row}>
               <Text style={styles.label}>{i18n.t('warehouse-name')}</Text>
               <Text style={styles.value}>{orderDetails.warehouse.name}</Text>
-            </View>
-            <View style={{ ...styles.row, borderBottomWidth: 0 }}>
-              <Text style={styles.label}>{i18n.t('total-invoice-price')}</Text>
-              <Text style={styles.value}>{computeTotalPrice()}</Text>
             </View>
           </ExpandedView>
 
@@ -174,15 +158,7 @@ const OrderDetailsScreen = ({ route }) => {
             )}
           </View>
 
-          {orderDetails.items?.length > 0 && (
-            <FlatList
-              data={orderDetails.items}
-              keyExtractor={(item) => item._id}
-              contentContainerStyle={{ backgroundColor: Colors.WHITE_COLOR, alignItems: 'center' }}
-              numColumns={1}
-              renderItem={({ item, index }) => <CartItem item={item} key={index} inOrderDetails={true} />}
-            />
-          )}
+          <Basket  basket={orderDetails.basket} />
         </>
       )}
 
@@ -236,4 +212,4 @@ const styles = StyleSheet.create({
   actionText: { color: Colors.WHITE_COLOR, marginEnd: 10 },
 });
 
-export default OrderDetailsScreen;
+export default BasketOrderDetailsScreen;

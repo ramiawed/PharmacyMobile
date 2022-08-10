@@ -18,8 +18,9 @@ import { deleteMe, selectUserData } from '../redux/auth/authSlice';
 // constants
 import { Colors } from '../utils/constants';
 import { useFocusEffect } from '@react-navigation/native';
+import { signoutHandler } from '../utils/functions';
 
-const DeleteMe = ({ resetStore }) => {
+const DeleteMe = ({  }) => {
   const { token, deleteError } = useSelector(selectUserData);
   const dispatch = useDispatch();
 
@@ -51,7 +52,7 @@ const DeleteMe = ({ resetStore }) => {
       .then(unwrapResult)
       .then(() => {
         setLoading(false);
-        resetStore();
+        signoutHandler(dispatch)
       })
       .catch((err) => {
         setLoading(false);

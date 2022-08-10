@@ -490,5 +490,22 @@
   "no-saved-items": "لا يوجد منتجات محغوظة",
   "baskets-screen": "العروض الخاصة",
   "all-baskets-label": "العروض الخاصة",
-  "baskets-orders-label": "طلبات العروض الخاصة"
+  "baskets-orders-label": "طلبات العروض الخاصة",
+  "no-baskets": "لا يوجد عروض خاصة",
+  "basket-total-items": "عدد المنتجات ضمن السلة",
+  "basket-total-price": "القيمة الاجمالية للسلة",
+  "basket-total-discount": "حسم ٪ على القيمة الاجمالية",
+  "basket-total-price-after-discount": "القيمة الاجمالية بعد الحسم",
+  "basket-gift-label": "هدية",
+  "basket-note-label": "ملاحظة",
+  "free": "مجاني",
+  "item-qty": "الكمية",
+  "order-basket": "طلب السلة",
+  "order-basket-msg": "هل تريد طلب السلة المحددة؟",
+  "order-basket-succeeded": "تم ارسال طلب السلة بنجاح",
+  "order-basket-failed": "حصل خطأ أثناء ارسال الطلب، الرجاء المحاولة مرة اخرى",
+  "orders-label": "طلبات الادوية",
+  "login-with-token-error-msg": "الرجاء التأكد من جودة الانترنيت و محاولة الدخول مرة اخرى",
+  "try-again-label": "إعادة المحاولة",
+  "medicies-have-offer-label": "المنتجات التي عليها عرض"
 }

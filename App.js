@@ -1,12 +1,12 @@
 import 'react-native-gesture-handler';
 
+// libraries
+import Toast from 'react-native-toast-message';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+
 import React, { useEffect, useState } from 'react';
 import { I18nManager } from 'react-native';
 import './src/i18n/index';
-
-// Navigation Stuff
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
 
 // redux stuff
 import { unwrapResult } from '@reduxjs/toolkit';
@@ -16,17 +16,15 @@ import { getAllAdvertisements } from './src/redux/advertisements/advertisementsS
 import { selectToken, selectUser, authSignWithToken } from './src/redux/auth/authSlice';
 import { addStatistics } from './src/redux/statistics/statisticsSlice';
 import { getAllSettings } from './src/redux/settings/settingsSlice';
+import { getSavedItems } from './src/redux/savedItems/savedItemsSlice';
 
-// libraries
-import Toast from 'react-native-toast-message';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-
-// components
+// screens
 import SignInScreen from './src/screens/SignInScreen';
 import SignupScreen from './src/screens/SignupScreen';
 import DrawerScreen from './src/screens/DrawerScreen';
 import ApproveScreen from './src/screens/ApproveScreen';
 import SplashScreen from './src/screens/SplashScreen';
+import LogoutScreen from './src/screens/LogoutScreen';
 
 // constants
 import { Colors, UserTypeConstants } from './src/utils/constants';
@@ -35,10 +33,11 @@ import { Colors, UserTypeConstants } from './src/utils/constants';
 import { persistStore } from 'redux-persist';
 import { PersistGate } from 'redux-persist/integration/react';
 import store from './src/app/store';
-import { getSavedItems } from './src/redux/savedItems/savedItemsSlice';
 let persistor = persistStore(store);
 
 // navigation's stuff
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
 const Stack = createStackNavigator();
 
 const App = () => {
@@ -80,7 +79,7 @@ const App = () => {
       } else {
         setShowSplashScreen(false);
       }
-    }, 3000);
+    }, 1000);
 
     return () => {
       clearTimeout(timer);
@@ -101,7 +100,13 @@ const App = () => {
           }}
         >
           {user ? (
-            <Stack.Screen name="Drawer" component={DrawerScreen} />
+              <>
+                <Stack.Screen name="Drawer" component={DrawerScreen} />
+              </>
+            ) : token ? (
+              <>
+                <Stack.Screen name="LogOut" component={LogoutScreen} />
+              </>
           ) : (
             <>
               <Stack.Screen name="SignIn" component={SignInScreen} />

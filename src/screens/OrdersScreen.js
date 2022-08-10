@@ -34,6 +34,22 @@ import {
   setDateOption,
   setSearchDate,
 } from '../redux/orders/ordersSlice';
+import {
+  getOrders as basketGetOrders,
+  selectBasketOrders as basketSelectOrders,
+  resetOrders as basketResetOrders,
+  setPage as basketSetPage,
+  deleteOrder as basketDeleteOrder,
+  getUnreadOrders as basketGetUnreadOrders,
+  updateOrders as basketUpdateOrders,
+  setSearchPharmacyName as basketSetSearchPharmacyName,
+  setSearchWarehouseName as basketSetSearchWarehouseName,
+  setAdminOrderStatus as basketSetAdminOrderStatus,
+  setWarehouseOrderStatus as basketSetWarehouseOrderStatus,
+  setPharmacyOrderStatus as basketSetPharmacyOrderStatus,
+  setDateOption as basketSetDateOption,
+  setSearchDate as basketSetSearchDate,
+} from '../redux/basketOrdersSlice/basketOrdersSlice';
 
 // icons
 import { Ionicons, FontAwesome, MaterialIcons, Fontisto } from '@expo/vector-icons';
@@ -56,12 +72,13 @@ const calculateSelectedOrdersCount = (orders) => {
   return count;
 };
 
-const OrdersScreen = () => {
+const OrdersScreen = ({route}) => {
   const dispatch = useDispatch();
+  const { type } = route.params;
 
   // selectors
   const { user, token } = useSelector(selectUserData);
-  const { status, count, orders, pageState, forceRefresh, deleteStatus } = useSelector(selectOrders);
+  const { status, count, orders, pageState, forceRefresh, deleteStatus } = useSelector(type === 'order' ? selectOrders : basketSelectOrders);
   const selectedOrdersCount = calculateSelectedOrdersCount(orders);
 
   const [date, setDate] = useState(new Date());
@@ -73,7 +90,7 @@ const OrdersScreen = () => {
     const currentDate = selectedDate ? selectedDate : date;
     setShow(false);
     setDate(currentDate);
-    dispatch(setSearchDate(JSON.stringify(currentDate)));
+    dispatch(type === 'order' ? setSearchDate(JSON.stringify(currentDate)) : basketSetSearchDate(JSON.stringify(currentDate)));
     onSearchSubmit();
   };
 
@@ -86,13 +103,11 @@ const OrdersScreen = () => {
     showMode('date');
   };
 
-  // own states
-
   const handleSearch = () => {
-    dispatch(
+    dispatch(type === 'order' ?
       getOrders({
         token,
-      }),
+      }) : basketGetOrders({token}),
     );
 
     setRefreshing(false);
@@ -100,8 +115,8 @@ const OrdersScreen = () => {
 
   const onRefreshing = () => {
     setRefreshing(true);
-    dispatch(resetOrders());
-    dispatch(setPage(1));
+    dispatch(type === 'order' ? resetOrders() : basketResetOrders());
+    dispatch(type === 'order' ? setPage(1) : basketSetPage(1));
     handleSearch();
   };
 
@@ -112,16 +127,21 @@ const OrdersScreen = () => {
   };
 
   const onSearchSubmit = () => {
-    dispatch(resetOrders());
-    dispatch(setPage(1));
+    dispatch(type === 'order' ? resetOrders() : basketResetOrders());
+    dispatch(type === 'order' ? setPage(1) : basketSetPage(1));
     handleSearch();
   };
 
   const deleteOrderHandler = (orderId) => {
     dispatch(
+      type === 'order' ?
       deleteOrder({
         token,
         orderId,
+      }) : 
+      basketDeleteOrder({
+        token,
+        orderId
       }),
     )
       .then(unwrapResult)
@@ -176,17 +196,27 @@ const OrdersScreen = () => {
         };
       }
       dispatch(
+        type === 'order' ?
         updateOrders({
           obj: {
             ids,
             body,
           },
           token,
+        })
+        : basketUpdateOrders({
+          obj: {
+            ids,
+            body
+          },
+          token
         }),
       )
         .then(unwrapResult)
         .then((result) => {
-          dispatch(getUnreadOrders({ token }));
+          dispatch(type === "order"
+          ? getUnreadOrders({ token })
+          : basketGetUnreadOrders({ token }));
         });
     }
   };
@@ -224,7 +254,9 @@ const OrdersScreen = () => {
 
   const handleAdminOrderStatusOption = (itemValue, itemIndex) => {
     setSelectedAdminOption(itemValue);
-    dispatch(setAdminOrderStatus(itemValue));
+    dispatch(type === 'order' ? 
+      setAdminOrderStatus(itemValue) 
+      : basketSetAdminOrderStatus(itemValue));
     onSearchSubmit();
   };
 
@@ -253,7 +285,9 @@ const OrdersScreen = () => {
 
   const handleWarehouseOrderStatusOption = (itemValue, itemIndex) => {
     setSelectedWarehouseOption(itemValue);
-    dispatch(setWarehouseOrderStatus(itemValue));
+    dispatch(type === 'order' ? 
+      setWarehouseOrderStatus(itemValue) 
+      : basketSetWarehouseOrderStatus(itemValue));
     onSearchSubmit();
   };
 
@@ -275,7 +309,9 @@ const OrdersScreen = () => {
 
   const handlePharmacyOrderStatusOption = (itemValue, itemIndex) => {
     setSelectedPharmacyOption(itemValue);
-    dispatch(setPharmacyOrderStatus(itemValue));
+    dispatch(type === 'order' ? 
+      setPharmacyOrderStatus(itemValue) 
+      : basketSetPharmacyOrderStatus(itemValue));
     onSearchSubmit();
   };
 
@@ -292,14 +328,14 @@ const OrdersScreen = () => {
   ];
 
   const handleDateOptions = (val) => {
-    dispatch(setDateOption(val));
+    dispatch(type === 'order' ? setDateOption(val) : basketSetDateOption(val));
     onSearchSubmit();
   };
 
   useEffect(() => {
     if (forceRefresh) {
-      dispatch(resetOrders());
-      dispatch(setPage(1));
+      dispatch(type === 'order' ? resetOrders() : basketResetOrders());
+      dispatch(type === 'order' ? setPage(1) : basketSetPage());
     }
     handleSearch();
   }, [forceRefresh]);
@@ -311,7 +347,7 @@ const OrdersScreen = () => {
           <SearchInput
             placeholder={i18n.t('search-by-pharmacy-name')}
             onTextChange={(val) => {
-              dispatch(setSearchPharmacyName(val));
+              dispatch(type === 'order' ? setSearchPharmacyName(val) : basketSetSearchPharmacyName(val));
             }}
             onSubmitEditing={onSearchSubmit}
             // onKeyPress={keyUpHandler}
@@ -323,7 +359,7 @@ const OrdersScreen = () => {
           <SearchInput
             placeholder={i18n.t('search-by-warehouse-name')}
             onTextChange={(val) => {
-              dispatch(setSearchWarehouseName(val));
+              dispatch(type === 'order' ? setSearchWarehouseName(val) : basketSetSearchWarehouseName(val));
             }}
             onSubmitEditing={onSearchSubmit}
             // onKeyPress={keyUpHandler}
@@ -471,7 +507,7 @@ const OrdersScreen = () => {
           onEndReached={handleMoreResult}
           onEndReachedThreshold={0.1}
           renderItem={({ item }) => {
-            return <OrderRow order={item} deleteAction={deleteOrderHandler} />;
+            return <OrderRow order={item} deleteAction={deleteOrderHandler} type={type} />;
           }}
         />
       )}
