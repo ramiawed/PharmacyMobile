@@ -250,7 +250,7 @@ function CustomDrawerContent(props) {
 
         {(user.type === UserTypeConstants.ADMIN ||
           user.type === UserTypeConstants.PHARMACY ||
-          user.type === UserType.WAREHOUSE) && (
+          user.type === UserTypeConstants.WAREHOUSE) && (
           <View
             style={{
               backgroundColor: props.state.index === 5 ? Colors.FAILED_COLOR : Colors.MAIN_COLOR,
