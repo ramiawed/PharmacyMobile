@@ -1,16 +1,14 @@
 import React, { memo, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
-import { View, Text, StyleSheet, TouchableWithoutFeedback, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TouchableWithoutFeedback, LayoutAnimation } from 'react-native';
 
 // redux stuff
-import { unwrapResult } from '@reduxjs/toolkit';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectUserData } from '../redux/auth/authSlice';
-import { addFavoriteItem, removeFavoriteItem, selectFavoritesItems } from '../redux/favorites/favoritesSlice';
 import { addStatistics } from '../redux/statistics/statisticsSlice';
 
 // constants
-import { Colors, UserTypeConstants, checkItemExistsInWarehouse, OfferTypes } from '../utils/constants';
+import { Colors, UserTypeConstants, OfferTypes } from '../utils/constants';
 
 // icons
 import { AntDesign, Ionicons } from '@expo/vector-icons';
@@ -25,49 +23,9 @@ const OfferCard = ({ item, addToCart }) => {
 
   // selectors
   const { user, token } = useSelector(selectUserData);
-  const favorites = useSelector(selectFavoritesItems);
 
   // own state
   const [expanded, setExpanded] = useState(false);
-  const [changeFavoriteLoading, setChangeFavoriteLoading] = useState(false);
-
-  const isFavorite = favorites.map((favorite) => favorite._id).includes(item._id);
-
-  // method to handle add company to user's favorite
-  const addItemToFavoriteItems = () => {
-    setChangeFavoriteLoading(true);
-
-    dispatch(addFavoriteItem({ obj: { favoriteItemId: item._id }, token }))
-      .then(unwrapResult)
-      .then(() => {
-        dispatch(
-          addStatistics({
-            obj: {
-              sourceUser: user._id,
-              targetItem: item._id,
-              action: 'item-added-to-favorite',
-            },
-          }),
-        );
-        setChangeFavoriteLoading(false);
-      })
-      .catch(() => {
-        setChangeFavoriteLoading(false);
-      });
-  };
-
-  // method to handle remove company from user's favorite
-  const removeItemFromFavoritesItems = () => {
-    setChangeFavoriteLoading(true);
-    dispatch(removeFavoriteItem({ obj: { favoriteItemId: item._id }, token }))
-      .then(unwrapResult)
-      .then(() => {
-        setChangeFavoriteLoading(false);
-      })
-      .catch(() => {
-        setChangeFavoriteLoading(false);
-      });
-  };
 
   const dispatchStatisticsHandler = () => {
     if (user.type === UserTypeConstants.PHARMACY || user.type === UserTypeConstants.GUEST) {
@@ -88,42 +46,21 @@ const OfferCard = ({ item, addToCart }) => {
     addToCart(item);
   };
 
+  const changeExpandedStatus = () => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setExpanded(!expanded);
+  };
+
   return user ? (
-    <OfferSwipeableRow
-      user={user}
-      addItemToFavorite={addItemToFavoriteItems}
-      removeItemFromFavorite={removeItemFromFavoritesItems}
-      isFavorite={isFavorite}
-      addToCart={() => addToCartHandler(item)}
-      item={item}
-    >
+    <OfferSwipeableRow user={user} addToCart={() => addToCartHandler(item)} item={item}>
       <View
         style={{
           ...styles.container,
         }}
       >
         <View style={{ flexDirection: 'row' }}>
-          <View style={{ flex: 1 }}>
+          <View style={{ flex: 1, justifyContent: 'space-between' }}>
             <View style={{ flexDirection: 'row' }}>
-              {expanded ? (
-                <AntDesign
-                  name="caretup"
-                  size={20}
-                  color={Colors.MAIN_COLOR}
-                  onPress={() => {
-                    setExpanded(!expanded);
-                  }}
-                />
-              ) : (
-                <AntDesign
-                  name="caretdown"
-                  size={20}
-                  color={Colors.MAIN_COLOR}
-                  onPress={() => {
-                    setExpanded(!expanded);
-                  }}
-                />
-              )}
               <TouchableWithoutFeedback
                 onPress={() => {
                   dispatchStatisticsHandler();
@@ -135,9 +72,12 @@ const OfferCard = ({ item, addToCart }) => {
                   });
                 }}
               >
-                <View style={{ ...styles.fullWidth, flexDirection: 'column' }}>
+                <View style={styles.fullWidth}>
                   <Text
-                    style={{ ...styles.title, fontSize: item.name.length >= 35 ? 14 : item.name.length > 25 ? 14 : 18 }}
+                    style={{
+                      ...styles.title,
+                      fontSize: item.name.length >= 35 ? 16 : item.name.length > 25 ? 18 : 18,
+                    }}
                   >
                     {item.name}
                   </Text>
@@ -160,12 +100,20 @@ const OfferCard = ({ item, addToCart }) => {
             ) : (
               <View style={{ height: 5 }}></View>
             )}
+
             <View style={styles.subHeader}>
               <View style={styles.fullWidth}>
                 <Text style={styles.companyName}>{item.company[0].name}</Text>
               </View>
               {user.type !== UserTypeConstants.GUEST && (
-                <Text style={{ ...styles.priceValue, color: Colors.SUCCEEDED_COLOR }}>{item.price}</Text>
+                <Text
+                  style={{
+                    ...styles.priceValue,
+                    color: Colors.SUCCEEDED_COLOR,
+                  }}
+                >
+                  {item.price}
+                </Text>
               )}
               <Text style={{ ...styles.priceValue, color: Colors.FAILED_COLOR }}>{item.customer_price}</Text>
             </View>
@@ -176,38 +124,28 @@ const OfferCard = ({ item, addToCart }) => {
               </View>
             </View>
           </View>
-          <View style={styles.actionsView}>
-            {user.type === UserTypeConstants.PHARMACY && (
-              <Ionicons
-                name="cart"
-                size={32}
-                color={Colors.SUCCEEDED_COLOR}
-                style={{ paddingHorizontal: 2 }}
-                onPress={() => addToCart(item)}
-              />
-            )}
+        </View>
+        <View style={{ ...styles.actionIcon, ...styles.addToCartIcon }}>
+          {user.type === UserTypeConstants.PHARMACY && (
+            <Ionicons
+              name="cart"
+              size={32}
+              color={Colors.SUCCEEDED_COLOR}
+              style={{ paddingHorizontal: 2, marginVertical: 4 }}
+              onPress={() => addToCart(item)}
+            />
+          )}
+        </View>
 
-            {changeFavoriteLoading ? (
-              <ActivityIndicator size="small" color={Colors.YELLOW_COLOR} />
-            ) : isFavorite ? (
-              <AntDesign
-                name="star"
-                size={32}
-                color={Colors.YELLOW_COLOR}
-                style={{ paddingHorizontal: 2 }}
-                onPress={removeItemFromFavoritesItems}
-              />
+        <TouchableWithoutFeedback onPress={changeExpandedStatus}>
+          <View style={{ ...styles.actionIcon, ...styles.expandedIcon }}>
+            {expanded ? (
+              <AntDesign name="caretup" size={16} color={Colors.MAIN_COLOR} />
             ) : (
-              <AntDesign
-                name="staro"
-                size={32}
-                color={Colors.YELLOW_COLOR}
-                style={{ paddingHorizontal: 2 }}
-                onPress={addItemToFavoriteItems}
-              />
+              <AntDesign name="caretdown" size={16} color={Colors.MAIN_COLOR} />
             )}
           </View>
-        </View>
+        </TouchableWithoutFeedback>
 
         {expanded && (
           <>
@@ -245,18 +183,22 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'column',
     padding: 5,
-    margin: 5,
+    paddingVertical: 23,
+    marginHorizontal: 5,
+    marginVertical: 30,
     backgroundColor: Colors.WHITE_COLOR,
     borderRadius: 12,
     borderWidth: 1,
     borderColor: '#e3e3e3',
     width: '95%',
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    marginBottom: 10,
+  nameAr: {
+    width: '100%',
+    textAlign: 'center',
+    color: Colors.MAIN_COLOR,
+    writingDirection: 'rtl',
+    paddingHorizontal: 5,
+    marginVertical: 5,
   },
   fullWidth: {
     flex: 1,
@@ -276,9 +218,11 @@ const styles = StyleSheet.create({
   },
   priceValue: {
     fontSize: 14,
-    paddingHorizontal: 6,
+    paddingStart: 6,
   },
   title: {
+    width: '100%',
+    textAlign: 'center',
     fontWeight: '700',
     color: Colors.MAIN_COLOR,
     writingDirection: 'rtl',
@@ -288,13 +232,34 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
     color: Colors.SUCCEEDED_COLOR,
-    marginStart: 25,
   },
-  warehouseName: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: Colors.SECONDARY_COLOR,
-    marginStart: 25,
+  actionIcon: {
+    borderWidth: 1,
+    borderColor: '#e3e3e3',
+    borderRadius: 50,
+    position: 'absolute',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 10,
+    backgroundColor: Colors.WHITE_COLOR,
+  },
+  favIcon: {
+    top: -22,
+    right: 10,
+    width: 45,
+    height: 45,
+  },
+  addToCartIcon: {
+    top: -22,
+    right: 20,
+    width: 45,
+    height: 45,
+  },
+  expandedIcon: {
+    bottom: -18,
+    width: 36,
+    height: 36,
+    alignSelf: 'center',
   },
   offer: {
     flexDirection: 'row',
@@ -319,26 +284,18 @@ const styles = StyleSheet.create({
     color: Colors.MAIN_COLOR,
   },
   separator: {
-    backgroundColor: Colors.GREY_COLOR,
-    height: 2,
-    width: '90%',
-    marginHorizontal: '5%',
-    marginTop: 10,
-    marginBottom: 5,
+    height: 1,
+    width: '100%',
+    backgroundColor: Colors.SECONDARY_COLOR,
+    marginVertical: 10,
   },
-  nameAr: {
-    fontWeight: '700',
-    color: Colors.MAIN_COLOR,
-    writingDirection: 'rtl',
-    paddingHorizontal: 5,
-    marginStart: 20,
+  warehouseName: {
+    flex: 1,
+    textAlign: 'center',
     marginVertical: 5,
-  },
-  actionsView: {
-    justifyContent: 'space-evenly',
-    borderStartColor: '#e3e3e3',
-    borderStartWidth: 1,
-    paddingStart: 5,
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: Colors.BLUE_COLOR,
   },
 });
 

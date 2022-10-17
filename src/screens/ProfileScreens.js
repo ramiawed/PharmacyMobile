@@ -19,10 +19,10 @@ import ProfileImage from '../components/ProfileImage';
 // redux stuff
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useDispatch, useSelector } from 'react-redux';
-import {  changeLogoURL, selectUserData, updateUserInfo } from '../redux/auth/authSlice';
+import { changeLogoURL, selectUserData, updateUserInfo } from '../redux/auth/authSlice';
 
 // constants
-import { BASEURL, Colors,  UserTypeConstants } from '../utils/constants';
+import { BASEURL, Colors, UserTypeConstants } from '../utils/constants';
 import { signoutHandler } from '../utils/functions';
 
 const ProfileScreen = () => {
@@ -262,7 +262,7 @@ const ProfileScreen = () => {
         </ExpandedView>
 
         {/* sign out section */}
-        <TouchableOpacity style={styles.button} onPress={() => signoutHandler(dispatch)}>
+        <TouchableOpacity style={styles.button} onPress={() => signoutHandler(dispatch, token)}>
           <Text style={styles.buttonText}>{i18n.t('nav-sign-out')}</Text>
         </TouchableOpacity>
       </ScrollView>

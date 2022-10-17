@@ -1,6 +1,15 @@
 import i18n from '../i18n/index';
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  LayoutAnimation,
+  Platform,
+  UIManager,
+} from 'react-native';
 import { BottomSheet } from 'react-native-btr';
 import Toast from 'react-native-toast-message';
 
@@ -18,10 +27,16 @@ import { saveOrder } from '../redux/orders/ordersSlice';
 import { addStatistics } from '../redux/statistics/statisticsSlice';
 
 // icons
-import { AntDesign } from '@expo/vector-icons';
+import { AntDesign, FontAwesome } from '@expo/vector-icons';
 
 // constants
 import { Colors, OfferTypes } from '../utils/constants';
+
+if (Platform.OS === 'android') {
+  if (UIManager.setLayoutAnimationEnabledExperimental) {
+    UIManager.setLayoutAnimationEnabledExperimental(true);
+  }
+}
 
 const CartWarehouse = ({ warehouse, index }) => {
   const dispatch = useDispatch();
@@ -105,61 +120,44 @@ const CartWarehouse = ({ warehouse, index }) => {
       });
   };
 
+  const onPress = () => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setExpanded(!expanded);
+  };
+
   return (
     <>
       <ScrollView>
-        <View
-          style={{ ...styles.container, backgroundColor: index % 2 === 0 ? Colors.WHITE_COLOR : Colors.WHITE_COLOR }}
-        >
+        <View style={{ ...styles.container, backgroundColor: index % 2 === 0 ? Colors.WHITE_COLOR : '#ffe' }}>
           <View style={styles.headerView}>
-            <View style={{ marginBottom: 5 }}>
-              <TouchableOpacity
-                style={{
-                  flexDirection: 'row',
-                }}
-                onPress={() => {
-                  setExpanded(!expanded);
-                }}
-              >
-                {expanded ? (
-                  <AntDesign name="caretup" size={20} color={Colors.MAIN_COLOR} />
-                ) : (
-                  <AntDesign name="caretdown" size={20} color={Colors.MAIN_COLOR} />
-                )}
-
-                <View>
-                  <Text style={styles.title}>{warehouse}</Text>
-                </View>
-              </TouchableOpacity>
-            </View>
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'flex-end',
-                alignItems: 'center',
+            <Text style={styles.title}>{warehouse}</Text>
+            <Text style={styles.totalPrice}>
+              {i18n.t('order-total-price')} {computeTotalPrice()}
+            </Text>
+            <TouchableOpacity
+              onPress={() => {
+                setShowConfirmSaveOrder(true);
               }}
+              style={{ ...styles.actionView, flex: 3, backgroundColor: Colors.BLUE_COLOR }}
             >
-              <TouchableOpacity
-                style={styles.sendBtn}
-                onPress={() => {
-                  setShowConfirmSaveOrder(true);
-                }}
-              >
-                <Text
-                  style={{
-                    color: Colors.WHITE_COLOR,
-                  }}
-                >
-                  {i18n.t('send-order')}
-                </Text>
-              </TouchableOpacity>
-              <Text style={styles.totalPrice}>{computeTotalPrice()}</Text>
-            </View>
+              <FontAwesome name="send" size={16} color={Colors.WHITE_COLOR} style={{ marginEnd: 10 }} />
+              <Text style={{ ...styles.actionText }}>{i18n.t('send-order')}</Text>
+            </TouchableOpacity>
           </View>
+
           {expanded &&
             cartItems
               .filter((item) => item.warehouse.warehouse.name === warehouse)
               .map((item, index) => <CartItem item={item} key={index} />)}
+
+          <View style={styles.expandedIcon}>
+            <AntDesign
+              name={expanded ? 'caretup' : 'caretdown'}
+              size={20}
+              color={Colors.MAIN_COLOR}
+              onPress={onPress}
+            />
+          </View>
         </View>
       </ScrollView>
 
@@ -189,27 +187,27 @@ const CartWarehouse = ({ warehouse, index }) => {
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'column',
-    paddingHorizontal: 5,
-    paddingVertical: 10,
-    borderBottomWidth: 20,
-    borderBottomColor: Colors.SECONDARY_COLOR,
+    margin: 5,
+    marginBottom: 25,
+    padding: 10,
+    paddingBottom: 25,
+    borderWidth: 1,
+    borderColor: '#e3e3e3',
+    borderRadius: 12,
   },
   totalPrice: {
     color: Colors.SUCCEEDED_COLOR,
     fontWeight: 'bold',
-    width: 70,
     textAlign: 'center',
+    fontSize: 18,
+    marginVertical: 10,
   },
-  title: { color: Colors.MAIN_COLOR, fontSize: 18, fontWeight: 'bold' },
+  title: { color: Colors.MAIN_COLOR, fontSize: 18, fontWeight: 'bold', textAlign: 'center' },
   sendBtn: {
     backgroundColor: Colors.SUCCEEDED_COLOR,
     marginHorizontal: 5,
     padding: 5,
     borderRadius: 6,
-  },
-  headerView: {
-    flexDirection: 'column',
-    justifyContent: 'flex-start',
   },
   bottomNavigationView: {
     backgroundColor: '#fff',
@@ -218,11 +216,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingBottom: 20,
     paddingHorizontal: 20,
-  },
-  actions: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    paddingVertical: 5,
   },
   okBtn: {
     backgroundColor: Colors.SUCCEEDED_COLOR,
@@ -239,6 +232,33 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     borderRadius: 6,
     marginHorizontal: 5,
+  },
+  actionText: {
+    fontSize: 16,
+    textAlign: 'center',
+    color: Colors.WHITE_COLOR,
+    paddingVertical: 10,
+    fontWeight: 'bold',
+  },
+  actionView: {
+    flexDirection: 'row',
+    backgroundColor: Colors.SUCCEEDED_COLOR,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 6,
+  },
+  expandedIcon: {
+    borderWidth: 1,
+    borderColor: '#e3e3e3',
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 18,
+    position: 'absolute',
+    bottom: -18,
+    backgroundColor: '#e3e3e3',
+    alignSelf: 'center',
   },
 });
 

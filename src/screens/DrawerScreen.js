@@ -1,7 +1,10 @@
 import React, { useEffect } from 'react';
-import i18n from '../i18n';
-import { View, StyleSheet, Text, Linking } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { View, StyleSheet, Text, Linking, Image, TouchableOpacity, Platform } from 'react-native';
+import * as Device from 'expo-device';
+import * as Notifications from 'expo-notifications';
+import * as SecureStore from 'expo-secure-store';
+import i18n from '../i18n';
 
 // Screens
 import ProfileScreen from './ProfileScreens';
@@ -36,38 +39,39 @@ import {
   Entypo,
 } from '@expo/vector-icons';
 
-// constants
-import { Colors,  UserTypeConstants } from '../utils/constants';
+// logo image
+import logo from '../../assets/logo.png';
 
 // redux stuff
 import { useDispatch, useSelector } from 'react-redux';
-import {  selectUser, selectUserData, signOut } from '../redux/auth/authSlice';
-import {  resetFavorites, selectFavorites } from '../redux/favorites/favoritesSlice';
-import {  resetCompanies } from '../redux/company/companySlice';
-import {
-  setSearchCompanyId,
-  setSearchWarehouseId,
-} from '../redux/medicines/medicinesSlices';
-import {  selectCartItemCount } from '../redux/cart/cartSlice';
-import { selectSettings} from '../redux/settings/settingsSlice';
-import {  selectAdvertisements } from '../redux/advertisements/advertisementsSlice';
+import { saveExpoPushToken, selectToken, selectUser, selectUserData, signOut } from '../redux/auth/authSlice';
+import { resetFavorites, selectFavorites } from '../redux/favorites/favoritesSlice';
+import { resetCompanies } from '../redux/company/companySlice';
+import { setSearchCompanyId, setSearchWarehouseId } from '../redux/medicines/medicinesSlices';
+import { selectCartItemCount } from '../redux/cart/cartSlice';
+import { selectSettings } from '../redux/settings/settingsSlice';
+import { selectAdvertisements } from '../redux/advertisements/advertisementsSlice';
 
 // components
 import Loader from '../components/Loader';
 import AboutScreen from './AboutScreen';
 
+// constants
+import { Colors, UserTypeConstants } from '../utils/constants';
 import { signoutHandler } from '../utils/functions';
 
 const Drawer = createDrawerNavigator();
 
 const DrawerScreen = () => {
   const dispatch = useDispatch();
-  const { user } = useSelector(selectUserData);
+  const { user, token } = useSelector(selectUserData);
   const { completed: settingsCompleted } = useSelector(selectSettings);
   const { completed: favoritesCompleted } = useSelector(selectFavorites);
   const { completed: advertisementsCompleted } = useSelector(selectAdvertisements);
 
   useEffect(() => {
+    registerForPushNotificationsAsync();
+
     return () => {
       dispatch(resetCompanies());
       dispatch(resetFavorites());
@@ -75,12 +79,49 @@ const DrawerScreen = () => {
     };
   }, []);
 
+  async function registerForPushNotificationsAsync() {
+    const expoPushTokenFromSecureStore = await SecureStore.getItemAsync('expoPushToken');
+    if (expoPushTokenFromSecureStore) {
+      dispatch(saveExpoPushToken({ expoPushToken: expoPushTokenFromSecureStore, token }));
+    } else {
+      let expoToken;
+      if (Device.isDevice) {
+        const { status: existingStatus } = await Notifications.getPermissionsAsync();
+        let finalStatus = existingStatus;
+        if (existingStatus !== 'granted') {
+          const { status } = await Notifications.requestPermissionsAsync();
+          finalStatus = status;
+        }
+        if (finalStatus !== 'granted') {
+          // alert('Failed to get push token for push notification!');
+          return;
+        }
+        expoToken = (await Notifications.getExpoPushTokenAsync()).data;
+        if (expoToken) {
+          dispatch(saveExpoPushToken({ expoPushToken: expoToken, token }));
+          await SecureStore.setItemAsync('expoPushToken', expoToken);
+        }
+      } else {
+        // alert('Must use physical device for Push Notifications');
+      }
+    }
+
+    if (Platform.OS === 'android') {
+      Notifications.setNotificationChannelAsync('default', {
+        name: 'default',
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: '#FF231F7C',
+      });
+    }
+  }
+
   return user ? (
     settingsCompleted === 'loading' || favoritesCompleted === 'loading' || advertisementsCompleted === 'loading' ? (
       <Loader />
     ) : (
       <Drawer.Navigator
-        screenOptions={{
+        screenOptions={({ navigation }) => ({
           headerStyle: {
             backgroundColor: Colors.MAIN_COLOR,
           },
@@ -88,7 +129,14 @@ const DrawerScreen = () => {
           header: ({ navigation, route, options }) => (
             <DrawerHeader navigation={navigation} route={route} options={options} />
           ),
-        }}
+          headerRight: (props) => (
+            <Image
+              source={{ uri: `../../assets/adaptive-icon.png` }}
+              style={styles.image}
+              onPress={navigation.toggleDrawer}
+            />
+          ),
+        })}
         drawerContent={(props) => <CustomDrawerContent {...props} user={user} />}
       >
         <Drawer.Screen
@@ -136,10 +184,11 @@ function CustomDrawerContent(props) {
       });
   };
 
-
   const dispatch = useDispatch();
+  const token = useSelector(selectToken);
 
   const { user } = props;
+
   return (
     <DrawerContentScrollView
       style={{
@@ -416,7 +465,7 @@ function CustomDrawerContent(props) {
             label={i18n.t('nav-sign-out')}
             icon={({}) => <Ionicons name="exit" size={24} color={Colors.WHITE_COLOR} />}
             onPress={() => {
-              signoutHandler(dispatch)
+              signoutHandler(dispatch, token);
             }}
             labelStyle={styles.drawerItemLabel}
           />
@@ -435,9 +484,7 @@ function CustomDrawerContent(props) {
             color="white"
             style={{ marginHorizontal: 5 }}
             onPress={() => {
-              // openApp('https://www.facebook.com/Smart-Pharma-106820748580558/');
               openApp('fb://Smart-Pharma-106820748580558/');
-              // Linking.openURL();
             }}
           />
           <FontAwesome5
@@ -479,7 +526,7 @@ function DrawerHeader({ navigation, route, options }) {
           <MaterialIcons name="menu" size={30} color={Colors.WHITE_COLOR} onPress={() => navigation.openDrawer()} />
           <Text
             style={{
-              fontSize: 20,
+              fontSize: 18,
               flex: 1,
               color: Colors.WHITE_COLOR,
               marginStart: 5,
@@ -514,19 +561,6 @@ function DrawerHeader({ navigation, route, options }) {
             />
           </View>
 
-          {user.type === UserTypeConstants.PHARMACY && (
-            <View style={styles.favoriteIcon}>
-              <MaterialCommunityIcons
-                name="bookmark"
-                size={24}
-                color={options.title === i18n.t('saved-items-screen') ? Colors.FAILED_COLOR : Colors.WHITE_COLOR}
-                onPress={() => {
-                  navigation.navigate('SavedItems');
-                }}
-              />
-            </View>
-          )}
-
           <View style={styles.favoriteIcon}>
             <AntDesign
               name="star"
@@ -536,6 +570,12 @@ function DrawerHeader({ navigation, route, options }) {
                 navigation.navigate('Favorite');
               }}
             />
+          </View>
+
+          <View style={styles.favoriteIcon}>
+            <TouchableOpacity onPress={() => navigation.navigate('Main')}>
+              <Image source={logo} style={styles.image} />
+            </TouchableOpacity>
           </View>
         </View>
       </View>
@@ -599,6 +639,14 @@ const styles = StyleSheet.create({
     color: Colors.WHITE_COLOR,
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  image: {
+    width: 48,
+    height: 32,
+    resizeMode: 'cover',
+    borderRadius: 4,
+    backgroundColor: 'white',
+    // marginHorizontal: 10,
   },
 });
 

@@ -5,7 +5,7 @@ import { Animated, StyleSheet, View } from 'react-native';
 import { RectButton, Swipeable } from 'react-native-gesture-handler';
 import { Colors, UserTypeConstants } from '../utils/constants';
 
-import { AntDesign, Ionicons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 
 export default class SwipeableRow extends Component {
   renderLeftActions = (progress, dragX) => {
@@ -39,41 +39,41 @@ export default class SwipeableRow extends Component {
     );
   };
 
-  renderRightActions = (progress, dragX) => {
-    const trans = dragX.interpolate({
-      inputRange: [0, 50, 100, 101],
-      outputRange: [-20, 0, 0, 1],
-    });
-    return (
-      <RectButton
-        style={{
-          ...styles.rightAction,
-          backgroundColor: Colors.YELLOW_COLOR,
-        }}
-        onPress={() => {
-          this.close();
+  // renderRightActions = (progress, dragX) => {
+  //   const trans = dragX.interpolate({
+  //     inputRange: [0, 50, 100, 101],
+  //     outputRange: [-20, 0, 0, 1],
+  //   });
+  //   return (
+  //     <RectButton
+  //       style={{
+  //         ...styles.rightAction,
+  //         backgroundColor: Colors.YELLOW_COLOR,
+  //       }}
+  //       onPress={() => {
+  //         this.close();
 
-          if (this.props.isFavorite === true) {
-            this.props.removeItemFromFavorite();
-          } else {
-            this.props.addItemToFavorite();
-          }
-        }}
-      >
-        {this.props.isFavorite === true ? (
-          <View style={styles.leftView}>
-            <AntDesign name="star" size={24} color={Colors.WHITE_COLOR} style={{ paddingHorizontal: 2 }} />
-            <Animated.Text style={[styles.actionText]}>{i18n.t('remove-from-favorite-tooltip')}</Animated.Text>
-          </View>
-        ) : (
-          <View style={styles.leftView}>
-            <AntDesign name="staro" size={24} color={Colors.WHITE_COLOR} style={{ paddingHorizontal: 2 }} />
-            <Animated.Text style={[styles.actionText]}>{i18n.t('add-to-favorite-tooltip')}</Animated.Text>
-          </View>
-        )}
-      </RectButton>
-    );
-  };
+  //         if (this.props.isFavorite === true) {
+  //           this.props.removeItemFromFavorite();
+  //         } else {
+  //           this.props.addItemToFavorite();
+  //         }
+  //       }}
+  //     >
+  //       {this.props.isFavorite === true ? (
+  //         <View style={styles.leftView}>
+  //           <AntDesign name="star" size={24} color={Colors.WHITE_COLOR} style={{ paddingHorizontal: 2 }} />
+  //           <Animated.Text style={[styles.actionText]}>{i18n.t('remove-from-favorite-tooltip')}</Animated.Text>
+  //         </View>
+  //       ) : (
+  //         <View style={styles.leftView}>
+  //           <AntDesign name="staro" size={24} color={Colors.WHITE_COLOR} style={{ paddingHorizontal: 2 }} />
+  //           <Animated.Text style={[styles.actionText]}>{i18n.t('add-to-favorite-tooltip')}</Animated.Text>
+  //         </View>
+  //       )}
+  //     </RectButton>
+  //   );
+  // };
 
   updateRef = (ref) => {
     this._swipeableRow = ref;
@@ -90,9 +90,9 @@ export default class SwipeableRow extends Component {
         ref={this.updateRef}
         friction={2}
         leftThreshold={30}
-        rightThreshold={40}
+        // rightThreshold={40}
         renderLeftActions={this.props.user.type === UserTypeConstants.PHARMACY && this.renderLeftActions}
-        renderRightActions={this.renderRightActions}
+        // renderRightActions={this.renderRightActions}
       >
         {children}
       </Swipeable>
@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    margin: 5,
+    margin: 30,
     borderRadius: 12,
   },
   leftView: {

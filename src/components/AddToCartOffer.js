@@ -1,16 +1,13 @@
 import i18n from '../i18n/index';
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
-
-// components
-import CustomPicker from './CustomPicker';
+import { Ionicons } from '@expo/vector-icons';
 
 // redux stuff
 import { useDispatch, useSelector } from 'react-redux';
 import { selectUserData } from '../redux/auth/authSlice';
 import { addItemToCart } from '../redux/cart/cartSlice';
 import { addStatistics } from '../redux/statistics/statisticsSlice';
-import { selectMedicines } from '../redux/medicines/medicinesSlices';
 
 // constants
 import { Colors, OfferTypes } from '../utils/constants';
@@ -123,9 +120,17 @@ const AddToCartOffer = ({ item, close }) => {
             {addToCartItem.warehouses.maxQty === 0 ? i18n.t('no-limit-qty') : addToCartItem.warehouses.maxQty}
           </Text>
         </View>
-        <View style={styles.row}>
+        <View style={{ ...styles.row, borderBottomColor: qtyError ? Colors.FAILED_COLOR : '#e3e3e3' }}>
           <Text style={styles.rowLabel}>{i18n.t('selected-qty')}</Text>
-          <TextInput value={qty} onChangeText={setQty} style={styles.selectedQty} keyboardType="number-pad" />
+          <TextInput
+            value={qty}
+            onChangeText={(val) => {
+              setQty(val);
+              setQtyError(false);
+            }}
+            style={styles.selectedQty}
+            keyboardType="number-pad"
+          />
         </View>
       </View>
 
@@ -153,11 +158,18 @@ const AddToCartOffer = ({ item, close }) => {
       ))}
 
       <View style={styles.actions}>
-        <TouchableOpacity onPress={handleAddItemToCart}>
-          <Text style={styles.okBtn}>{i18n.t('add-label')}</Text>
+        <TouchableOpacity
+          onPress={handleAddItemToCart}
+          style={{ ...styles.actionView, flex: 3, backgroundColor: Colors.SUCCEEDED_COLOR }}
+        >
+          <Ionicons name="cart" size={24} color={Colors.WHITE_COLOR} style={{ marginEnd: 10 }} />
+          <Text style={{ ...styles.actionText }}>{i18n.t('add-to-cart')}</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={close}>
-          <Text style={styles.cancelBtn}>{i18n.t('cancel-label')}</Text>
+        <TouchableOpacity
+          onPress={close}
+          style={{ ...styles.actionView, flex: 1, backgroundColor: Colors.FAILED_COLOR }}
+        >
+          <Text style={{ ...styles.actionText }}>{i18n.t('cancel-label')}</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -176,13 +188,12 @@ const styles = StyleSheet.create({
   row: {
     backgroundColor: Colors.WHITE_COLOR,
     width: '90%',
-    borderWidth: 1,
-    borderRadius: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e3e3e3',
     padding: 10,
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 10,
-    borderColor: Colors.MAIN_COLOR,
   },
   offerRow: {
     backgroundColor: Colors.OFFER_COLOR,
@@ -194,7 +205,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'center',
     marginBottom: 10,
-    borderColor: Colors.MAIN_COLOR,
+    borderColor: '#e3e3e3',
     marginHorizontal: 20,
   },
   offerRowFirst: {
@@ -213,33 +224,34 @@ const styles = StyleSheet.create({
   },
   rowLabel: { fontSize: 10, marginEnd: 10 },
   actions: {
+    width: '90%',
     flexDirection: 'row',
-    justifyContent: 'flex-end',
-    paddingVertical: 10,
+    alignItems: 'stretch',
+    marginHorizontal: 20,
+    marginBottom: 10,
   },
-  okBtn: {
-    backgroundColor: Colors.MAIN_COLOR,
+  actionView: {
+    flex: 3,
+    marginEnd: 10,
+    flexDirection: 'row',
+    backgroundColor: Colors.SUCCEEDED_COLOR,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 6,
+  },
+  actionText: {
+    fontSize: 14,
+    textAlign: 'center',
     color: Colors.WHITE_COLOR,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 6,
-    marginHorizontal: 5,
-    fontSize: 18,
-  },
-  cancelBtn: {
-    color: Colors.MAIN_COLOR,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 6,
-    marginHorizontal: 5,
-    fontSize: 18,
+    paddingVertical: 10,
   },
   header: {
     backgroundColor: Colors.MAIN_COLOR,
     color: Colors.WHITE_COLOR,
-    padding: 10,
+    paddingVertical: 20,
     fontSize: 18,
     fontWeight: 'bold',
+    textAlign: 'center',
   },
   body: {
     alignItems: 'center',

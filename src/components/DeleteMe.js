@@ -20,7 +20,7 @@ import { Colors } from '../utils/constants';
 import { useFocusEffect } from '@react-navigation/native';
 import { signoutHandler } from '../utils/functions';
 
-const DeleteMe = ({  }) => {
+const DeleteMe = ({}) => {
   const { token, deleteError } = useSelector(selectUserData);
   const dispatch = useDispatch();
 
@@ -52,7 +52,7 @@ const DeleteMe = ({  }) => {
       .then(unwrapResult)
       .then(() => {
         setLoading(false);
-        signoutHandler(dispatch)
+        signoutHandler(dispatch, token);
       })
       .catch((err) => {
         setLoading(false);

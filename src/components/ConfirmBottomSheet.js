@@ -9,13 +9,21 @@ const ConfirmBottomSheet = ({ header, message, okAction, cancelAction, okLabel, 
   return (
     <View style={styles.container}>
       <Text style={styles.header}>{i18n.t(header)}</Text>
-      <Text style={styles.message}>{i18n.t(message)}</Text>
+      <View style={styles.body}>
+        <Text style={styles.message}>{i18n.t(message)}</Text>
+      </View>
       <View style={styles.actions}>
-        <TouchableOpacity onPress={okAction}>
-          <Text style={styles.okBtn}>{i18n.t(okLabel)}</Text>
+        <TouchableOpacity
+          onPress={okAction}
+          style={{ ...styles.actionView, flex: 3, backgroundColor: Colors.SUCCEEDED_COLOR }}
+        >
+          <Text style={{ ...styles.actionText }}>{i18n.t(okLabel)}</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={cancelAction}>
-          <Text style={styles.cancelBtn}>{i18n.t(cancelLabel)}</Text>
+        <TouchableOpacity
+          onPress={cancelAction}
+          style={{ ...styles.actionView, flex: 1, backgroundColor: Colors.FAILED_COLOR }}
+        >
+          <Text style={{ ...styles.actionText }}>{i18n.t(cancelLabel)}</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -28,33 +36,38 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
   },
   actions: {
+    width: '90%',
     flexDirection: 'row',
-    justifyContent: 'flex-end',
-    paddingVertical: 5,
+    alignItems: 'stretch',
+    marginHorizontal: 20,
+    marginBottom: 10,
   },
-  okBtn: {
-    backgroundColor: Colors.MAIN_COLOR,
+  actionView: {
+    flex: 3,
+    marginEnd: 10,
+    flexDirection: 'row',
+    backgroundColor: Colors.SUCCEEDED_COLOR,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 6,
+  },
+  actionText: {
+    fontSize: 14,
+    textAlign: 'center',
     color: Colors.WHITE_COLOR,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 6,
-    marginHorizontal: 5,
-    fontSize: 18,
-  },
-  cancelBtn: {
-    color: Colors.MAIN_COLOR,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 6,
-    marginHorizontal: 5,
-    fontSize: 18,
+    paddingVertical: 10,
   },
   header: {
-    backgroundColor: Colors.MAIN_COLOR,
+    backgroundColor: Colors.BLUE_COLOR,
     color: Colors.WHITE_COLOR,
-    padding: 10,
+    paddingVertical: 20,
     fontSize: 18,
     fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  body: {
+    minHeight: 60,
+    justifyContent: 'center',
   },
   message: {
     color: Colors.MAIN_COLOR,

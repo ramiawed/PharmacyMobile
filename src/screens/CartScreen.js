@@ -5,6 +5,7 @@ import { View, Text, Image, StyleSheet, ScrollView } from 'react-native';
 // redux stuff
 import { useSelector } from 'react-redux';
 import CartWarehouse from '../components/CartWarehouse';
+import NoContent from '../components/NoContent';
 import { selectUser } from '../redux/auth/authSlice';
 import { selectCartWarehouse } from '../redux/cart/cartSlice';
 import { Colors } from '../utils/constants';
@@ -33,10 +34,11 @@ const CartScreen = () => {
       )}
 
       {cartWarehouse.length === 0 && (
-        <View style={styles.noContentContainer}>
-          <Image source={require('../../assets/no-content.jpeg')} style={styles.noContentImage} />
-          <Text style={styles.noContent}>{i18n.t('empty-cart')}</Text>
-        </View>
+        <NoContent msg="empty-cart" />
+        // <View style={styles.noContentContainer}>
+        //   <Image source={require('../../assets/no-content.jpeg')} style={styles.noContentImage} />
+        //   <Text style={styles.noContent}>{i18n.t('empty-cart')}</Text>
+        // </View>
       )}
     </View>
   ) : null;

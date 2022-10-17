@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import i18n from 'i18n-js';
 
 import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
 
@@ -18,10 +19,13 @@ import { BASEURL, Colors, OfferTypes, UserTypeConstants } from '../utils/constan
 import Loader from '../components/Loader';
 import CartItem from '../components/CartItem';
 import ExpandedView from '../components/ExpandedView';
-import i18n from 'i18n-js';
 
 const OrderDetailsScreen = ({ route }) => {
-  const { params :{orderId} } = route.params;
+  let orderId = route.params?.params?.orderId;
+
+  if (!orderId) {
+    orderId = route.params?.orderId;
+  }
   const dispatch = useDispatch();
 
   const { token, user } = useSelector(selectUserData);
@@ -178,7 +182,7 @@ const OrderDetailsScreen = ({ route }) => {
             <FlatList
               data={orderDetails.items}
               keyExtractor={(item) => item._id}
-              contentContainerStyle={{ backgroundColor: Colors.WHITE_COLOR, alignItems: 'center' }}
+              contentContainerStyle={{ backgroundColor: Colors.WHITE_COLOR }}
               numColumns={1}
               renderItem={({ item, index }) => <CartItem item={item} key={index} inOrderDetails={true} />}
             />
@@ -199,6 +203,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.WHITE_COLOR,
     paddingHorizontal: 10,
     paddingVertical: 10,
+    width: '100%',
   },
   row: {
     flexDirection: 'row',

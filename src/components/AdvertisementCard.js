@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { TouchableOpacity, Image, StyleSheet } from 'react-native';
+import { TouchableOpacity, Image, StyleSheet, TouchableWithoutFeedback, TouchableHighlight } from 'react-native';
 
 // constants
 import { SERVER_URL } from '../utils/constants';
@@ -11,8 +11,9 @@ const AdvertisementCard = ({ adv, onAdvertisementPress }) => {
       onPress={() => {
         onAdvertisementPress(adv);
       }}
+      activeOpacity="1"
     >
-        <Image source={{ uri: `${SERVER_URL}/advertisements/${adv.source}` }} style={styles.image} />
+      <Image source={{ uri: `${SERVER_URL}/advertisements/${adv.source}` }} style={styles.image} />
     </TouchableOpacity>
   );
 };
@@ -28,6 +29,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 10,
+    width: '95%',
   },
   image: {
     width: '100%',

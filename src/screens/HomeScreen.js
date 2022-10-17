@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, ScrollView, StyleSheet, Text } from 'react-native';
+import { View, ScrollView, StyleSheet, Text, Platform } from 'react-native';
 
 // component
 import SearchHome from '../components/SearchHome';

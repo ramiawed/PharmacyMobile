@@ -12,11 +12,13 @@ const NoContent = ({ refreshing, onRefreshing, msg }) => {
         height: '100%',
       }}
       refreshControl={
-        <RefreshControl
-          //refresh control used for the Pull to Refresh
-          refreshing={refreshing}
-          onRefresh={onRefreshing}
-        />
+        onRefreshing ? (
+          <RefreshControl
+            //refresh control used for the Pull to Refresh
+            refreshing={refreshing}
+            onRefresh={onRefreshing}
+          />
+        ) : null
       }
     >
       <View style={styles.noContentContainer}>

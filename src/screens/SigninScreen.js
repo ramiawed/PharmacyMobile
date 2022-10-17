@@ -1,16 +1,18 @@
 import i18n from '../i18n/index';
 import React, { useState } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import * as SecureStore from 'expo-secure-store';
 
 // redux stuff
 import { unwrapResult } from '@reduxjs/toolkit';
-import { authSign, resetError, selectUserData } from '../redux/auth/authSlice';
+import { authSign, resetError, saveExpoPushToken, selectUserData } from '../redux/auth/authSlice';
 import { addStatistics } from '../redux/statistics/statisticsSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { getFavorites } from '../redux/favorites/favoritesSlice';
 import { getAllSettings } from '../redux/settings/settingsSlice';
 import { getAllAdvertisements } from '../redux/advertisements/advertisementsSlice';
+import { getSavedItems } from '../redux/savedItems/savedItemsSlice';
 
 // components
 import Input from '../components/Input';
@@ -23,7 +25,6 @@ import { Colors } from '../utils/constants';
 // icons
 import { AntDesign } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
-import { getSavedItems } from '../redux/savedItems/savedItemsSlice';
 
 const SignInScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -84,6 +85,7 @@ const SignInScreen = ({ navigation }) => {
               targetUser: result.data.user._id,
               action: 'user-sign-in',
             },
+            token: result.token,
           }),
         );
         dispatch(getAllSettings({ token: result.token }));
@@ -174,13 +176,14 @@ const SignInScreen = ({ navigation }) => {
                 <Text style={styles.buttonText}>{i18n.t('sign-in')}</Text>
               </TouchableOpacity>
             </View>
+            <TouchableOpacity style={styles.signupView} onPress={goToSignUpHandler}>
+              <View>
+                <Text style={styles.signupSentences}>{i18n.t('sign-up-sentence')}</Text>
+                <Text style={styles.signUpBtnText}>{i18n.t('sign-up')}</Text>
+              </View>
+            </TouchableOpacity>
           </View>
-          <View style={styles.signUpView}>
-            <Text style={styles.signUpSentences}>{i18n.t('sign-up-sentence')}</Text>
-            <Text style={styles.signUpBtn} onPress={goToSignUpHandler}>
-              {i18n.t('sign-up')}
-            </Text>
-          </View>
+
           {showForgetPasswordModal && <ForgetPasswordModal cancelAction={() => setShowForgetPasswordModal(false)} />}
         </>
       )}
@@ -207,7 +210,6 @@ const styles = StyleSheet.create({
     minHeight: '65%',
     alignItems: 'center',
     justifyContent: 'flex-start',
-    // overflow: 'hidden',
   },
   appName: {
     fontSize: 32,
@@ -227,6 +229,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    minHeight: 350,
   },
   logo: {
     width: 150,
@@ -244,40 +247,21 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   signupView: {
-    position: 'absolute',
-    top: 25,
-    end: 0,
-    marginTop: 10,
-    flexDirection: 'row',
+    backgroundColor: Colors.MAIN_COLOR,
+    width: '90%',
+    borderRadius: 12,
+    flexDirection: 'column',
     alignItems: 'center',
-    justifyContent: 'center',
+    paddingVertical: 10,
   },
   signupSentences: {
-    color: Colors.MAIN_COLOR,
+    color: Colors.WHITE_COLOR,
   },
-  signupBtn: {
+  signUpBtnText: {
     color: Colors.FAILED_COLOR,
+    fontSize: 18,
     fontWeight: 'bold',
-    paddingHorizontal: 6,
-    fontSize: 16,
-  },
-  signUpView: {
-    position: 'absolute',
-    top: 25,
-    end: 0,
-    marginTop: 10,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  signUpSentences: {
-    color: Colors.MAIN_COLOR,
-  },
-  signUpBtn: {
-    color: Colors.FAILED_COLOR,
-    fontWeight: 'bold',
-    paddingHorizontal: 6,
-    fontSize: 16,
+    textAlign: 'center',
   },
 });
 

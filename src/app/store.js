@@ -52,7 +52,8 @@ const persistConfig = {
   key: 'root',
   version: 1,
   storage: AsyncStorage,
-  whitelist: ['auth', 'settings'],
+  whitelist: ['auth', 'settings', 'cart'],
+  // whitelist: ['settings'],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

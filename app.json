@@ -2,7 +2,7 @@
   "expo": {
     "name": "Smart Pharma",
     "slug": "SmartPharma",
-    "version": "1.0.10",
+    "version": "1.1.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
@@ -20,7 +20,8 @@
     },
     "android": {
       "package": "com.smartpharmasy.app",
-      "versionCode": 12,
+      "googleServicesFile": "./google-services.json",
+      "versionCode": 14,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
@@ -29,6 +30,18 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/adaptive-icon.png",
+          "color": "#ffffff",
+          "androidMode": "collapse",
+          "androidCollapsedTitle": "Smart Pharma",
+          "sounds": []
+        }
+      ]
+    ]
   }
 }

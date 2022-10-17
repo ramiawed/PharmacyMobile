@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { View } from 'react-native';
+import GestureRecognizer, { swipeDirections } from 'react-native-swipe-gestures';
 
 // icons
 import { Feather } from '@expo/vector-icons';
@@ -54,7 +56,7 @@ const Advertisements = () => {
     setIndex(i.current);
 
     startTimer();
-  }
+  };
 
   const prevBackground = () => {
     clearInterval(timer);
@@ -64,7 +66,7 @@ const Advertisements = () => {
     setIndex(i.current);
 
     startTimer();
-  }
+  };
 
   useEffect(() => {
     startTimer();
@@ -110,22 +112,62 @@ const Advertisements = () => {
     }
   };
 
+  const onSwipe = (gestureName, gestureState) => {
+    const { SWIPE_LEFT, SWIPE_RIGHT } = swipeDirections;
+    if (gestureName === SWIPE_LEFT) {
+      prevBackground();
+    }
+
+    if (gestureName === SWIPE_RIGHT) {
+      nextBackground();
+    }
+  };
+
   return backgrounds?.length === 0 ? (
     <></>
   ) : (
-    <View
-      style={{
-        justifyContent: 'center',
-        alignItems: 'center',
-        flexDirection: 'row'
-      }}
-    >
-      <Feather name="arrow-right-circle" size={36} color={Colors.GREY_COLOR} onPress={prevBackground} />
-      <AdvertisementCard adv={backgrounds[index]} onAdvertisementPress={onAdvertisementPressHandler} />
-      <Feather name="arrow-left-circle" size={36} color={Colors.GREY_COLOR} onPress={nextBackground} />
-    </View>
+    <GestureRecognizer onSwipe={onSwipe}>
+      <View
+        style={{
+          justifyContent: 'center',
+          alignItems: 'center',
+          flexDirection: 'column',
+        }}
+      >
+        {/* <Feather name="arrow-right-circle" size={36} color={Colors.GREY_COLOR} onPress={prevBackground} /> */}
+        <AdvertisementCard adv={backgrounds[index]} onAdvertisementPress={onAdvertisementPressHandler} />
+        <View
+          style={{
+            flexDirection: 'row',
+            marginTop: 10,
+            alignItems: 'center',
+          }}
+        >
+          {backgrounds.map((background, index) => (
+            <View style={[styles.point, index === i.current ? styles.active : null]} key={index}></View>
+          ))}
+        </View>
+
+        {/* <Feather name="arrow-left-circle" size={36} color={Colors.GREY_COLOR} onPress={nextBackground} /> */}
+      </View>
+    </GestureRecognizer>
   );
 };
 
+const styles = StyleSheet.create({
+  point: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: Colors.BLUE_COLOR,
+    marginHorizontal: 4,
+  },
+  active: {
+    backgroundColor: Colors.MAIN_COLOR,
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+  },
+});
 
 export default Advertisements;

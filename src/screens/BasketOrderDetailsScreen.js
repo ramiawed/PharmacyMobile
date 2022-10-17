@@ -22,7 +22,11 @@ import ExpandedView from '../components/ExpandedView';
 import Basket from '../components/Basket';
 
 const BasketOrderDetailsScreen = ({ route }) => {
-  const { params :{orderId} } = route.params;
+  let orderId = route.params?.params?.orderId;
+
+  if (!orderId) {
+    orderId = route.params?.orderId;
+  }
   const dispatch = useDispatch();
 
   const { token, user } = useSelector(selectUserData);
@@ -60,7 +64,7 @@ const BasketOrderDetailsScreen = ({ route }) => {
   };
 
   const getBasketOrderDetails = async () => {
-    setEmptyMsg("");
+    setEmptyMsg('');
     setLoading(true);
     axios
       .get(`${BASEURL}/ordered-baskets/details?id=${orderId}`, {
@@ -70,13 +74,13 @@ const BasketOrderDetailsScreen = ({ route }) => {
       })
       .then((response) => {
         if (response.data.data.order === null) {
-          setEmptyMsg("order-deleted");
+          setEmptyMsg('order-deleted');
         } else {
           setOrderDetails(response.data.data.basketOrder);
         }
       })
       .catch((err) => {
-        setEmptyMsg("order-details-error");
+        setEmptyMsg('order-details-error');
       });
 
     setLoading(false);
@@ -158,7 +162,7 @@ const BasketOrderDetailsScreen = ({ route }) => {
             )}
           </View>
 
-          <Basket  basket={orderDetails.basket} />
+          <Basket basket={orderDetails.basket} />
         </>
       )}
 

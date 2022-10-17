@@ -23,7 +23,7 @@ import {
   setSearchWarehouseName,
   setSearchInWarehouse,
   setSearchOutWarehouse,
-  setSearchHaveOffer
+  setSearchHaveOffer,
 } from '../redux/medicines/medicinesSlices';
 
 // components
@@ -108,7 +108,7 @@ const MedicinesScreen = ({ navigation, route }) => {
     }
   };
 
-  const keyUpHandler = (event) => {
+  const keyUpHandler = () => {
     cancelOperation();
 
     if (timer) {

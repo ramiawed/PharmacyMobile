@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import i18n from '../i18n';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import i18n from '../i18n';
 
 // component
 import Loader from '../components/Loader';
@@ -23,7 +23,7 @@ const LogoutScreen = () => {
   const dispatch = useDispatch();
 
   // selectors
-  const {token, user} = useSelector(selectUserData);
+  const { token, user } = useSelector(selectUserData);
 
   const [loading, setLoading] = useState(false);
 
@@ -46,7 +46,7 @@ const LogoutScreen = () => {
           dispatch(getFavorites({ token: result.token }));
           dispatch(getAllAdvertisements({ token: result.token }));
           if (user.type === UserTypeConstants.PHARMACY) {
-            dispatch(getSavedItems({ token }));
+            dispatch(getSavedItems({ token: result.token }));
           }
           setLoading(false);
         })
@@ -54,27 +54,23 @@ const LogoutScreen = () => {
           setLoading(false);
         });
     }
-  }
+  };
+
+  const signout = () => {
+    signoutHandler(dispatch, token);
+  };
 
   return (
     <View style={styles.container}>
       <Image source={require('../../assets/logo.png')} style={{ width: 150, height: 150, resizeMode: 'contain' }} />
       <Text style={styles.warningMsg}>{i18n.t('login-with-token-error-msg')}</Text>
-      <TouchableOpacity
-        style={styles.checkBtn}
-        onPress={loginHandler}
-      >
+      <TouchableOpacity style={styles.checkBtn} onPress={loginHandler}>
         <Text style={styles.checkBtnText}>{i18n.t('try-again-label')}</Text>
       </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.checkBtn}
-        onPress={() => signoutHandler(dispatch)}
-      >
+      <TouchableOpacity style={styles.checkBtn} onPress={signout}>
         <Text style={styles.checkBtnText}>{i18n.t('nav-sign-out')}</Text>
       </TouchableOpacity>
-      {
-        loading && <Loader />
-      }
+      {loading && <Loader />}
     </View>
   );
 };
@@ -91,7 +87,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: Colors.MAIN_COLOR,
     marginVertical: 10,
-    textAlign: 'center'
+    textAlign: 'center',
   },
   version: {
     fontSize: 16,
@@ -105,8 +101,8 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   checkBtnText: {
-    color: Colors.WHITE_COLOR
-  }
+    color: Colors.WHITE_COLOR,
+  },
 });
 
 export default LogoutScreen;

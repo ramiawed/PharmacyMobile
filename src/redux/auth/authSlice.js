@@ -102,6 +102,83 @@ export const authSignWithToken = createAsyncThunk('auth/authSignWithToken', asyn
   }
 });
 
+export const saveExpoPushToken = createAsyncThunk(
+  'auth/saveExpoPushToken',
+  async ({ expoPushToken, token }, { rejectWithValue }) => {
+    try {
+      CancelToken = axios.CancelToken;
+      source = CancelToken.source();
+      const response = await axios.post(
+        `${BASEURL}/users/store-expo-push-token?expoPushToken=${expoPushToken}`,
+        {},
+        {
+          cancelToken: source.token,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      resetCancelAndSource();
+
+      return response.data;
+    } catch (err) {
+      resetCancelAndSource();
+      if (err.code === 'ECONNABORTED' && err.message.startsWith('timeout')) {
+        return rejectWithValue('timeout');
+      }
+      if (axios.isCancel(err)) {
+        return rejectWithValue('cancel');
+      }
+
+      if (!err.response) {
+        return rejectWithValue('network failed');
+      }
+
+      return rejectWithValue(err.response.data);
+    }
+  },
+);
+
+export const clearExpoPushToken = createAsyncThunk(
+  'auth/clearExpoPushToken',
+  async ({ expoPushToken, token }, { rejectWithValue }) => {
+    try {
+      CancelToken = axios.CancelToken;
+      source = CancelToken.source();
+
+      const response = await axios.post(
+        `${BASEURL}/users/clear-expo-push-token?expoPushToken=${expoPushToken}`,
+        {},
+        {
+          cancelToken: source.token,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      resetCancelAndSource();
+
+      return response.data;
+    } catch (err) {
+      resetCancelAndSource();
+      if (err.code === 'ECONNABORTED' && err.message.startsWith('timeout')) {
+        return rejectWithValue('timeout');
+      }
+      if (axios.isCancel(err)) {
+        return rejectWithValue('cancel');
+      }
+
+      if (!err.response) {
+        return rejectWithValue('network failed');
+      }
+
+      return rejectWithValue(err.response.data);
+    }
+  },
+);
+
 export const updateUserInfo = createAsyncThunk('auth/updateUser', async ({ obj, token }, { rejectWithValue }) => {
   try {
     CancelToken = axios.CancelToken;
@@ -226,6 +303,7 @@ export const changeLogo = createAsyncThunk('auth/changeLogo', async ({ data, tok
   //   return rejectWithValue(err.response.data);
   // }
 });
+
 export const addCompanyToOurCompanies = createAsyncThunk(
   'auth/addCompanyToOurs',
   async ({ companyId, token }, { rejectWithValue }) => {
@@ -416,7 +494,6 @@ export const authSlice = createSlice({
     },
     [authSignWithToken.rejected]: (state, { error, meta, payload }) => {
       state.status = 'failed';
-      state.token = '';
       state.user = null;
 
       try {
@@ -558,6 +635,10 @@ export const authSlice = createSlice({
         state.error = 'general-error';
       }
     },
+    // change the logo of a user lifecycle
+    [saveExpoPushToken.pending]: (state) => {},
+    [saveExpoPushToken.fulfilled]: (state, action) => {},
+    [saveExpoPushToken.rejected]: (state, { payload }) => {},
 
     // // change the logo of a user lifecycle
     // [changeLogo.pending]: (state) => {

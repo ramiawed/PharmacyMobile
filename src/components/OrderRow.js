@@ -18,7 +18,7 @@ import {
   decrementUnreadOrder as basketDecrementUnreadOrder,
   selectedChange as basketSelectedChange,
   updateOrder as basketUpdateOrder,
-} from "../redux/basketOrdersSlice/basketOrdersSlice";
+} from '../redux/basketOrdersSlice/basketOrdersSlice';
 
 // icons
 import { Ionicons, FontAwesome, MaterialIcons, AntDesign } from '@expo/vector-icons';
@@ -51,14 +51,10 @@ const OrderRow = ({ order, deleteAction, type }) => {
       }
 
       if (Object.keys(obj).length > 0) {
-        dispatch(type === 'order' 
-          ? updateOrder({ id, obj, token }) 
-          : basketUpdateOrder({id, obj, token}))
+        dispatch(type === 'order' ? updateOrder({ id, obj, token }) : basketUpdateOrder({ id, obj, token }))
           .then(unwrapResult)
           .then(() => {
-            dispatch(type === 'order' 
-              ? decrementUnreadOrder({ token })
-              : basketDecrementUnreadOrder({token}));
+            dispatch(type === 'order' ? decrementUnreadOrder({ token }) : basketDecrementUnreadOrder({ token }));
           });
       }
     }
@@ -76,7 +72,6 @@ const OrderRow = ({ order, deleteAction, type }) => {
         },
       });
     }
-    
   };
 
   return order ? (
@@ -88,7 +83,12 @@ const OrderRow = ({ order, deleteAction, type }) => {
             justifyContent: 'center',
           }}
         >
-          <CheckBox value={order.selected} onValueChange={() => dispatch(type === 'order' ? selectedChange(order._id) : basketSelectedChange(order._id))} />
+          <CheckBox
+            value={order.selected}
+            onValueChange={() =>
+              dispatch(type === 'order' ? selectedChange(order._id) : basketSelectedChange(order._id))
+            }
+          />
         </View>
       )}
 
@@ -98,18 +98,24 @@ const OrderRow = ({ order, deleteAction, type }) => {
       >
         <View style={styles.details}>
           {(user.type === UserTypeConstants.ADMIN || user.type === UserTypeConstants.WAREHOUSE) && (
-            <View style={styles.row}>
+            <View style={{ ...styles.row }}>
               {order.pharmacyStatus === 'received' && (
                 <Ionicons name="checkmark-done" size={16} color={Colors.SUCCEEDED_COLOR} />
               )}
               {order.pharmacyStatus === 'sent' && <FontAwesome name="send" size={16} color={Colors.SUCCEEDED_COLOR} />}
               <Text style={styles.name}>{order.pharmacy?.name}</Text>
+              {/* <Text style={styles.address}>{order.pharmacy?.addressDetails}</Text> */}
+            </View>
+          )}
+
+          {(user.type === UserTypeConstants.ADMIN || user.type === UserTypeConstants.WAREHOUSE) && (
+            <View style={{ ...styles.row, ...styles.address, ...styles.withBottomBorder }}>
               <Text style={styles.address}>{order.pharmacy?.addressDetails}</Text>
             </View>
           )}
 
           {(user.type === UserTypeConstants.ADMIN || user.type === UserTypeConstants.PHARMACY) && (
-            <View style={styles.row}>
+            <View style={{ ...styles.row, ...styles.withBottomBorder }}>
               {order.warehouseStatus === 'unread' && (
                 <Ionicons name="mail-unread-outline" size={16} color={Colors.MAIN_COLOR} />
               )}
@@ -205,8 +211,6 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.SECONDARY_COLOR,
     flex: 1,
     paddingVertical: 5,
   },
@@ -218,7 +222,9 @@ const styles = StyleSheet.create({
   },
   address: {
     color: Colors.SECONDARY_COLOR,
-    fontSize: 10,
+    fontSize: 12,
+    fontWeight: 'bold',
+    // justifyContent: 'flex-end',
   },
   date: {
     flexDirection: 'row',
@@ -234,6 +240,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-around',
     paddingStart: 10,
+  },
+  withBottomBorder: {
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.SECONDARY_COLOR,
   },
 });
 

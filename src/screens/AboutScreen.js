@@ -16,9 +16,7 @@ const AboutScreen = () => {
         await Updates.fetchUpdateAsync();
         await Updates.reloadAsync();
       }
-    } catch (error) {
-      alert(error.message);
-    }
+    } catch (error) {}
   };
 
   return (

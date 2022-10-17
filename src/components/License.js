@@ -1,17 +1,11 @@
 import i18n from '../i18n/index';
 import React from 'react';
-import { View, Text, StyleSheet, Modal, Alert, Pressable, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Modal, Pressable, ScrollView } from 'react-native';
 import { Colors } from '../utils/constants';
 
 const License = ({ action, close }) => {
   return (
-    <Modal
-      animationType="slide"
-      transparent={true}
-      onRequestClose={() => {
-        Alert.alert('Modal has been closed.');
-      }}
-    >
+    <Modal animationType="slide" transparent={true} onRequestClose={() => {}}>
       <View style={styles.modalView}>
         <ScrollView>
           <Text style={[styles.header]}>سياسة الخصوصية</Text>
@@ -270,15 +264,14 @@ const License = ({ action, close }) => {
               </Text>
             </View>
           </View>
-
-          <Pressable style={[styles.button]} onPress={action}>
-            <Text style={styles.textStyle}>{i18n.t('agree-license')}</Text>
-          </Pressable>
-
-          <Pressable style={[styles.button, styles.buttonClose]} onPress={close}>
-            <Text style={styles.closeTextStyle}>{i18n.t('no-agree-license')}</Text>
-          </Pressable>
         </ScrollView>
+        <Pressable style={[styles.button]} onPress={action}>
+          <Text style={styles.textStyle}>{i18n.t('agree-license')}</Text>
+        </Pressable>
+
+        <Pressable style={[styles.button, styles.buttonClose]} onPress={close}>
+          <Text style={styles.closeTextStyle}>{i18n.t('no-agree-license')}</Text>
+        </Pressable>
       </View>
     </Modal>
   );
@@ -302,6 +295,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
+    height: '90%',
   },
   button: {
     borderRadius: 6,

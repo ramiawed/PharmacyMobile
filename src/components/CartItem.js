@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import i18n from '../i18n/index';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
 
 // redux stuff
 import { useDispatch } from 'react-redux';
@@ -11,6 +11,7 @@ import { AntDesign, Ionicons, MaterialIcons } from '@expo/vector-icons';
 
 // constants
 import { Colors, OfferTypes } from '../utils/constants';
+import { t } from 'i18n-js';
 
 const CartItem = ({ item, inOrderDetails }) => {
   const dispatch = useDispatch();
@@ -18,168 +19,106 @@ const CartItem = ({ item, inOrderDetails }) => {
 
   return (
     <View style={{ ...styles.container }}>
-      <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => setExpanded(!expanded)}
-          style={{
-            flex: 1,
-            flexDirection: 'row',
-            alignItems: 'center',
-          }}
-        >
-          {expanded ? (
-            <AntDesign name="caretup" size={16} color={Colors.WHITE_COLOR} />
-          ) : (
-            <AntDesign name="caretdown" size={16} color={Colors.WHITE_COLOR} />
-          )}
-          <View
-            style={{
-              flex: 1,
-            }}
-          >
-            <Text
-              style={{
-                ...styles.name,
-                fontSize: item.item.name.length >= 35 ? 12 : item.item.name.length > 25 ? 13 : 14,
-              }}
-            >
-              {item.item.name}
-            </Text>
-            {item.item.nameAr?.length > 0 ? (
-              <Text
-                style={{
-                  ...styles.name,
-                  fontSize: item.item.nameAr.length >= 35 ? 12 : item.item.nameAr.length > 25 ? 13 : 14,
-                }}
-              >
-                {item.item.nameAr}
-              </Text>
-            ) : (
-              <></>
-            )}
-          </View>
-        </TouchableOpacity>
-
-        {!inOrderDetails && (
+      {!inOrderDetails && (
+        <View style={{ ...styles.deleteIcon, ...styles.icon }}>
           <MaterialIcons
             name="delete"
             size={24}
             color={Colors.FAILED_COLOR}
             onPress={() => dispatch(removeItemFromCart(item))}
           />
+        </View>
+      )}
+      <View style={styles.header}>
+        <Text
+          style={{
+            ...styles.name,
+            fontSize: item.item.name.length >= 35 ? 16 : item.item.name.length > 25 ? 16 : 18,
+          }}
+        >
+          {item.item.name}
+        </Text>
+        {item.item.nameAr ? (
+          <Text
+            style={{
+              ...styles.name,
+              fontSize: item.item.nameAr.length >= 35 ? 14 : item.item.nameAr.length > 14 ? 14 : 16,
+            }}
+          >
+            {item.item.nameAr}
+          </Text>
+        ) : (
+          <></>
         )}
-      </View>
-      {expanded && (
-        <>
-          <View style={styles.row}>
-            <Text style={styles.label}>{i18n.t('item-company')}</Text>
-            <Text style={styles.value}>{item.item.company.name}</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.label}>{i18n.t('item-formula')}</Text>
-            <Text style={styles.value}>{item.item.formula}</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.label}>{i18n.t('item-caliber')}</Text>
-            <Text style={styles.value}>{item.item.caliber}</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.label}>{i18n.t('item-packing')}</Text>
-            <Text style={styles.value}>{item.item.packing}</Text>
-          </View>
-        </>
-      )}
 
-      <View style={styles.row}>
-        <View
-          style={{
-            flexDirection: 'row',
-            flex: 1,
-            alignItems: 'center',
-          }}
-        >
-          <Text style={styles.label}>{i18n.t('item-price')}</Text>
-          <Text style={[styles.value, styles.price]}>{item.item.price}</Text>
-        </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            flex: 1,
-            alignItems: 'center',
-          }}
-        >
-          <Text style={styles.label}>{i18n.t('item-customer-price')}</Text>
-          <Text style={[styles.value, styles.customerPrice]}>{item.item.customer_price}</Text>
-        </View>
-      </View>
+        <View style={{ height: 5 }}></View>
 
-      {expanded && !inOrderDetails && (
+        {!item.bonus && !inOrderDetails && (
+          <TouchableOpacity
+            style={{ ...styles.minusIcon, ...styles.icon, top: item.item.nameAr ? 50 : 35 }}
+            onPress={() => {
+              if (item.qty > 1) dispatch(decreaseItemQty(item));
+            }}
+          >
+            <View>
+              <AntDesign name="minus" size={24} color={Colors.FAILED_COLOR} />
+            </View>
+          </TouchableOpacity>
+        )}
+        <View style={{ flexDirection: 'row' }}>
+          <Text style={styles.qty}>{item.qty}</Text>
+
+          {item.bonus && (
+            <>
+              <View style={{ padding: 5, justifyContent: 'center', alignItems: 'center' }}>
+                <Text>+</Text>
+              </View>
+              <Text style={styles.qty}>
+                {item.bonus}{' '}
+                {item.bonus
+                  ? item.bonusType === OfferTypes.PERCENTAGE
+                    ? i18n.t('after-bonus-percentage-label')
+                    : i18n.t('after-quantity-label')
+                  : '-'}
+              </Text>
+            </>
+          )}
+        </View>
+
+        {!item.bonus && !inOrderDetails && (
+          <TouchableOpacity
+            style={{ ...styles.addIcon, ...styles.icon, top: item.item.nameAr ? 50 : 35 }}
+            onPress={() => {
+              if (item.warehouse.maxQty !== 0 && item.qty < item.warehouse.maxQty) dispatch(increaseItemQty(item));
+              else if (item.warehouse.maxQty === 0) {
+                dispatch(increaseItemQty(item));
+              }
+            }}
+          >
+            <View>
+              <Ionicons name="md-add" size={24} color={Colors.SUCCEEDED_COLOR} />
+            </View>
+          </TouchableOpacity>
+        )}
+
+        <View style={{ height: 5 }}></View>
+
         <View style={styles.row}>
-          <Text style={styles.label}>{i18n.t('item-max-qty')}</Text>
-          <Text style={[styles.value]}>{item.warehouse.maxQty ? item.warehouse.maxQty : ''}</Text>
+          <Text style={styles.company}>{item.item.company.name}</Text>
+          <Text style={styles.price}>{item.item.price}</Text>
         </View>
-      )}
 
-      <View style={styles.row}>
-        <View
-          style={{
-            flexDirection: 'row',
-            flex: 1,
-            alignItems: 'center',
-          }}
-        >
-          <Text style={styles.label}>{i18n.t('quantity-label')}:</Text>
-          {!item.bonus && !inOrderDetails && (
-            <AntDesign
-              name="minus"
-              size={24}
-              color={Colors.FAILED_COLOR}
-              onPress={() => {
-                if (item.qty > 0) dispatch(decreaseItemQty(item));
-              }}
-            />
-          )}
-          <Text style={styles.value}>{item.qty}</Text>
-          {!item.bonus && !inOrderDetails && (
-            <Ionicons
-              name="md-add"
-              size={24}
-              color={Colors.SUCCEEDED_COLOR}
-              onPress={() => {
-                if (item.warehouse.maxQty !== 0 && item.qty < item.warehouse.maxQty) dispatch(increaseItemQty(item));
-                else if (item.warehouse.maxQty === 0) {
-                  dispatch(increaseItemQty(item));
-                }
-              }}
-            />
-          )}
-        </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            flex: 1,
-            alignItems: 'center',
-          }}
-        >
-          <Text style={styles.label}>{i18n.t('offer-label')}:</Text>
-          <Text style={styles.value}>
-            {item.bonus && item.bonus}
-            {item.bonus
-              ? item.bonusType === OfferTypes.PERCENTAGE
-                ? i18n.t('after-bonus-percentage-label')
-                : i18n.t('after-quantity-label')
-              : '-'}
+        <View style={{ height: 1, backgroundColor: '#e3e3e3', width: '100%' }}></View>
+
+        <View style={{ ...styles.row, borderBottomWidth: 0, justifyContent: 'flex-end' }}>
+          <Text style={styles.totalPrice}>{t('item-total-price')}</Text>
+          <Text style={styles.totalPrice}>
+            {item.qty * (inOrderDetails ? item.price : item.item.price) -
+              (item.bonus && item.bonusType === OfferTypes.PERCENTAGE
+                ? (item.qty * (inOrderDetails ? item.price : item.item.price) * item.bonus) / 100
+                : 0)}
           </Text>
         </View>
-      </View>
-
-      <View style={{ ...styles.row, borderBottomWidth: 0 }}>
-        <Text style={styles.totalPrice}>
-          {item.qty * (inOrderDetails ? item.price : item.item.price) -
-            (item.bonus && item.bonusType === OfferTypes.PERCENTAGE
-              ? (item.qty * (inOrderDetails ? item.price : item.item.price) * item.bonus) / 100
-              : 0)}
-        </Text>
       </View>
     </View>
   );
@@ -191,61 +130,65 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#e3e3e3',
     borderRadius: 6,
-    marginVertical: 5,
-    overflow: 'hidden',
-    width: '100%',
+    marginTop: 22,
+    marginHorizontal: 12,
+    paddingTop: 20,
   },
   header: {
-    backgroundColor: Colors.MAIN_COLOR,
-    flexDirection: 'row',
+    flexDirection: 'column',
     alignItems: 'center',
     width: '100%',
     padding: 5,
   },
   name: {
-    color: Colors.WHITE_COLOR,
-    writingDirection: 'rtl',
-    fontSize: 14,
+    color: Colors.MAIN_COLOR,
     fontWeight: 'bold',
-    textAlign: 'left',
+    textAlign: 'center',
     marginStart: 10,
   },
   row: {
     flexDirection: 'row',
     paddingVertical: 5,
     paddingHorizontal: 3,
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e3e3e3',
+    justifyContent: 'space-between',
+    width: '100%',
   },
-  value: {
-    textAlign: 'center',
-    padding: 5,
-    borderRadius: 4,
-    color: Colors.MAIN_COLOR,
-    marginStart: 10,
-    fontSize: 14,
-  },
-  label: {
-    color: Colors.SECONDARY_COLOR,
-    fontSize: 10,
-    fontWeight: 'bold',
-    width: 65,
+  company: {
+    color: Colors.SUCCEEDED_COLOR,
   },
   price: {
-    backgroundColor: Colors.SUCCEEDED_COLOR,
-    color: Colors.WHITE_COLOR,
+    color: Colors.SUCCEEDED_COLOR,
   },
-  customerPrice: {
-    backgroundColor: Colors.FAILED_COLOR,
-    color: Colors.WHITE_COLOR,
+  icon: {
+    borderWidth: 1,
+    borderColor: '#e3e3e3',
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 18,
+    position: 'absolute',
+    backgroundColor: Colors.WHITE_COLOR,
+  },
+  minusIcon: {
+    left: 50,
+  },
+  addIcon: {
+    right: 50,
+  },
+  deleteIcon: {
+    top: -18,
+    alignSelf: 'center',
+  },
+  qty: {
+    fontSize: 20,
+    color: Colors.BLUE_COLOR,
+    paddingHorizontal: 10,
+    borderRadius: 6,
   },
   totalPrice: {
     color: Colors.SUCCEEDED_COLOR,
-    fontWeight: 'bold',
-    textAlign: 'right',
-    flex: 1,
-    marginEnd: 10,
+    marginStart: 10,
   },
 });
 

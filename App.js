@@ -4,8 +4,10 @@ import 'react-native-gesture-handler';
 import Toast from 'react-native-toast-message';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
+import * as Notifications from 'expo-notifications';
 import { I18nManager } from 'react-native';
+
 import './src/i18n/index';
 
 // redux stuff
@@ -13,7 +15,7 @@ import { unwrapResult } from '@reduxjs/toolkit';
 import { Provider, useDispatch, useSelector } from 'react-redux';
 import { getFavorites } from './src/redux/favorites/favoritesSlice';
 import { getAllAdvertisements } from './src/redux/advertisements/advertisementsSlice';
-import { selectToken, selectUser, authSignWithToken } from './src/redux/auth/authSlice';
+import { selectToken, selectUser, authSignWithToken, saveExpoPushToken } from './src/redux/auth/authSlice';
 import { addStatistics } from './src/redux/statistics/statisticsSlice';
 import { getAllSettings } from './src/redux/settings/settingsSlice';
 import { getSavedItems } from './src/redux/savedItems/savedItemsSlice';
@@ -36,12 +38,24 @@ import store from './src/app/store';
 let persistor = persistStore(store);
 
 // navigation's stuff
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, createNavigationContainerRef } from '@react-navigation/native';
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
 const Stack = createStackNavigator();
+const navigationRef = createNavigationContainerRef();
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+  }),
+});
 
 const App = () => {
   const dispatch = useDispatch();
+  const [notification, setNotification] = useState(false);
+  const notificationListener = useRef();
+  const responseListener = useRef();
 
   // selectors
   const user = useSelector(selectUser);
@@ -51,6 +65,58 @@ const App = () => {
   const [showSplashScreen, setShowSplashScreen] = useState(true);
 
   useEffect(() => {
+    // This listener is fired whenever a notification is received while the app is foregrounded
+    notificationListener.current = Notifications.addNotificationReceivedListener((notification) => {
+      setNotification(notification);
+    });
+
+    // This listener is fired whenever a user taps on or interacts with a notification (works when app is foregrounded, backgrounded, or killed)
+    responseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
+      // console.log(response.notification.request.content.data);
+
+      if (response.notification.request.content.data) {
+        const { screen, notificationId, orderId } = response.notification.request.content.data;
+        if (screen === 'notification') {
+          if (navigationRef.isReady()) {
+            navigationRef.navigate('Notifications', {
+              screen: 'Notification',
+              params: {
+                notificationId,
+              },
+            });
+          }
+        }
+
+        if (screen === 'order') {
+          if (navigationRef.isReady()) {
+            navigationRef.navigate('Orders', {
+              screen: 'orders',
+              params: {
+                screen: 'Order',
+                params: {
+                  orderId,
+                },
+              },
+            });
+          }
+        }
+
+        if (screen === 'basket order') {
+          if (navigationRef.isReady()) {
+            navigationRef.navigate('Orders', {
+              screen: 'baskets-orders',
+              params: {
+                screen: 'BasketOrder',
+                params: {
+                  orderId,
+                },
+              },
+            });
+          }
+        }
+      }
+    });
+
     const timer = setTimeout(() => {
       if (token) {
         dispatch(authSignWithToken({ token }))
@@ -83,6 +149,8 @@ const App = () => {
 
     return () => {
       clearTimeout(timer);
+      Notifications.removeNotificationSubscription(notificationListener.current);
+      Notifications.removeNotificationSubscription(responseListener.current);
     };
   }, []);
 
@@ -92,7 +160,7 @@ const App = () => {
 
   return (
     <SafeAreaProvider>
-      <NavigationContainer>
+      <NavigationContainer ref={navigationRef}>
         <Stack.Navigator
           screenOptions={{
             headerShown: false,
@@ -100,13 +168,13 @@ const App = () => {
           }}
         >
           {user ? (
-              <>
-                <Stack.Screen name="Drawer" component={DrawerScreen} />
-              </>
-            ) : token ? (
-              <>
-                <Stack.Screen name="LogOut" component={LogoutScreen} />
-              </>
+            <>
+              <Stack.Screen name="Drawer" component={DrawerScreen} />
+            </>
+          ) : token ? (
+            <>
+              <Stack.Screen name="LogOut" component={LogoutScreen} />
+            </>
           ) : (
             <>
               <Stack.Screen name="SignIn" component={SignInScreen} />

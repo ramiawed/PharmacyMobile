@@ -405,7 +405,7 @@
   "copy-right": "جميع الحقوق محفوظة لـ سمارت فارما ٢٠٢٢ ©",
   "not-found-page": "هذه الصفحة غير موجودة، الرجاء التآكد من رابط الصفحة",
   "forget-password": "هل نسيت كلمة السر؟",
-  "forget-password-msg": "في حال نسيت كلمة السر يرجى ",
+  "forget-password-msg": "في حال نسيت كلمة السر يرجى التواصل معنا من خلال ",
   "error-msg": "حدث خطأ ما أثناء القيام بآخر عملية",
   "add-item-confirm-msg": "هل تريد إضافة الدواء؟",
   "update-item-confirm-msg": "هل تريد تعديل الدواء؟",
@@ -505,7 +505,11 @@
   "order-basket-succeeded": "تم ارسال طلب السلة بنجاح",
   "order-basket-failed": "حصل خطأ أثناء ارسال الطلب، الرجاء المحاولة مرة اخرى",
   "orders-label": "طلبات الادوية",
-  "login-with-token-error-msg": "الرجاء التأكد من جودة الانترنيت و محاولة الدخول مرة اخرى",
+  "login-with-token-error-msg": "الرجاء التأكد من وجود اتصال بالانترنيت و محاولة الدخول مرة اخرى",
   "try-again-label": "إعادة المحاولة",
-  "medicies-have-offer-label": "المنتجات التي عليها عرض"
+  "medicies-have-offer-label": "المنتجات التي عليها عرض",
+  "available-warehouses": "المستودعات المتوفرة للطلب",
+  "no-value": "-",
+  "order-total-price": "القيمة الاجمالية للطلبية",
+  "item-total-price": "القيمة الاجمالية للمنتج"
 }

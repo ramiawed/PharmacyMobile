@@ -38,11 +38,13 @@ const checkOffer = (item, user) => {
   let result = false;
 
   if (user?.type === UserTypeConstants.ADMIN) {
-    item.warehouses.forEach((w) => {
-      if (w.offer.offers.length > 0) {
-        result = true;
-      }
-    });
+    item.warehouses
+      .filter((w) => w.warehouse.isApproved && w.warehouse.isActive)
+      .forEach((w) => {
+        if (w.offer.offers.length > 0) {
+          result = true;
+        }
+      });
   }
 
   if (user?.type === UserTypeConstants.WAREHOUSE) {
@@ -56,11 +58,13 @@ const checkOffer = (item, user) => {
   }
 
   if (user?.type === UserTypeConstants.PHARMACY) {
-    item.warehouses.forEach((w) => {
-      if (w.warehouse.city === user.city && w.offer.offers.length > 0) {
-        result = true;
-      }
-    });
+    item.warehouses
+      .filter((w) => w.warehouse.isActive && w.warehouse.isApproved)
+      .forEach((w) => {
+        if (w.warehouse.city === user.city && w.offer.offers.length > 0) {
+          result = true;
+        }
+      });
   }
 
   return result;
@@ -80,7 +84,10 @@ const ItemRow = ({ item, addToCart }) => {
   const [showAddToCartModal, setShowAddToCartModal] = useState(false);
 
   const canAddToCart = user?.type === UserTypeConstants.PHARMACY && checkItemExistsInWarehouse(item, user);
-  const isInWarehouse = item.warehouses.map((w) => w.warehouse._id).includes(user._id);
+  const isInWarehouse = item.warehouses
+    .filter((w) => w.warehouse.isApproved && w.warehouse.isActive)
+    .map((w) => w.warehouse._id)
+    .includes(user._id);
   const isFavorite = favorites.map((favorite) => favorite._id).includes(item._id);
 
   // method to handle add company to user's favorite

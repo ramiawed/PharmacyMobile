@@ -8,7 +8,7 @@ import { FontAwesome } from '@expo/vector-icons';
 //constant
 import { Colors, SERVER_URL, UserTypeConstants } from '../utils/constants';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectUser, selectUserData } from '../redux/auth/authSlice';
+import { selectUserData } from '../redux/auth/authSlice';
 import { useNavigation } from '@react-navigation/native';
 import {
   decreaseUnreadNotificationsCount,

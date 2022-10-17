@@ -1,9 +1,7 @@
-
-
-// export const BASEURL = 'http://950a-45-133-183-162.ngrok.io/api/v1';
+// export const BASEURL = 'http://408f-46-213-239-109.ngrok.io/api/v1';
 export const BASEURL = 'https://api.smartpharmasy.com/api/v1';
 export const SERVER_URL = 'https://api.smartpharmasy.com/';
-// export const SERVER_URL = 'http://61f7-46-213-65-158.ngrok.io';
+// export const SERVER_URL = 'http://408f-46-213-239-109.ngrok.io';
 
 export const UserTypeConstants = {
   COMPANY: 'company',
@@ -129,5 +127,3 @@ export const checkItemExistsInWarehouse = (item, user) => {
       .length > 0
   );
 };
-
-

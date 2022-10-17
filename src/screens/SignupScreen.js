@@ -17,7 +17,7 @@ import Loader from '../components/Loader';
 import { CitiesName, Colors, GuestJob, UserTypeConstants, BASEURL } from '../utils/constants';
 
 // icons
-import { AntDesign, MaterialCommunityIcons, FontAwesome, Entypo } from '@expo/vector-icons';
+import { AntDesign, MaterialCommunityIcons, FontAwesome, Entypo, Feather } from '@expo/vector-icons';
 
 const SignupScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
@@ -88,7 +88,7 @@ const SignupScreen = ({ navigation }) => {
     mobile: '',
     city: CitiesName.NONE,
     addressDetails: '',
-    type: UserTypeConstants.GUEST,
+    type: UserTypeConstants.PHARMACY,
     employeeName: '',
     certificateName: '',
     paperUrl: null,
@@ -753,30 +753,23 @@ const SignupScreen = ({ navigation }) => {
                   }}
                 >
                   <TouchableOpacity style={styles.chooseImageButton} onPress={pickImage}>
-                    <Text style={styles.chooseImageText}>{i18n.t(userPaperUrlLabel)}</Text>
-                    {/* {signUpUser.paperUrl && <Text>{signUpUser.paperUrl}</Text>} */}
+                    <Text style={styles.chooseImageText}>
+                      {signUpUser.paperUrl
+                        ? signUpUser.paperUrl.uri.split('/')[signUpUser.paperUrl.uri.split('/').length - 1]
+                        : i18n.t(userPaperUrlLabel)}
+                    </Text>
                   </TouchableOpacity>
                   {signUpUser.paperUrl && (
                     <View style={styles.chooseImageActions}>
-                      <AntDesign
-                        name="closecircleo"
-                        size={24}
-                        color={Colors.FAILED_COLOR}
-                        onPress={() => {
-                          setSignUpUser({
-                            ...signUpUser,
-                            paperUrl: null,
-                          });
-                        }}
-                      />
+                      <Feather name="check-circle" size={24} color={Colors.SUCCEEDED_COLOR} />
                     </View>
                   )}
                 </View>
               )}
-              <TouchableOpacity style={styles.button} onPress={createAccountHandler}>
-                <Text style={styles.buttonText}>{i18n.t('sign-up')}</Text>
-              </TouchableOpacity>
             </ScrollView>
+            <TouchableOpacity style={styles.button} onPress={createAccountHandler}>
+              <Text style={styles.buttonText}>{i18n.t('sign-up')}</Text>
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -828,7 +821,7 @@ const styles = StyleSheet.create({
   signUpView: {
     borderRadius: 15,
     width: '95%',
-    minHeight: '85%',
+    minHeight: '90%',
     alignItems: 'center',
     justifyContent: 'flex-start',
     overflow: 'hidden',
