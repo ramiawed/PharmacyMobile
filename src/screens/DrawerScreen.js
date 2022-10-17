@@ -40,7 +40,7 @@ import {
 } from '@expo/vector-icons';
 
 // logo image
-import logo from '../../assets/logo.png';
+import logo from '../../assets/adaptive-icon.png';
 
 // redux stuff
 import { useDispatch, useSelector } from 'react-redux';
@@ -641,12 +641,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   image: {
-    width: 48,
+    width: 32,
     height: 32,
     resizeMode: 'cover',
-    borderRadius: 4,
-    backgroundColor: 'white',
-    // marginHorizontal: 10,
+    borderRadius: 16,
+    backgroundColor: Colors.WHITE_COLOR,
   },
 });
 

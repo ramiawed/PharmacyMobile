@@ -1,6 +1,7 @@
 import React, { memo, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { View, Text, StyleSheet, TouchableWithoutFeedback, LayoutAnimation } from 'react-native';
+import i18n from 'i18n-js';
 
 // redux stuff
 import { useDispatch, useSelector } from 'react-redux';
@@ -15,7 +16,6 @@ import { AntDesign, Ionicons } from '@expo/vector-icons';
 
 // components
 import OfferSwipeableRow from './OfferSwipeableRow';
-import i18n from 'i18n-js';
 
 const OfferCard = ({ item, addToCart }) => {
   const navigation = useNavigation();
@@ -125,8 +125,9 @@ const OfferCard = ({ item, addToCart }) => {
             </View>
           </View>
         </View>
-        <View style={{ ...styles.actionIcon, ...styles.addToCartIcon }}>
-          {user.type === UserTypeConstants.PHARMACY && (
+
+        {user.type === UserTypeConstants.PHARMACY && (
+          <View style={{ ...styles.actionIcon, ...styles.addToCartIcon }}>
             <Ionicons
               name="cart"
               size={32}
@@ -134,8 +135,8 @@ const OfferCard = ({ item, addToCart }) => {
               style={{ paddingHorizontal: 2, marginVertical: 4 }}
               onPress={() => addToCart(item)}
             />
-          )}
-        </View>
+          </View>
+        )}
 
         <TouchableWithoutFeedback onPress={changeExpandedStatus}>
           <View style={{ ...styles.actionIcon, ...styles.expandedIcon }}>
@@ -183,9 +184,10 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'column',
     padding: 5,
-    paddingVertical: 23,
+    paddingTop: 20,
+    paddingBottom: 15,
     marginHorizontal: 5,
-    marginVertical: 30,
+    marginVertical: 23,
     backgroundColor: Colors.WHITE_COLOR,
     borderRadius: 12,
     borderWidth: 1,
