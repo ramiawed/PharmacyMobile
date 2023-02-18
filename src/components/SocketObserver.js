@@ -10,7 +10,7 @@ import { Colors, SERVER_URL, UserTypeConstants } from '../utils/constants';
 
 // socket
 import socketIoClient from 'socket.io-client';
-import {  selectUserData } from '../redux/auth/authSlice';
+import { selectUserData } from '../redux/auth/authSlice';
 import { deleteOrderSocket, getUnreadOrders, setForceRefresh, updateOrderStatus } from '../redux/orders/ordersSlice';
 import { addAdvertisementSocket } from '../redux/advertisements/advertisementsSlice';
 
@@ -24,8 +24,6 @@ function SocketObserver() {
 
   // own state
 
-  
-
   useEffect(() => {
     // orders observer
     socket.on('order-changed', (data) => {
@@ -35,7 +33,7 @@ function SocketObserver() {
           (user.type === UserTypeConstants.WAREHOUSE && user._id === data.fullDocument.warehouse)
         ) {
           dispatch(setForceRefresh(true));
-          dispatch(getUnreadOrders({ token }));
+          // dispatch(getUnreadOrders({ token }));
         }
       }
 

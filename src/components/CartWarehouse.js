@@ -30,7 +30,7 @@ import { addStatistics } from '../redux/statistics/statisticsSlice';
 import { AntDesign, FontAwesome } from '@expo/vector-icons';
 
 // constants
-import { Colors, OfferTypes } from '../utils/constants';
+import { Colors, OfferTypes, OrdersStatusOptions } from '../utils/constants';
 
 if (Platform.OS === 'android') {
   if (UIManager.setLayoutAnimationEnabledExperimental) {
@@ -48,13 +48,14 @@ const CartWarehouse = ({ warehouse, index }) => {
   // owns state
   const [showLoadingModal, setShowLoadingModal] = useState(false);
   const [showConfirmSaveOrder, setShowConfirmSaveOrder] = useState(false);
+  const [showWarningMsg, setShowWarningMsg] = useState(false);
   const [expanded, setExpanded] = useState(false);
 
   const computeTotalPrice = () => {
     let total = 0;
 
     cartItems
-      .filter((item) => item.warehouse.warehouse.name === warehouse)
+      .filter((item) => item.warehouse.warehouse.name === warehouse.name)
       .forEach((item) => {
         total =
           total +
@@ -67,14 +68,24 @@ const CartWarehouse = ({ warehouse, index }) => {
     return total;
   };
 
+  const checkOrderHandler = () => {
+    if (warehouse.invoiceMinTotal > 0 && computeTotalPrice() < warehouse.invoiceMinTotal) {
+      setShowWarningMsg(true);
+      return;
+    }
+
+    setShowConfirmSaveOrder(true);
+  };
+
   const sendOrderHandler = () => {
     setShowLoadingModal(true);
 
     let obj = {
       pharmacy: user._id,
-      warehouse: cartItems.filter((item) => item.warehouse.warehouse.name === warehouse)[0].warehouse.warehouse._id,
+      warehouse: cartItems.filter((item) => item.warehouse.warehouse.name === warehouse.name)[0].warehouse.warehouse
+        ._id,
       items: cartItems
-        .filter((item) => item.warehouse.warehouse.name === warehouse)
+        .filter((item) => item.warehouse.warehouse.name === warehouse.name)
         .map((e) => {
           return {
             item: e.item._id,
@@ -85,6 +96,7 @@ const CartWarehouse = ({ warehouse, index }) => {
             customer_price: e.item.customer_price,
           };
         }),
+      status: OrdersStatusOptions.SENT_BY_PHARMACY,
     };
 
     dispatch(saveOrder({ obj, token }))
@@ -130,24 +142,38 @@ const CartWarehouse = ({ warehouse, index }) => {
       <ScrollView>
         <View style={{ ...styles.container, backgroundColor: index % 2 === 0 ? Colors.WHITE_COLOR : '#ffe' }}>
           <View style={styles.headerView}>
-            <Text style={styles.title}>{warehouse}</Text>
+            <Text style={styles.title}>{warehouse.name}</Text>
             <Text style={styles.totalPrice}>
               {i18n.t('order-total-price')} {computeTotalPrice()}
             </Text>
+            {warehouse.costOfDeliver > 0 && (
+              <Text style={styles.infoText}>
+                {i18n.t('deliver-cost')}: {warehouse.costOfDeliver} %
+              </Text>
+            )}
+
+            {warehouse.invoiceMinTotal > 0 && (
+              <Text style={styles.infoText}>
+                {i18n.t('minimum-invoice-cost')}: {warehouse.invoiceMinTotal}
+              </Text>
+            )}
+
+            {warehouse.fastDeliver && (
+              <Text style={{ ...styles.infoText, ...styles.fastDeliver }}>{i18n.t('fast-deliver')}</Text>
+            )}
             <TouchableOpacity
-              onPress={() => {
-                setShowConfirmSaveOrder(true);
-              }}
+              onPress={checkOrderHandler}
               style={{ ...styles.actionView, flex: 3, backgroundColor: Colors.BLUE_COLOR }}
             >
               <FontAwesome name="send" size={16} color={Colors.WHITE_COLOR} style={{ marginEnd: 10 }} />
               <Text style={{ ...styles.actionText }}>{i18n.t('send-order')}</Text>
             </TouchableOpacity>
+            <Text style={styles.payCash}>{i18n.t('dear-partner-pay-when-deliver')}</Text>
           </View>
 
           {expanded &&
             cartItems
-              .filter((item) => item.warehouse.warehouse.name === warehouse)
+              .filter((item) => item.warehouse.warehouse.name === warehouse.name)
               .map((item, index) => <CartItem item={item} key={index} />)}
 
           <View style={styles.expandedIcon}>
@@ -176,6 +202,22 @@ const CartWarehouse = ({ warehouse, index }) => {
           cancelLabel="cancel-label"
           okAction={sendOrderHandler}
           cancelAction={() => setShowConfirmSaveOrder(false)}
+        />
+      </BottomSheet>
+
+      <BottomSheet
+        visible={showWarningMsg}
+        //setting the visibility state of the bottom shee
+        onBackButtonPress={() => setShowWarningMsg(false)}
+        //Toggling the visibility state on the click of the back botton
+        onBackdropPress={() => setShowWarningMsg(false)}
+        //Toggling the visibility state on the clicking out side of the sheet
+      >
+        <ConfirmBottomSheet
+          header="minimum-invoice-cost"
+          message="minimum-invoice-cost-error"
+          cancelLabel="cancel-label"
+          cancelAction={() => setShowWarningMsg(false)}
         />
       </BottomSheet>
 
@@ -259,6 +301,22 @@ const styles = StyleSheet.create({
     bottom: -18,
     backgroundColor: '#e3e3e3',
     alignSelf: 'center',
+  },
+  infoText: {
+    textAlign: 'center',
+    color: Colors.DARK_COLOR,
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  fastDeliver: {
+    fontWeight: 'bold',
+    fontSize: 18,
+  },
+  payCash: {
+    fontWeight: 'bold',
+    textAlign: 'center',
+    color: Colors.FAILED_COLOR,
+    marginTop: 10,
   },
 });
 

@@ -1,11 +1,23 @@
-import i18n from '../i18n/index';
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, LayoutAnimation, Platform, UIManager } from 'react-native';
-import { Colors } from '../utils/constants';
-import PartnerFavoriteRow from './PartnerFavoriteRow';
-import ItemFavoriteRow from './ItemFavoriteRow';
+import i18n from "../i18n/index";
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  LayoutAnimation,
+  Platform,
+  UIManager,
+} from "react-native";
 
-if (Platform.OS === 'android') {
+// constants
+import { Colors } from "../utils/constants";
+
+// components
+import PartnerFavoriteRow from "./PartnerFavoriteRow";
+import ItemFavoriteRow from "./ItemFavoriteRow";
+
+if (Platform.OS === "android") {
   if (UIManager.setLayoutAnimationEnabledExperimental) {
     UIManager.setLayoutAnimationEnabledExperimental(true);
   }
@@ -29,7 +41,7 @@ function CollapseSection({ header, favorites, type, isOpen }) {
       </TouchableOpacity>
 
       {open &&
-        (type === 'item' ? (
+        (type === "item" ? (
           <View>
             {favorites.map((favorite) => (
               <ItemFavoriteRow key={favorite._id} favorite={favorite} />
@@ -38,7 +50,11 @@ function CollapseSection({ header, favorites, type, isOpen }) {
         ) : (
           <View>
             {favorites.map((favorite) => (
-              <PartnerFavoriteRow key={favorite._id} type={type} favorite={favorite} />
+              <PartnerFavoriteRow
+                key={favorite._id}
+                type={type}
+                favorite={favorite}
+              />
             ))}
           </View>
         ))}
@@ -50,9 +66,9 @@ const styles = StyleSheet.create({
   item: {
     marginHorizontal: 10,
     borderWidth: 1,
-    borderColor: '#e3e3e3',
+    borderColor: "#e3e3e3",
     borderRadius: 6,
-    overflow: 'hidden',
+    overflow: "hidden",
     marginBottom: 10,
   },
   headerContainer: {
@@ -60,13 +76,13 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     paddingHorizontal: 10,
 
-    justifyContent: 'center',
-    alignItems: 'center',
-    flexDirection: 'row',
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "row",
   },
   headerText: {
     color: Colors.WHITE_COLOR,
-    fontWeight: '900',
+    fontWeight: "900",
     fontSize: 18,
     flex: 1,
   },
@@ -74,8 +90,8 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     backgroundColor: Colors.WHITE_COLOR,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     borderRadius: 6,
   },
   badgeText: {

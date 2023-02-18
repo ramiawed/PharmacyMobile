@@ -1,22 +1,23 @@
-import React, { useEffect } from 'react';
-import { FlatList, View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
-import i18n from '../i18n/index';
+import React, { memo, useEffect } from 'react';
+import { FlatList, View, StyleSheet } from 'react-native';
+
 // components
-import HomeScreenAdvertisementCard from './HomeScreenAdvertisementCard';
+import HomeScreenAdvertisementCard from './PartnerAdvertisementCard';
+import TitleAndDescription from './TitleAndDescription';
+import LoadingData from './LoadingData';
 
 // redux stuff
 import { useDispatch, useSelector } from 'react-redux';
 import { getCompaniesSectionOne, selectCompaniesSectionOne } from '../redux/advertisements/companiesSectionOneSlice';
 import { selectUserData } from '../redux/auth/authSlice';
 import { selectCompaniesSectionOneFromSettings } from '../redux/settings/settingsSlice';
-
-import { Colors } from '../utils/constants';
+import PartnerAdvertisementCard from './PartnerAdvertisementCard';
 
 const CompaniesSectionOne = () => {
   const dispatch = useDispatch();
 
   const { token } = useSelector(selectUserData);
-  const { show, title, description, order } = useSelector(selectCompaniesSectionOneFromSettings);
+  const { show, title, description } = useSelector(selectCompaniesSectionOneFromSettings);
   const { companiesSectionOne, companiesSectionOneStatus } = useSelector(selectCompaniesSectionOne);
 
   useEffect(() => {
@@ -27,25 +28,15 @@ const CompaniesSectionOne = () => {
 
   return show ? (
     companiesSectionOneStatus === 'loading' ? (
-      <View style={styles.loaderView}>
-        <ActivityIndicator size="large" color={Colors.MAIN_COLOR} style={{ flex: 1 }} />
-        <Text
-          style={{
-            color: Colors.MAIN_COLOR,
-          }}
-        >
-          {i18n.t('loading-data')}
-        </Text>
-      </View>
+      <LoadingData />
     ) : companiesSectionOne.length > 0 ? (
-      <View style={{ ...styles.container }}>
-        <Text style={styles.title}>{title}</Text>
-        <Text style={styles.description}>{description}</Text>
+      <View style={styles.container}>
+        <TitleAndDescription title={title} desc={description} />
         <FlatList
           data={companiesSectionOne}
           keyExtractor={(item) => item._id}
           horizontal={true}
-          renderItem={({ item }) => <HomeScreenAdvertisementCard data={item} type="company" rect="rect" />}
+          renderItem={({ item }) => <PartnerAdvertisementCard data={item} />}
         />
       </View>
     ) : null
@@ -53,30 +44,13 @@ const CompaniesSectionOne = () => {
 };
 
 const styles = StyleSheet.create({
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: Colors.MAIN_COLOR,
-    textAlign: 'center',
-    paddingTop: 10,
-  },
-  description: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: Colors.SECONDARY_COLOR,
-    textAlign: 'center',
-  },
-  loaderView: {
-    height: 150,
-    backgroundColor: '#e3e3e3',
-    width: '90%',
-    marginHorizontal: '5%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
-    borderRadius: 15,
-    marginBottom: 20,
+  container: {
+    backgroundColor: '#A1869E',
+    borderRadius: 6,
+    marginVertical: 5,
+    marginHorizontal: 10,
+    paddingHorizontal: 5,
   },
 });
 
-export default CompaniesSectionOne;
+export default memo(CompaniesSectionOne);

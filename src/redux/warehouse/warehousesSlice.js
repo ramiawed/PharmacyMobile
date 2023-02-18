@@ -8,15 +8,11 @@ let source = null;
 const initialState = {
   status: 'idle',
   warehouses: [],
-  count: 0,
   error: '',
   selectedWarehouse: null,
   pageState: {
     searchName: '',
     searchCity: CitiesName.ALL,
-    displayType: 'list',
-    showFavorites: false,
-    page: 1,
   },
 };
 
@@ -34,23 +30,11 @@ const resetCancelAndSource = () => {
 export const getWarehouses = createAsyncThunk(
   'warehouses/getWarehouses',
   async ({ token }, { rejectWithValue, getState }) => {
-    const {
-      warehouses: { pageState },
-    } = getState();
-
     try {
       CancelToken = axios.CancelToken;
       source = CancelToken.source();
 
-      let buildUrl = `${BASEURL}/users?type=warehouse&isActive=true&isApproved=true&page=${pageState.page}&limit=15&details=some`;
-
-      if (pageState.searchName.trim() !== '') {
-        buildUrl = buildUrl + `&name=${pageState.searchName}`;
-      }
-
-      if (pageState.searchCity !== CitiesName.ALL) {
-        buildUrl = buildUrl + `&city=${pageState.searchCity}`;
-      }
+      let buildUrl = `${BASEURL}/users/warehouses`;
 
       const response = await axios.get(buildUrl, {
         // timeout: 10000,
@@ -107,20 +91,6 @@ export const warehousesSlice = createSlice({
       };
     },
 
-    changePage: (state, action) => {
-      state.pageState = {
-        ...state.pageState,
-        page: action.payload,
-      };
-    },
-
-    changeShowFavorites: (state, action) => {
-      state.pageState = {
-        ...state.pageState,
-        showFavorites: action.payload,
-      };
-    },
-
     setSelectedWarehouse: (state, action) => {
       state.selectedWarehouse = action.payload;
     },
@@ -129,9 +99,6 @@ export const warehousesSlice = createSlice({
       state.pageState = {
         searchName: '',
         searchCity: CitiesName.ALL,
-        displayType: 'list',
-        showFavorites: false,
-        page: 1,
       };
     },
     resetError: (state) => {
@@ -144,24 +111,12 @@ export const warehousesSlice = createSlice({
     resetWarehouse: (state) => {
       state.status = 'idle';
       state.warehouses = [];
-      state.count = 0;
       state.error = null;
-      state.pageState = {
-        ...state.pageState,
-        page: 1,
-      };
     },
     resetWarehousesArray: (state) => {
       state.warehouses = [];
-      state.count = 0;
-      state.pageState = {
-        ...state.pageState,
-        page: 1,
-      };
     },
-    resetCount: (state) => {
-      state.count = 0;
-    },
+
     warehouseSliceSignOut: (state) => {
       state.status = 'idle';
       state.warehouses = [];
@@ -170,9 +125,6 @@ export const warehousesSlice = createSlice({
       state.pageState = {
         searchName: '',
         searchCity: CitiesName.ALL,
-        displayType: 'list',
-        showFavorites: false,
-        page: 1,
       };
     },
   },
@@ -183,13 +135,8 @@ export const warehousesSlice = createSlice({
     },
     [getWarehouses.fulfilled]: (state, action) => {
       state.status = 'success';
-      state.warehouses = [...state.warehouses, ...action.payload.data.users];
-      state.count = action.payload.count;
+      state.warehouses = [...action.payload.data];
       state.error = null;
-      state.pageState = {
-        ...state.pageState,
-        page: Math.ceil(state.warehouses.length / 15) + 1,
-      };
     },
     [getWarehouses.rejected]: (state, { payload }) => {
       state.status = 'failed';
@@ -207,6 +154,7 @@ export const warehousesSlice = createSlice({
 
 export const selectWarehouses = (state) => state.warehouses;
 export const selectWarehousesPageState = (state) => state.warehouses.pageState;
+export const selectWarehousesIds = (state) => state.warehouses.warehouses.map((w) => w._id);
 
 export const {
   resetError,

@@ -16,6 +16,8 @@ import AddToCart from '../components/AddToCart';
 
 // constants
 import { Colors } from '../utils/constants';
+import ScreenWrapper from '../screens/ScreenWrapper';
+import PullDownToRefresh from '../components/PullDownToRefresh';
 
 const SavedItemsScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -59,51 +61,54 @@ const SavedItemsScreen = ({ navigation }) => {
   );
 
   return user ? (
-    <View style={styles.container}>
-      {savedItems?.length === 0 && status !== 'loading' && (
-        <NoContent refreshing={refreshing} onRefreshing={onRefreshing} msg="no-saved-items" />
-      )}
+    <ScreenWrapper>
+      <View style={styles.container}>
+        {status !== 'loading' && <PullDownToRefresh />}
+        {savedItems?.length === 0 && status !== 'loading' && (
+          <NoContent refreshing={refreshing} onRefreshing={onRefreshing} msg="no-saved-items" />
+        )}
 
-      {savedItems?.length > 0 && (
-        <FlatList
-          data={savedItems}
-          keyExtractor={(item) => item._id}
-          contentContainerStyle={{
-            padding: 10,
-          }}
-          refreshControl={
-            <RefreshControl
-              //refresh control used for the Pull to Refresh
-              refreshing={refreshing}
-              onRefresh={onRefreshing}
-            />
-          }
-          numColumns={1}
-          renderItem={({ item, index }) => {
-            return (
-              <ItemCard
-                item={item}
-                index={index}
-                navigation={navigation}
-                addToCart={() => {
-                  setTheItemToAddToCartHandler(item);
-                }}
+        {savedItems?.length > 0 && (
+          <FlatList
+            data={savedItems}
+            keyExtractor={(item) => item._id}
+            contentContainerStyle={{
+              paddingHorizontal: 5,
+            }}
+            refreshControl={
+              <RefreshControl
+                //refresh control used for the Pull to Refresh
+                refreshing={refreshing}
+                onRefresh={onRefreshing}
               />
-            );
-          }}
-        />
-      )}
+            }
+            numColumns={1}
+            renderItem={({ item, index }) => {
+              return (
+                <ItemCard
+                  item={item}
+                  index={index}
+                  navigation={navigation}
+                  addToCart={() => {
+                    setTheItemToAddToCartHandler(item);
+                  }}
+                />
+              );
+            }}
+          />
+        )}
 
-      {status === 'loading' && savedItems.length === 0 && <LoadingData />}
+        {status === 'loading' && savedItems.length === 0 && <LoadingData />}
 
-      <BottomSheet
-        visible={showAddToCartModal}
-        onBackButtonPress={() => setShowAddToCartModal(false)}
-        onBackdropPress={() => setShowAddToCartModal(false)}
-      >
-        <AddToCart item={itemToAddToCart} close={() => setShowAddToCartModal(false)} fromSavedItems={true} />
-      </BottomSheet>
-    </View>
+        <BottomSheet
+          visible={showAddToCartModal}
+          onBackButtonPress={() => setShowAddToCartModal(false)}
+          onBackdropPress={() => setShowAddToCartModal(false)}
+        >
+          <AddToCart item={itemToAddToCart} close={() => setShowAddToCartModal(false)} fromSavedItems={true} />
+        </BottomSheet>
+      </View>
+    </ScreenWrapper>
   ) : null;
 };
 
@@ -111,6 +116,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.WHITE_COLOR,
+    width: '100%',
   },
 });
 

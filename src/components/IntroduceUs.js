@@ -20,18 +20,20 @@ const styles = StyleSheet.create({
     margin: 10,
     padding: 10,
     borderRadius: 6,
-    backgroundColor: '#f3f3f3',
+    backgroundColor: Colors.MAIN_COLOR,
   },
   header: {
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 10,
-    color: Colors.MAIN_COLOR,
+    color: Colors.WHITE_COLOR,
   },
   body: {
     textAlign: 'justify',
     lineHeight: 25,
+    color: '#e3e3e3',
+    fontSize: 16,
   },
 });
 

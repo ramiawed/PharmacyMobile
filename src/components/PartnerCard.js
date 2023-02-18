@@ -1,22 +1,42 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableWithoutFeedback, Animated, ActivityIndicator } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableWithoutFeedback,
+  Animated,
+  ActivityIndicator,
+} from "react-native";
+import { useNavigation } from "@react-navigation/native";
 
 // icons
-import { AntDesign, FontAwesome5 } from '@expo/vector-icons';
+import { AntDesign, FontAwesome5 } from "@expo/vector-icons";
 
 // redux stuff
-import { unwrapResult } from '@reduxjs/toolkit';
-import { resetMedicines, setSearchWarehouseId, setSearchCompanyId } from '../redux/medicines/medicinesSlices';
-import { useDispatch, useSelector } from 'react-redux';
-import { addFavorite, removeFavorite, selectFavoritesPartners } from '../redux/favorites/favoritesSlice';
-import { addStatistics } from '../redux/statistics/statisticsSlice';
-import { addCompanyToOurCompanies, removeCompanyFromOurCompanies, selectUserData } from '../redux/auth/authSlice';
-import { setSelectedWarehouse } from '../redux/warehouse/warehousesSlice';
-import { selectSettings } from '../redux/settings/settingsSlice';
+import { unwrapResult } from "@reduxjs/toolkit";
+import {
+  resetMedicines,
+  setSearchWarehouseId,
+  setSearchCompanyId,
+} from "../redux/medicines/medicinesSlices";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addFavorite,
+  removeFavorite,
+  selectFavoritesPartners,
+} from "../redux/favorites/favoritesSlice";
+import { addStatistics } from "../redux/statistics/statisticsSlice";
+import {
+  addCompanyToOurCompanies,
+  removeCompanyFromOurCompanies,
+  selectUserData,
+} from "../redux/auth/authSlice";
+import { setSelectedWarehouse } from "../redux/warehouse/warehousesSlice";
+import { selectSettings } from "../redux/settings/settingsSlice";
 
 // constants
-import { Colors, UserTypeConstants, SERVER_URL } from '../utils/constants';
+import { Colors, UserTypeConstants, SERVER_URL } from "../utils/constants";
 
 const SPACING = 20;
 
@@ -31,12 +51,15 @@ const PartnerCard = ({ partner, advertisement }) => {
   } = useSelector(selectSettings);
 
   const [changeFavoriteLoading, setChangeFavoriteLoading] = useState(false);
-  const [changeLinkCompanyToWarehouse, setChangeLinkCompanyToWarehouse] = useState(false);
+  const [changeLinkCompanyToWarehouse, setChangeLinkCompanyToWarehouse] =
+    useState(false);
 
   const allowShowingWarehouseMedicines =
     user.type === UserTypeConstants.ADMIN ||
     partner.type === UserTypeConstants.COMPANY ||
-    (partner.type === UserTypeConstants.WAREHOUSE && showWarehouseItem && partner.allowShowingMedicines);
+    (partner.type === UserTypeConstants.WAREHOUSE &&
+      showWarehouseItem &&
+      partner.allowShowingMedicines);
 
   // method to handle add company to user's favorite
   const addPartnerToFavorites = () => {
@@ -51,10 +74,10 @@ const PartnerCard = ({ partner, advertisement }) => {
             obj: {
               sourceUser: user._id,
               targetUser: partner._id,
-              action: 'user-added-to-favorite',
+              action: "user-added-to-favorite",
             },
             token,
-          }),
+          })
         );
       })
       .catch(() => {
@@ -119,10 +142,10 @@ const PartnerCard = ({ partner, advertisement }) => {
             obj: {
               sourceUser: user._id,
               targetUser: partner._id,
-              action: 'choose-company',
+              action: "choose-company",
             },
             token,
-          }),
+          })
         );
       }
 
@@ -136,14 +159,16 @@ const PartnerCard = ({ partner, advertisement }) => {
         dispatch(setSearchWarehouseId(partner._id));
       }
 
-      if (partner.type === UserTypeConstants.WAREHOUSE && user.type === UserTypeConstants.PHARMACY) {
+      if (
+        partner.type === UserTypeConstants.WAREHOUSE &&
+        user.type === UserTypeConstants.PHARMACY
+      ) {
         dispatch(setSelectedWarehouse(partner._id));
       } else {
         dispatch(setSelectedWarehouse(null));
       }
 
-      navigation.navigate('Medicines', {
-        screen: 'AllMedicines',
+      navigation.navigate("Items", {
         params: {
           myCompanies: partner.ourCompanies,
         },
@@ -162,7 +187,8 @@ const PartnerCard = ({ partner, advertisement }) => {
       >
         <TouchableWithoutFeedback>
           <View style={styles.favoriteIcon}>
-            {user.type === UserTypeConstants.WAREHOUSE && partner.type === UserTypeConstants.COMPANY ? (
+            {user.type === UserTypeConstants.WAREHOUSE &&
+            partner.type === UserTypeConstants.COMPANY ? (
               changeLinkCompanyToWarehouse ? (
                 <ActivityIndicator size="small" color={Colors.YELLOW_COLOR} />
               ) : (
@@ -190,7 +216,10 @@ const PartnerCard = ({ partner, advertisement }) => {
             <View style={{ width: 5 }}></View>
             {changeFavoriteLoading ? (
               <ActivityIndicator size="small" color={Colors.YELLOW_COLOR} />
-            ) : favorites && favorites.map((favorite) => favorite._id).includes(partner?._id) ? (
+            ) : favorites &&
+              favorites
+                .map((favorite) => favorite._id)
+                .includes(partner?._id) ? (
               <AntDesign
                 name="star"
                 size={24}
@@ -207,14 +236,17 @@ const PartnerCard = ({ partner, advertisement }) => {
             )}
           </View>
         </TouchableWithoutFeedback>
-        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+        <View style={{ alignItems: "center", justifyContent: "center" }}>
           {partner.logo_url && partner.logo_url.length !== 0 ? (
             <Image
               source={{ uri: `${SERVER_URL}/profiles/${partner.logo_url}` }}
               style={advertisement ? styles.logoLarge : styles.logo}
             />
           ) : (
-            <Image source={require('../../assets/logo.png')} style={advertisement ? styles.logoLarge : styles.logo} />
+            <Image
+              source={require("../../assets/logo.png")}
+              style={advertisement ? styles.logoLarge : styles.logo}
+            />
           )}
         </View>
 
@@ -230,7 +262,7 @@ const styles = StyleSheet.create({
   animatedView: {
     padding: 10,
     marginBottom: SPACING,
-    backgroundColor: 'rgba(255,255,255, 1)',
+    backgroundColor: "rgba(255,255,255, 1)",
     borderRadius: 12,
     shadowColor: Colors.SECONDARY_COLOR,
     shadowOffset: {
@@ -243,31 +275,31 @@ const styles = StyleSheet.create({
     elevation: 25,
 
     minHeight: 200,
-    justifyContent: 'flex-start',
+    justifyContent: "flex-start",
   },
   title: {
     fontSize: 20,
-    fontWeight: '700',
+    fontWeight: "700",
     color: Colors.MAIN_COLOR,
-    textAlign: 'center',
+    textAlign: "center",
   },
   favoriteIcon: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-end",
   },
   logo: {
     width: 120,
     height: 100,
     borderRadius: 12,
-    resizeMode: 'contain',
+    resizeMode: "contain",
     marginVertical: 5,
   },
   logoLarge: {
     width: 130,
     height: 130,
     borderRadius: 12,
-    resizeMode: 'contain',
+    resizeMode: "contain",
     marginVertical: 5,
   },
 });

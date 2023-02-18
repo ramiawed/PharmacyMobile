@@ -1,177 +1,130 @@
-import { useNavigation } from '@react-navigation/native';
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableWithoutFeedback } from 'react-native';
-import CheckBox from 'expo-checkbox';
+import { useNavigation } from "@react-navigation/native";
+import React, { useState } from "react";
+import { t } from "i18n-js";
+import { View, Text, StyleSheet, TouchableWithoutFeedback } from "react-native";
 
 // libraries
-import { BottomSheet } from 'react-native-btr';
+import { BottomSheet } from "react-native-btr";
 
 // components
-import ConfirmBottomSheet from '../components/ConfirmBottomSheet';
+import ConfirmBottomSheet from "../components/ConfirmBottomSheet";
 
 // redux stuff
-import { unwrapResult } from '@reduxjs/toolkit';
-import { useDispatch, useSelector } from 'react-redux';
-import { selectUserData } from '../redux/auth/authSlice';
-import { decrementUnreadOrder, selectedChange, updateOrder } from '../redux/orders/ordersSlice';
-import {
-  decrementUnreadOrder as basketDecrementUnreadOrder,
-  selectedChange as basketSelectedChange,
-  updateOrder as basketUpdateOrder,
-} from '../redux/basketOrdersSlice/basketOrdersSlice';
+import { useSelector } from "react-redux";
+import { selectUserData } from "../redux/auth/authSlice";
 
 // icons
-import { Ionicons, FontAwesome, MaterialIcons, AntDesign } from '@expo/vector-icons';
+import { AntDesign } from "@expo/vector-icons";
 
 // constants
-import { Colors, UserTypeConstants } from '../utils/constants';
+import {
+  Colors,
+  OrdersStatusOptions,
+  UserTypeConstants,
+} from "../utils/constants";
 
 const OrderRow = ({ order, deleteAction, type }) => {
   const navigation = useNavigation();
-  const dispatch = useDispatch();
 
-  const { user, token } = useSelector(selectUserData);
+  const { user } = useSelector(selectUserData);
 
   const [showDeleteConfirmBts, setShowDeleteConfirmBts] = useState(false);
 
-  const rowClickHandler = (id) => {
-    if (user.type !== UserTypeConstants.PHARMACY) {
-      let obj = {};
-
-      if (user.type === UserTypeConstants.ADMIN && !order.seenByAdmin) {
-        obj = {
-          seenByAdmin: true,
-        };
-      }
-
-      if (user.type === UserTypeConstants.WAREHOUSE && order.warehouseStatus === 'unread') {
-        obj = {
-          warehouseStatus: 'received',
-        };
-      }
-
-      if (Object.keys(obj).length > 0) {
-        dispatch(type === 'order' ? updateOrder({ id, obj, token }) : basketUpdateOrder({ id, obj, token }))
-          .then(unwrapResult)
-          .then(() => {
-            dispatch(type === 'order' ? decrementUnreadOrder({ token }) : basketDecrementUnreadOrder({ token }));
-          });
-      }
-    }
-
-    if (type === 'order') {
-      navigation.navigate('Order', {
-        params: {
-          orderId: order._id,
-        },
+  const rowClickHandler = () => {
+    if (type === "normal") {
+      navigation.navigate("OrderDetails", {
+        orderId: order._id,
       });
     } else {
-      navigation.navigate('BasketOrder', {
-        params: {
-          orderId: order._id,
-        },
+      navigation.navigate("BasketOrderDetails", {
+        orderId: order._id,
       });
     }
   };
 
   return order ? (
     <View style={styles.container}>
-      {user.type !== UserTypeConstants.ADMIN && (
-        <View
-          style={{
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <CheckBox
-            value={order.selected}
-            onValueChange={() =>
-              dispatch(type === 'order' ? selectedChange(order._id) : basketSelectedChange(order._id))
-            }
-          />
-        </View>
-      )}
-
       <TouchableWithoutFeedback
-        style={{ ...styles.details, borderStartWidth: user.type === UserTypeConstants.ADMIN ? 0 : 1 }}
+        style={{
+          ...styles.details,
+          borderStartWidth: user.type === UserTypeConstants.ADMIN ? 0 : 1,
+        }}
         onPress={() => rowClickHandler(order._id)}
       >
         <View style={styles.details}>
-          {(user.type === UserTypeConstants.ADMIN || user.type === UserTypeConstants.WAREHOUSE) && (
-            <View style={{ ...styles.row }}>
-              {order.pharmacyStatus === 'received' && (
-                <Ionicons name="checkmark-done" size={16} color={Colors.SUCCEEDED_COLOR} />
-              )}
-              {order.pharmacyStatus === 'sent' && <FontAwesome name="send" size={16} color={Colors.SUCCEEDED_COLOR} />}
-              <Text style={styles.name}>{order.pharmacy?.name}</Text>
-              {/* <Text style={styles.address}>{order.pharmacy?.addressDetails}</Text> */}
-            </View>
-          )}
-
-          {(user.type === UserTypeConstants.ADMIN || user.type === UserTypeConstants.WAREHOUSE) && (
-            <View style={{ ...styles.row, ...styles.address, ...styles.withBottomBorder }}>
-              <Text style={styles.address}>{order.pharmacy?.addressDetails}</Text>
-            </View>
-          )}
-
-          {(user.type === UserTypeConstants.ADMIN || user.type === UserTypeConstants.PHARMACY) && (
+          {(user.type === UserTypeConstants.ADMIN ||
+            user.type === UserTypeConstants.WAREHOUSE) && (
             <View style={{ ...styles.row, ...styles.withBottomBorder }}>
-              {order.warehouseStatus === 'unread' && (
-                <Ionicons name="mail-unread-outline" size={16} color={Colors.MAIN_COLOR} />
-              )}
-              {order.warehouseStatus === 'received' && (
-                <Ionicons name="checkmark-done" size={16} color={Colors.SUCCEEDED_COLOR} />
-              )}
-              {order.warehouseStatus === 'sent' && (
-                <MaterialIcons name="local-shipping" size={16} color={Colors.SUCCEEDED_COLOR} />
-              )}
-              {order.warehouseStatus === 'dontServe' && (
-                <MaterialIcons name="remove-done" size={16} color={Colors.FAILED_COLOR} />
-              )}
+              <Text style={styles.name}>{order.pharmacy?.name}</Text>
+            </View>
+          )}
+
+          {(user.type === UserTypeConstants.ADMIN ||
+            user.type === UserTypeConstants.WAREHOUSE) && (
+            <View style={{ ...styles.row, ...styles.withBottomBorder }}>
+              <Text style={styles.address}>
+                {order.pharmacy?.addressDetails}
+              </Text>
+            </View>
+          )}
+
+          {(user.type === UserTypeConstants.ADMIN ||
+            user.type === UserTypeConstants.PHARMACY) && (
+            <View style={{ ...styles.row, ...styles.withBottomBorder }}>
               <Text style={styles.name}>{order.warehouse?.name}</Text>
             </View>
           )}
 
-          <View style={[styles.date]}>
-            <Text style={styles.dateText}>{order.createdAt?.split('T')[0]}</Text>
+          <View style={{ ...styles.date, ...styles.withBottomBorder }}>
+            <Text style={styles.dateText}>
+              {order.createdAt?.split("T")[0]}
+            </Text>
+          </View>
+
+          <View style={{ ...styles.row, ...styles.center }}>
+            <Text style={styles.status}>{t(order.status)}</Text>
+            {order.status === OrdersStatusOptions.WILL_DONT_SERVER && (
+              <Text style={styles.status}>
+                {order.couldNotDeliverDate.split("T")[0]}
+              </Text>
+            )}
+            {order.status === OrdersStatusOptions.CONFIRM && (
+              <Text style={styles.status}>
+                {order.confirmDate.split("T")[0]}
+              </Text>
+            )}
+            {order.status === OrdersStatusOptions.DELIVERY && (
+              <Text style={styles.status}>
+                {order.deliverDate?.split("T")[0]}{" "}
+                {order.deliverTime
+                  ? `---${t("time-label")}: ${order.deliverTime}`
+                  : ""}
+              </Text>
+            )}
+            {order.status === OrdersStatusOptions.SHIPPING && (
+              <Text style={styles.status}>
+                {order.shippedDate
+                  ? order.shippedDate.split("T")[0]
+                  : t("shipped-done")}
+                {order.shippedTime
+                  ? `---${t("time-label")}: ${order.shippedTime}`
+                  : ""}
+              </Text>
+            )}
           </View>
         </View>
       </TouchableWithoutFeedback>
 
-      <View style={styles.actions}>
-        {user.type === UserTypeConstants.ADMIN && !order.seenByAdmin && (
-          <Ionicons name="mail-unread-outline" size={16} color={Colors.MAIN_COLOR} />
-        )}
-        {user.type === UserTypeConstants.WAREHOUSE && order.warehouseStatus === 'sent' && (
-          <MaterialIcons name="local-shipping" size={16} color={Colors.SUCCEEDED_COLOR} />
-        )}
-        {user.type === UserTypeConstants.WAREHOUSE && order.warehouseStatus === 'unread' && (
-          <Ionicons name="mail-unread-outline" size={16} color={Colors.MAIN_COLOR} />
-        )}
-        {user.type === UserTypeConstants.WAREHOUSE && order.warehouseStatus === 'received' && (
-          <Ionicons name="checkmark-done" size={16} color={Colors.SUCCEEDED_COLOR} />
-        )}
-        {user.type === UserTypeConstants.WAREHOUSE && order.warehouseStatus === 'dontServe' && (
-          <MaterialIcons name="remove-done" size={16} color={Colors.FAILED_COLOR} />
-        )}
-
-        {user.type === UserTypeConstants.PHARMACY && order.pharmacyStatus === 'sent' && (
-          <FontAwesome name="send" size={16} color={Colors.SUCCEEDED_COLOR} />
-        )}
-
-        {user.type === UserTypeConstants.PHARMACY && order.pharmacyStatus === 'received' && (
-          <Ionicons name="checkmark-done" size={16} color={Colors.SUCCEEDED_COLOR} />
-        )}
-
-        {user.type !== UserTypeConstants.WAREHOUSE ? (
+      {user.type !== UserTypeConstants.WAREHOUSE ? (
+        <View style={styles.actions}>
           <AntDesign
             name="delete"
             size={20}
             color={Colors.FAILED_COLOR}
             onPress={() => setShowDeleteConfirmBts(true)}
           />
-        ) : null}
-      </View>
+        </View>
+      ) : null}
 
       <BottomSheet
         visible={showDeleteConfirmBts}
@@ -194,57 +147,66 @@ const OrderRow = ({ order, deleteAction, type }) => {
 const styles = StyleSheet.create({
   container: {
     borderWidth: 1,
-    borderColor: '#e3e3e3',
-    flexDirection: 'row',
+    borderColor: Colors.LIGHT_GREY_COLOR,
+    flexDirection: "column",
     padding: 5,
     marginBottom: 10,
     borderRadius: 6,
+    overflow: "hidden",
   },
   details: {
     paddingHorizontal: 10,
     flex: 1,
-    borderStartColor: Colors.SECONDARY_COLOR,
-    // borderStartWidth: 1,
-    borderEndColor: Colors.SECONDARY_COLOR,
-    borderEndWidth: 1,
   },
   row: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    flexWrap: "wrap",
+    alignItems: "center",
     flex: 1,
     paddingVertical: 5,
   },
   name: {
     color: Colors.MAIN_COLOR,
-    fontWeight: 'bold',
-    marginStart: 10,
+    fontWeight: "bold",
     flex: 1,
+    fontSize: 16,
   },
   address: {
-    color: Colors.SECONDARY_COLOR,
-    fontSize: 12,
-    fontWeight: 'bold',
-    // justifyContent: 'flex-end',
+    color: Colors.SUCCEEDED_COLOR,
+    fontSize: 14,
+    fontWeight: "bold",
+    flex: 1,
   },
   date: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    alignItems: "center",
     flex: 1,
     paddingVertical: 5,
   },
   dateText: {
-    color: Colors.SUCCEEDED_COLOR,
+    color: Colors.DARK_COLOR,
   },
   actions: {
-    alignItems: 'center',
-    justifyContent: 'space-around',
+    position: "absolute",
+    top: 10,
+    right: 10,
+    alignItems: "center",
+    justifyContent: "space-around",
     paddingStart: 10,
+    borderStartColor: Colors.LIGHT_GREY_COLOR,
+    borderStartWidth: 1,
   },
   withBottomBorder: {
     borderBottomWidth: 1,
-    borderBottomColor: Colors.SECONDARY_COLOR,
+    borderBottomColor: Colors.LIGHT_GREY_COLOR,
   },
+  status: {
+    color: Colors.SUCCEEDED_COLOR,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  center: { flex: 1, alignItems: "center", justifyContent: "center" },
 });
 
 export default OrderRow;

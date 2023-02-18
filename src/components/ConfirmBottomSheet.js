@@ -13,12 +13,15 @@ const ConfirmBottomSheet = ({ header, message, okAction, cancelAction, okLabel, 
         <Text style={styles.message}>{i18n.t(message)}</Text>
       </View>
       <View style={styles.actions}>
-        <TouchableOpacity
-          onPress={okAction}
-          style={{ ...styles.actionView, flex: 3, backgroundColor: Colors.SUCCEEDED_COLOR }}
-        >
-          <Text style={{ ...styles.actionText }}>{i18n.t(okLabel)}</Text>
-        </TouchableOpacity>
+        {okAction && (
+          <TouchableOpacity
+            onPress={okAction}
+            style={{ ...styles.actionView, flex: 3, backgroundColor: Colors.SUCCEEDED_COLOR }}
+          >
+            <Text style={{ ...styles.actionText }}>{i18n.t(okLabel)}</Text>
+          </TouchableOpacity>
+        )}
+
         <TouchableOpacity
           onPress={cancelAction}
           style={{ ...styles.actionView, flex: 1, backgroundColor: Colors.FAILED_COLOR }}
@@ -58,9 +61,9 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   header: {
-    backgroundColor: Colors.BLUE_COLOR,
+    backgroundColor: Colors.MAIN_COLOR,
     color: Colors.WHITE_COLOR,
-    paddingVertical: 20,
+    paddingVertical: 10,
     fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',

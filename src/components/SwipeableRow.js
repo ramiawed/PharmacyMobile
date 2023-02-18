@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginHorizontal: 10,
-    marginVertical: 30,
+    marginVertical: 5,
     borderRadius: 12,
   },
   leftView: {
@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginHorizontal: 10,
-    marginVertical: 30,
+    marginVertical: 5,
     borderRadius: 12,
   },
   actionText: {

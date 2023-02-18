@@ -9,15 +9,15 @@ const GuestIntroduce = () => {
     <View style={styles.container}>
       <Text style={styles.header}>الضيوف</Text>
       <View style={styles.row}>
-        <FontAwesome name="dot-circle-o" size={16} color={Colors.SECONDARY_COLOR} style={styles.icon} />
+        <FontAwesome name="dot-circle-o" size={16} color="#e3e3e3" style={styles.icon} />
         <Text style={styles.body}>التعرف على منتجات الشركات وتركيباتها واستطباباتها</Text>
       </View>
       <View style={styles.row}>
-        <FontAwesome name="dot-circle-o" size={16} color={Colors.SECONDARY_COLOR} style={styles.icon} />
+        <FontAwesome name="dot-circle-o" size={16} color="#e3e3e3" style={styles.icon} />
         <Text style={styles.body}>معرفة أسعار العموم</Text>
       </View>
       <View style={styles.row}>
-        <FontAwesome name="dot-circle-o" size={16} color={Colors.SECONDARY_COLOR} style={styles.icon} />
+        <FontAwesome name="dot-circle-o" size={16} color="#e3e3e3" style={styles.icon} />
         <Text style={styles.body}>التعرف على المنتجات الجديدة المطروحة بالسوق اضافة الى اهم الاخبار</Text>
       </View>
     </View>
@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
     margin: 10,
     padding: 10,
     borderRadius: 6,
-    backgroundColor: '#f3f3f3',
+    backgroundColor: '#B56576',
     overflow: 'hidden',
   },
   header: {
@@ -37,13 +37,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 10,
-    color: Colors.MAIN_COLOR,
+    color: Colors.WHITE_COLOR,
   },
   body: {
     textAlign: 'auto',
     lineHeight: 25,
     marginStart: 10,
     flex: 1,
+    color: '#e3e3e3',
   },
   row: {
     flexDirection: 'row',

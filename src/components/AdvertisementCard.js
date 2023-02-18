@@ -20,8 +20,6 @@ const AdvertisementCard = ({ adv, onAdvertisementPress }) => {
 
 const styles = StyleSheet.create({
   advertisement: {
-    padding: 10,
-    backgroundColor: '#f3f3f3',
     height: 300,
     marginHorizontal: 10,
     flex: 1,

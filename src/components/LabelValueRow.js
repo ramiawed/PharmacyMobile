@@ -12,18 +12,18 @@ const LabelValueRow = ({ label, value }) => {
 };
 
 const styles = StyleSheet.create({
-  row: { flexDirection: 'row', marginHorizontal: 5, marginBottom: 5, alignItems: 'center' },
+  row: { flexDirection: 'row', marginHorizontal: 5, marginBottom: 15, alignItems: 'center' },
   label: {
-    fontSize: 12,
-    width: 75,
+    fontSize: 14,
+    minWidth: 75,
     color: Colors.GREY_COLOR,
   },
   value: {
-    fontSize: 14,
+    fontSize: 16,
     flex: 1,
     color: Colors.MAIN_COLOR,
     justifyContent: 'flex-start',
-    textAlign: 'left',
+    textAlign: 'center',
   },
 });
 

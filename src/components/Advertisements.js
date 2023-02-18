@@ -82,8 +82,7 @@ const Advertisements = () => {
     if (adv.company !== null) {
       dispatch(resetMedicines());
       dispatch(setSearchCompanyId(adv.company._id));
-      navigation.navigate('Medicines', {
-        screen: 'AllMedicines',
+      navigation.navigate('Items', {
         params: {
           myCompanies: [],
         },
@@ -93,8 +92,7 @@ const Advertisements = () => {
     if (adv.warehouse !== null) {
       dispatch(resetMedicines());
       dispatch(setSearchWarehouseId(adv.warehouse._id));
-      navigation.navigate('Medicines', {
-        screen: 'AllMedicines',
+      navigation.navigate('Items', {
         params: {
           myCompanies: adv.warehouse.ourCompanies,
         },
@@ -102,12 +100,8 @@ const Advertisements = () => {
     }
 
     if (adv.medicine !== null) {
-      dispatch(resetMedicines());
-      navigation.navigate('Medicines', {
-        screen: 'Medicine',
-        params: {
-          medicineId: adv.medicine._id,
-        },
+      navigation.navigate('ItemDetails', {
+        medicineId: adv.medicine._id,
       });
     }
   };
@@ -132,9 +126,9 @@ const Advertisements = () => {
           justifyContent: 'center',
           alignItems: 'center',
           flexDirection: 'column',
+          marginBottom: 10,
         }}
       >
-        {/* <Feather name="arrow-right-circle" size={36} color={Colors.GREY_COLOR} onPress={prevBackground} /> */}
         <AdvertisementCard adv={backgrounds[index]} onAdvertisementPress={onAdvertisementPressHandler} />
         <View
           style={{
@@ -147,8 +141,6 @@ const Advertisements = () => {
             <View style={[styles.point, index === i.current ? styles.active : null]} key={index}></View>
           ))}
         </View>
-
-        {/* <Feather name="arrow-left-circle" size={36} color={Colors.GREY_COLOR} onPress={nextBackground} /> */}
       </View>
     </GestureRecognizer>
   );

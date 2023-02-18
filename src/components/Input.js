@@ -54,7 +54,7 @@ const Input = ({ value, onTextChange, placeholder, password, icon, error, border
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
-    width: '90%',
+    width: '100%',
     borderRadius: 15,
     padding: 10,
     flexDirection: 'column',

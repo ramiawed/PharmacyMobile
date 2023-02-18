@@ -1,24 +1,28 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 
-import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
 
 // redux stuff
-import { selectToken, selectUserData } from '../redux/auth/authSlice';
-import { useDispatch, useSelector } from 'react-redux';
-import { removeFavorite } from '../redux/favorites/favoritesSlice';
+import { selectToken, selectUserData } from "../redux/auth/authSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { removeFavorite } from "../redux/favorites/favoritesSlice";
 
 // navigation stuff
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from "@react-navigation/native";
 
 // constants
-import { Colors, UserTypeConstants } from '../utils/constants';
+import { Colors, UserTypeConstants } from "../utils/constants";
 
 // icons
-import { AntDesign } from '@expo/vector-icons';
-import { selectSettings } from '../redux/settings/settingsSlice';
-import { addStatistics } from '../redux/statistics/statisticsSlice';
-import { resetMedicines, setSearchCompanyId, setSearchWarehouseId } from '../redux/medicines/medicinesSlices';
-import { setSelectedWarehouse } from '../redux/warehouse/warehousesSlice';
+import { AntDesign } from "@expo/vector-icons";
+import { selectSettings } from "../redux/settings/settingsSlice";
+import { addStatistics } from "../redux/statistics/statisticsSlice";
+import {
+  resetMedicines,
+  setSearchCompanyId,
+  setSearchWarehouseId,
+} from "../redux/medicines/medicinesSlices";
+import { setSelectedWarehouse } from "../redux/warehouse/warehousesSlice";
 
 const PartnerFavoriteRow = ({ type, favorite }) => {
   const navigation = useNavigation();
@@ -35,11 +39,13 @@ const PartnerFavoriteRow = ({ type, favorite }) => {
   const allowShowingWarehouseMedicines =
     user?.type === UserTypeConstants.ADMIN ||
     favorite.type === UserTypeConstants.COMPANY ||
-    (favorite.type === UserTypeConstants.WAREHOUSE && showWarehouseItem && favorite.allowShowingMedicines);
+    (favorite.type === UserTypeConstants.WAREHOUSE &&
+      showWarehouseItem &&
+      favorite.allowShowingMedicines);
 
   // method to handle remove company from user's favorite
   const removeCompanyFromFavorite = (id) => {
-    if (type === 'company' || type === 'warehouse') {
+    if (type === "company" || type === "warehouse") {
       setLoading(true);
       dispatch(removeFavorite({ obj: { favoriteId: id }, token }));
     }
@@ -64,10 +70,10 @@ const PartnerFavoriteRow = ({ type, favorite }) => {
             obj: {
               sourceUser: user._id,
               targetUser: favorite._id,
-              action: 'choose-company',
+              action: "choose-company",
             },
             token,
-          }),
+          })
         );
       }
     }
@@ -82,17 +88,17 @@ const PartnerFavoriteRow = ({ type, favorite }) => {
       dispatch(setSearchWarehouseId(favorite._id));
     }
 
-    if (favorite.type === UserTypeConstants.WAREHOUSE && user.type === UserTypeConstants.PHARMACY) {
+    if (
+      favorite.type === UserTypeConstants.WAREHOUSE &&
+      user.type === UserTypeConstants.PHARMACY
+    ) {
       dispatch(setSelectedWarehouse(favorite._id));
     } else {
       dispatch(setSelectedWarehouse(null));
     }
 
-    navigation.navigate('Medicines', {
-      screen: 'AllMedicines',
-      params: {
-        myCompanies: favorite.ourCompanies,
-      },
+    navigation.navigate("Items", {
+      myCompanies: favorite.ourCompanies,
     });
   };
 
@@ -117,19 +123,19 @@ const PartnerFavoriteRow = ({ type, favorite }) => {
 
 const styles = StyleSheet.create({
   row: {
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    writingDirection: 'rtl',
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    writingDirection: "rtl",
     padding: 10,
     borderBottomWidth: 1,
-    borderColor: 'rgba(0, 0, 0, .1)',
+    borderColor: "rgba(0, 0, 0, .1)",
   },
   name: {
     fontSize: 16,
     color: Colors.MAIN_COLOR,
     flex: 1,
-    textAlign: 'left',
+    textAlign: "left",
   },
 });
 

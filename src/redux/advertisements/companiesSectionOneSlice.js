@@ -24,7 +24,6 @@ export const getCompaniesSectionOne = createAsyncThunk(
       const response = await axios.get(
         `${BASEURL}/users?type=company&isActive=true&inSectionOne=true&page=1&limit=25`,
         {
-          // timeout: 10000,
           cancelToken: source.token,
           headers: {
             Authorization: `Bearer ${token}`,

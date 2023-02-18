@@ -53,7 +53,7 @@ const SearchContainer = ({ children }) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: Colors.SECONDARY_COLOR,
+    backgroundColor: Colors.LIGHT_COLOR,
     padding: 10,
     flexDirection: 'row',
     alignItems: 'flex-start',

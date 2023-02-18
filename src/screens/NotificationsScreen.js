@@ -19,6 +19,8 @@ import NotificationRow from '../components/NotificationRow';
 
 // constants
 import { Colors } from '../utils/constants';
+import ScreenWrapper from './ScreenWrapper';
+import PullDownToRefresh from '../components/PullDownToRefresh';
 
 const NotificationsScreen = () => {
   const dispatch = useDispatch();
@@ -55,36 +57,40 @@ const NotificationsScreen = () => {
   );
 
   return user ? (
-    <View style={styles.container}>
-      {userNotifications?.length === 0 && status !== 'loading' && (
-        <NoContent refreshing={refreshing} onRefreshing={onRefreshing} msg="no-notifications" />
-      )}
+    <ScreenWrapper>
+      <View style={styles.container}>
+        {userNotifications?.length === 0 && status !== 'loading' && (
+          <NoContent refreshing={refreshing} onRefreshing={onRefreshing} msg="no-notifications" />
+        )}
 
-      {userNotifications?.length > 0 && (
-        <FlatList
-          data={userNotifications}
-          keyExtractor={(notification) => notification._id}
-          contentContainerStyle={{
-            padding: 20,
-          }}
-          refreshControl={
-            <RefreshControl
-              //refresh control used for the Pull to Refresh
-              refreshing={refreshing}
-              onRefresh={onRefreshing}
-            />
-          }
-          numColumns={1}
-          onEndReached={handleMoreResult}
-          onEndReachedThreshold={0.1}
-          renderItem={({ item }) => {
-            return <NotificationRow notification={item} />;
-          }}
-        />
-      )}
+        {status !== 'loading' && <PullDownToRefresh />}
 
-      {status === 'loading' && <LoadingData />}
-    </View>
+        {userNotifications?.length > 0 && (
+          <FlatList
+            data={userNotifications}
+            keyExtractor={(notification) => notification._id}
+            contentContainerStyle={{
+              padding: 10,
+            }}
+            refreshControl={
+              <RefreshControl
+                //refresh control used for the Pull to Refresh
+                refreshing={refreshing}
+                onRefresh={onRefreshing}
+              />
+            }
+            numColumns={1}
+            onEndReached={handleMoreResult}
+            onEndReachedThreshold={0.1}
+            renderItem={({ item }) => {
+              return <NotificationRow notification={item} />;
+            }}
+          />
+        )}
+
+        {status === 'loading' && <LoadingData />}
+      </View>
+    </ScreenWrapper>
   ) : null;
 };
 
@@ -92,6 +98,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.WHITE_COLOR,
+    width: '100%',
   },
 });
 

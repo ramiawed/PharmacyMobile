@@ -12,8 +12,8 @@ const initialState = {
   error: '',
   pageState: {
     searchName: '',
-    searchCompanyName: '',
-    searchWarehouseName: '',
+    searchCompaniesIds: [],
+    searchWarehousesIds: [],
     page: 1,
   },
 };
@@ -45,16 +45,11 @@ export const getOffers = createAsyncThunk(
         buildUrl = buildUrl + `&itemName=${pageState.searchName}`;
       }
 
-      if (pageState.searchCompanyName.trim() !== '') {
-        buildUrl = buildUrl + `&companyName=${pageState.searchCompanyName}`;
-      }
-
-      if (pageState.searchWarehouseName.trim() !== '') {
-        buildUrl = buildUrl + `&warehouseName=${pageState.searchWarehouseName}`;
-      }
-
       const response = await axios.get(buildUrl, {
-        // timeout: 10000,
+        params: {
+          searchCompaniesIds: pageState.searchCompaniesIds.map((company) => company.value),
+          searchWarehousesIds: pageState.searchWarehousesIds.map((warehouse) => warehouse.value),
+        },
         cancelToken: source.token,
         headers: {
           Authorization: `Bearer ${token}`,
@@ -103,24 +98,48 @@ export const offersSlice = createSlice({
       };
     },
 
-    setSearchCompanyName: (state, action) => {
-      state.pageState = {
-        ...state.pageState,
-        searchCompanyName: action.payload,
-      };
-    },
-
-    setSearchWarehouseName: (state, action) => {
-      state.pageState = {
-        ...state.pageState,
-        searchWarehouseName: action.payload,
-      };
-    },
-
     setPage: (state, action) => {
       state.pageState = {
         ...state.pageState,
         page: action.payload,
+      };
+    },
+
+    addIdToCompaniesIds: (state, action) => {
+      const { value } = action.payload;
+      if (state.pageState.searchCompaniesIds.filter((company) => company.value === value).length === 0) {
+        state.pageState = {
+          ...state.pageState,
+          searchCompaniesIds: [...state.pageState.searchCompaniesIds, action.payload],
+        };
+      }
+    },
+
+    removeIdFromCompaniesId: (state, action) => {
+      const id = action.payload;
+      const filteredArray = state.pageState.searchCompaniesIds.filter((i) => i.value !== id);
+      state.pageState = {
+        ...state.pageState,
+        searchCompaniesIds: [...filteredArray],
+      };
+    },
+
+    addIdToWarehousesIds: (state, action) => {
+      const { value } = action.payload;
+      if (state.pageState.searchWarehousesIds.filter((warehouse) => warehouse.value === value).length === 0) {
+        state.pageState = {
+          ...state.pageState,
+          searchWarehousesIds: [...state.pageState.searchWarehousesIds, action.payload],
+        };
+      }
+    },
+
+    removeIdFromWarehousesId: (state, action) => {
+      const id = action.payload;
+      const filteredArray = state.pageState.searchWarehousesIds.filter((i) => i.value !== id);
+      state.pageState = {
+        ...state.pageState,
+        searchWarehousesIds: [...filteredArray],
       };
     },
 
@@ -136,8 +155,8 @@ export const offersSlice = createSlice({
     resetOfferItemsPageState: (state) => {
       state.pageState = {
         searchName: '',
-        searchCompanyName: '',
-        searchWarehouseName: '',
+        searchCompaniesIds: [],
+        searchWarehousesIds: [],
         page: 1,
       };
     },
@@ -149,8 +168,8 @@ export const offersSlice = createSlice({
       state.error = '';
       state.pageState = {
         searchName: '',
-        searchCompanyName: '',
-        searchWarehouseName: '',
+        searchCompaniesIds: [],
+        searchWarehousesIds: [],
         page: 1,
       };
     },
@@ -189,11 +208,13 @@ export const {
   resetMedicines,
   offersSliceSignOut,
   setSearchName,
-  setSearchCompanyName,
-  setSearchWarehouseName,
   setPage,
   resetOfferItemsArray,
   resetOfferItemsPageState,
+  addIdToCompaniesIds,
+  addIdToWarehousesIds,
+  removeIdFromCompaniesId,
+  removeIdFromWarehousesId,
 } = offersSlice.actions;
 
 export const selectOfferMedicines = (state) => state.offers;

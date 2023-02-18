@@ -1,10 +1,11 @@
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, RefreshControl } from 'react-native';
+import { View, StyleSheet, FlatList, RefreshControl } from 'react-native';
 
 //components
 import LoadingData from '../components/LoadingData';
 import NoContent from '../components/NoContent';
+import ScreenWrapper from './ScreenWrapper';
 import Basket from '../components/Basket';
 
 // redux stuff
@@ -15,6 +16,7 @@ import { cancelOperation, getBaskets, resetBasketsArray, selectBaskets } from '.
 
 // constants and untils
 import { Colors } from '../utils/constants';
+import PullDownToRefresh from '../components/PullDownToRefresh';
 
 const BasketsScreen = () => {
   const dispatch = useDispatch();
@@ -25,9 +27,9 @@ const BasketsScreen = () => {
 
   const handleSearch = () => {
     dispatch(getBaskets({ token }))
-    .then(unwrapResult)
-    .then(() => setRefreshing(false))
-    .catch(() => setRefreshing(false));
+      .then(unwrapResult)
+      .then(() => setRefreshing(false))
+      .catch(() => setRefreshing(false));
   };
 
   const onRefreshing = () => {
@@ -59,43 +61,45 @@ const BasketsScreen = () => {
   );
 
   return (
-    <View style={styles.container}>
-      {baskets?.length === 0 && status !== 'loading' && (
-        <NoContent refreshing={refreshing} onRefreshing={onRefreshing} msg="no-baskets" />
-      )}
+    <ScreenWrapper>
+      <View style={styles.container}>
+        {status !== 'loading' && <PullDownToRefresh />}
 
+        {baskets?.length === 0 && status !== 'loading' && (
+          <NoContent refreshing={refreshing} onRefreshing={onRefreshing} msg="no-baskets" />
+        )}
 
-      {baskets?.length > 0 && (
-        <FlatList
-          data={baskets}
-          keyExtractor={(item) => item._id}
-          refreshControl={
-            <RefreshControl
-              //refresh control used for the Pull to Refresh
-              refreshing={refreshing}
-              onRefresh={onRefreshing}
-            />
-          }
-          contentContainerStyle={{ backgroundColor: Colors.WHITE_COLOR }}
-          numColumns={1}
-          onEndReached={handleMoreResult}
-          onEndReachedThreshold={0.1}
-          renderItem={({ item, index }) => (
-            <Basket basket={item} />
-          )}
-        />
-      )}
+        {baskets?.length > 0 && (
+          <FlatList
+            data={baskets}
+            keyExtractor={(item) => item._id}
+            refreshControl={
+              <RefreshControl
+                //refresh control used for the Pull to Refresh
+                refreshing={refreshing}
+                onRefresh={onRefreshing}
+              />
+            }
+            contentContainerStyle={{ backgroundColor: Colors.WHITE_COLOR }}
+            numColumns={1}
+            onEndReached={handleMoreResult}
+            onEndReachedThreshold={0.1}
+            renderItem={({ item, index }) => <Basket basket={item} />}
+          />
+        )}
 
-      {status === 'loading' && <LoadingData />}
-    </View>
+        {status === 'loading' && <LoadingData />}
+      </View>
+    </ScreenWrapper>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.WHITE_COLOR
-  }
-})
+    backgroundColor: Colors.WHITE_COLOR,
+    width: '100%',
+  },
+});
 
 export default BasketsScreen;

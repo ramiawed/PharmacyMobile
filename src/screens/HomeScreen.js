@@ -1,14 +1,19 @@
-import React from 'react';
-import { View, ScrollView, StyleSheet, Text, Platform } from 'react-native';
+import React, { useState } from 'react';
+import i18n from '../i18n';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 
-// component
-import SearchHome from '../components/SearchHome';
+// navigation stuff
+
+// components
+import WarehouseIntroduce from '../components/WarehouseIntroduce';
+import PharmacyIntroduce from '../components/PharmacyIntroduce';
 import SocketObserver from '../components/SocketObserver';
 import Advertisements from '../components/Advertisements';
-import IntroduceUs from '../components/IntroduceUs';
-import PharmacyIntroduce from '../components/PharmacyIntroduce';
-import WarehouseIntroduce from '../components/WarehouseIntroduce';
 import GuestIntroduce from '../components/GuestIntroduce';
+import Communication from '../components/Communication';
+import IntroduceUs from '../components/IntroduceUs';
+import SearchHome from '../components/SearchHome';
+import ScreenWrapper from './ScreenWrapper';
 import CompaniesSectionOne from '../components/CompaniesSectionOne';
 import CompaniesSectionTwo from '../components/CompaniesSectionTwo';
 import WarehousesSectionOne from '../components/WarehousesSectionOne';
@@ -18,50 +23,41 @@ import ItemsSectionThree from '../components/ItemsSectionThree';
 
 // constants
 import { Colors } from '../utils/constants';
-import i18n from '../i18n';
 
-const HomeScreen = () => {
+const HomeScreen = ({}) => {
+  const [showScanner, setShowScanner] = useState(false);
+
   return (
-    <View
-      style={{
-        flex: 1,
-        alignItems: 'center',
-        backgroundColor: Colors.WHITE_COLOR,
-      }}
-    >
-      <SocketObserver />
-      <SearchHome />
-
-      <ScrollView>
-        <Advertisements />
-        <IntroduceUs />
-        <View>
+    <ScreenWrapper>
+      <View style={styles.container}>
+        <SocketObserver />
+        <SearchHome showScanner={showScanner} setShowScanner={setShowScanner} />
+        <ScrollView>
+          <Advertisements />
           <ItemsSectionOne />
           <ItemsSectionTwo />
-          <CompaniesSectionOne />
-          <WarehousesSectionOne />
           <ItemsSectionThree />
+          <IntroduceUs />
+          <CompaniesSectionOne />
           <CompaniesSectionTwo />
-        </View>
-        <Text style={styles.specification}>{i18n.t('smart-pharma-specification')}</Text>
-        <PharmacyIntroduce />
-        <WarehouseIntroduce />
-        <GuestIntroduce />
-      </ScrollView>
-    </View>
+          <WarehousesSectionOne />
+          <Text style={styles.specification}>{i18n.t('smart-pharma-specification')}</Text>
+          <PharmacyIntroduce />
+          <WarehouseIntroduce />
+          <GuestIntroduce />
+          <Communication />
+        </ScrollView>
+      </View>
+    </ScreenWrapper>
   );
 };
 
+// styles
 const styles = StyleSheet.create({
-  loading: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  searchTextInput: {
+  container: {
+    flex: 1,
     backgroundColor: Colors.WHITE_COLOR,
-    borderRadius: 6,
-    paddingVertical: 4,
-    paddingHorizontal: 10,
+    width: '100%',
   },
   specification: {
     textAlign: 'center',

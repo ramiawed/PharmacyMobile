@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, BackHandler } from 'react-native';
 import { Camera } from 'expo-camera';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
+
+import { Colors } from '../utils/constants';
 
 const Scanner = ({ onScannerDone, close }) => {
   const [hasPermission, setHasPermission] = useState(null);
@@ -14,6 +17,22 @@ const Scanner = ({ onScannerDone, close }) => {
       setHasPermission(status === 'granted');
     })();
   }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        close();
+        return true;
+      };
+
+      const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+      return () => {
+        subscription.remove();
+        close();
+      };
+    }, []),
+  );
 
   if (hasPermission === null) {
     return <View />;
@@ -36,7 +55,7 @@ const Scanner = ({ onScannerDone, close }) => {
       >
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.button} onPress={close}>
-            <MaterialCommunityIcons name="close-thick" size={32} color="white" />
+            <MaterialCommunityIcons name="close-thick" size={32} color={Colors.WHITE_COLOR} style={styles.icon} />
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -45,7 +64,7 @@ const Scanner = ({ onScannerDone, close }) => {
               setType(type === Camera.Constants.Type.back ? Camera.Constants.Type.front : Camera.Constants.Type.back);
             }}
           >
-            <MaterialIcons name="flip-camera-android" size={32} color="white" />
+            <MaterialIcons name="flip-camera-android" size={32} color="white" style={styles.icon} />
           </TouchableOpacity>
         </View>
       </Camera>
@@ -69,7 +88,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'transparent',
     flexDirection: 'row',
-    // margin: 20,
   },
   button: {
     alignSelf: 'flex-end',
@@ -79,6 +97,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: 'white',
   },
+  icon: { backgroundColor: Colors.DARK_COLOR, padding: 5, borderRadius: 6 },
 });
 
 export default Scanner;

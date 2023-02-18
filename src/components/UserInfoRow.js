@@ -1,19 +1,32 @@
-import React from 'react';
-import i18n from '../i18n/index';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React from "react";
+import i18n from "../i18n/index";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+
+import { Feather } from "@expo/vector-icons";
 
 // constants
-import { Colors } from '../utils/constants';
+import { Colors } from "../utils/constants";
 
-const UserInfoRow = ({ label, value, action, editable, withoutBottomBorder }) => {
+const UserInfoRow = ({
+  label,
+  value,
+  action,
+  editable,
+  withoutBottomBorder,
+}) => {
   return (
-    <View style={{ ...styles.row, borderBottomWidth: withoutBottomBorder ? 0 : 1 }}>
+    <View
+      style={{ ...styles.row, borderBottomWidth: withoutBottomBorder ? 0 : 1 }}
+    >
       <Text style={styles.label}>{label}</Text>
       <Text style={styles.value}>{value}</Text>
       {editable && (
-        <TouchableOpacity onPress={action}>
-          <Text style={styles.button}>{i18n.t('update-label')}</Text>
-        </TouchableOpacity>
+        <Feather
+          name="edit"
+          size={24}
+          color={Colors.DARK_COLOR}
+          onPress={action}
+        />
       )}
     </View>
   );
@@ -21,26 +34,28 @@ const UserInfoRow = ({ label, value, action, editable, withoutBottomBorder }) =>
 
 const styles = StyleSheet.create({
   row: {
-    width: '100%',
+    width: "100%",
     paddingHorizontal: 5,
-    flexDirection: 'row',
-    alignItems: 'center',
-    height: 45,
-    borderBottomColor: '#e3e3e3',
+    flexDirection: "row",
+    alignItems: "center",
+    borderBottomColor: "#e3e3e3",
+    flexWrap: "wrap",
+    overflow: "hidden",
+    paddingVertical: 10,
   },
   value: {
     flex: 1,
     color: Colors.MAIN_COLOR,
-    fontSize: 12,
-    fontWeight: 'bold',
+    fontSize: 16,
+    fontWeight: "bold",
     marginStart: 5,
-    writingDirection: 'rtl',
-    textAlign: 'left',
+    writingDirection: "rtl",
+    textAlign: "left",
   },
   label: {
-    width: 70,
+    width: 100,
     color: Colors.GREY_COLOR,
-    fontSize: 10,
+    fontSize: 14,
   },
   button: {
     backgroundColor: Colors.SUCCEEDED_COLOR,

@@ -1,23 +1,23 @@
-import React, { useState } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import i18n from '../i18n';
+import React, { useState } from "react";
+import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
+import i18n from "../i18n";
 
 // component
-import Loader from '../components/Loader';
+import Loader from "../components/Loader";
 
 // redux stuff
-import { useDispatch, useSelector } from 'react-redux';
-import { authSignWithToken, selectUserData } from '../redux/auth/authSlice';
-import { unwrapResult } from '@reduxjs/toolkit';
-import { addStatistics } from '../redux/statistics/statisticsSlice';
-import { getAllSettings } from '../redux/settings/settingsSlice';
-import { getFavorites } from '../redux/favorites/favoritesSlice';
-import { getAllAdvertisements } from '../redux/advertisements/advertisementsSlice';
-import { getSavedItems } from '../redux/savedItems/savedItemsSlice';
+import { useDispatch, useSelector } from "react-redux";
+import { authSignWithToken, selectUserData } from "../redux/auth/authSlice";
+import { unwrapResult } from "@reduxjs/toolkit";
+import { addStatistics } from "../redux/statistics/statisticsSlice";
+import { getAllSettings } from "../redux/settings/settingsSlice";
+import { getFavorites } from "../redux/favorites/favoritesSlice";
+import { getAllAdvertisements } from "../redux/advertisements/advertisementsSlice";
+import { getSavedItems } from "../redux/savedItems/savedItemsSlice";
 
 // constants
-import { signoutHandler } from '../utils/functions';
-import { Colors, UserTypeConstants } from '../utils/constants';
+import { signoutHandler } from "../utils/functions";
+import { Colors, UserTypeConstants, VERSION } from "../utils/constants";
 
 const LogoutScreen = () => {
   const dispatch = useDispatch();
@@ -26,21 +26,22 @@ const LogoutScreen = () => {
   const { token, user } = useSelector(selectUserData);
 
   const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("login-with-token-error-msg");
 
   const loginHandler = () => {
     if (token) {
       setLoading(true);
-      dispatch(authSignWithToken({ token }))
+      dispatch(authSignWithToken({ token, version: VERSION }))
         .then(unwrapResult)
         .then((result) => {
           dispatch(
             addStatistics({
               obj: {
                 targetUser: result.data.user._id,
-                action: 'user-sign-in',
+                action: "user-sign-in",
               },
               token: result.token,
-            }),
+            })
           );
           dispatch(getAllSettings({ token: result.token }));
           dispatch(getFavorites({ token: result.token }));
@@ -50,7 +51,10 @@ const LogoutScreen = () => {
           }
           setLoading(false);
         })
-        .catch(() => {
+        .catch((err) => {
+          if (err.message == "update the app") {
+            setErrorMsg("update the app");
+          }
           setLoading(false);
         });
     }
@@ -62,13 +66,16 @@ const LogoutScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Image source={require('../../assets/logo.png')} style={{ width: 150, height: 150, resizeMode: 'contain' }} />
-      <Text style={styles.warningMsg}>{i18n.t('login-with-token-error-msg')}</Text>
+      <Image
+        source={require("../../assets/logo.png")}
+        style={{ width: 150, height: 150, resizeMode: "contain" }}
+      />
+      <Text style={styles.warningMsg}>{i18n.t(errorMsg)}</Text>
       <TouchableOpacity style={styles.checkBtn} onPress={loginHandler}>
-        <Text style={styles.checkBtnText}>{i18n.t('try-again-label')}</Text>
+        <Text style={styles.checkBtnText}>{i18n.t("try-again-label")}</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.checkBtn} onPress={signout}>
-        <Text style={styles.checkBtnText}>{i18n.t('nav-sign-out')}</Text>
+        <Text style={styles.checkBtnText}>{i18n.t("nav-sign-out")}</Text>
       </TouchableOpacity>
       {loading && <Loader />}
     </View>
@@ -79,19 +86,19 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.WHITE_COLOR,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   warningMsg: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: Colors.MAIN_COLOR,
     marginVertical: 10,
-    textAlign: 'center',
+    textAlign: "center",
   },
   version: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: Colors.SECONDARY_COLOR,
   },
   checkBtn: {

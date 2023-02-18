@@ -15,25 +15,30 @@ import {
   selectOfferMedicines,
   cancelOperation,
   setSearchName,
-  setSearchCompanyName,
-  setSearchWarehouseName,
   resetOfferItemsArray,
+  addIdToCompaniesIds,
+  removeIdFromCompaniesId,
+  addIdToWarehousesIds,
+  removeIdFromWarehousesId,
 } from '../redux/offers/offersSlices';
 
 // components
-import OfferRow from '../components/OfferRow';
+import SearchPartnerContainer from '../components/SearchPartnerContainer';
 import SearchContainer from '../components/SearchContainer';
-import Scanner from '../components/Scanner';
 import AddToCartOffer from '../components/AddToCartOffer';
-import NoContent from '../components/NoContent';
 import SearchInput from '../components/SearchInput';
 import LoadingData from '../components/LoadingData';
+import NoContent from '../components/NoContent';
+import OfferRow from '../components/OfferRow';
+import ScreenWrapper from './ScreenWrapper';
+import Scanner from '../components/Scanner';
 
 // constants
-import { Colors } from '../utils/constants';
+import { Colors, UserTypeConstants } from '../utils/constants';
 
 // icons
 import { AntDesign } from '@expo/vector-icons';
+import PullDownToRefresh from '../components/PullDownToRefresh';
 
 let timer;
 
@@ -111,88 +116,93 @@ const OffersScreen = ({ navigation }) => {
   );
 
   return user ? (
-    <View style={styles.container}>
-      <SearchContainer>
-        <>
-          <SearchInput
-            placeholder={i18n.t('search-by-name-composition-barcode')}
-            onTextChange={(val) => {
-              dispatch(setSearchName(val));
-            }}
-            onSubmitEditing={onSearchSubmit}
-            onKeyPress={keyUpHandler}
-            value={pageState.searchName}
-          />
-          <View style={styles.barcodeIcon}>
-            <AntDesign name="barcode" size={32} color={Colors.MAIN_COLOR} onPress={() => setShowScanner(true)} />
-          </View>
-        </>
-
-        <SearchInput
-          placeholder={i18n.t('search-by-company-name')}
-          onTextChange={(val) => {
-            dispatch(setSearchCompanyName(val));
-          }}
-          onSubmitEditing={onSearchSubmit}
-          onKeyPress={keyUpHandler}
-          value={pageState.searchCompanyName}
-        />
-
-        <SearchInput
-          placeholder={i18n.t('search-by-warehouse-name')}
-          onTextChange={(val) => {
-            dispatch(setSearchWarehouseName(val));
-          }}
-          onSubmitEditing={onSearchSubmit}
-          onKeyPress={keyUpHandler}
-          value={pageState.searchWarehouseName}
-        />
-      </SearchContainer>
-
-      {medicines?.length === 0 && status !== 'loading' && (
-        <NoContent refreshing={refreshing} onRefreshing={onRefreshing} msg="no-offers-at-all" />
-      )}
-
-      {medicines?.length > 0 && (
-        <FlatList
-          data={medicines}
-          keyExtractor={(item, index) => index}
-          refreshControl={
-            <RefreshControl
-              //refresh control used for the Pull to Refresh
-              refreshing={refreshing}
-              onRefresh={onRefreshing}
-            />
-          }
-          contentContainerStyle={{ backgroundColor: Colors.WHITE_COLOR, marginStart: 10 }}
-          numColumns={1}
-          onEndReached={handleMoreResult}
-          onEndReachedThreshold={0.1}
-          renderItem={({ item, index }) => (
-            <OfferRow
-              item={item}
-              index={index}
-              navigation={navigation}
-              addToCart={() => {
-                setTheItemToAddToCartHandler(item);
+    <ScreenWrapper>
+      <View style={styles.container}>
+        <SearchContainer>
+          <>
+            <SearchInput
+              placeholder={i18n.t('search-by-name-composition-barcode')}
+              onTextChange={(val) => {
+                dispatch(setSearchName(val));
               }}
+              onSubmitEditing={onSearchSubmit}
+              onKeyPress={keyUpHandler}
+              value={pageState.searchName}
             />
-          )}
-        />
-      )}
+            <View style={styles.barcodeIcon}>
+              <AntDesign name="barcode" size={32} color={Colors.MAIN_COLOR} onPress={() => setShowScanner(true)} />
+            </View>
+          </>
 
-      {status === 'loading' && <LoadingData />}
+          <SearchPartnerContainer
+            label={i18n.t('choose-company')}
+            partners={pageState?.searchCompaniesIds}
+            addId={addIdToCompaniesIds}
+            removeId={removeIdFromCompaniesId}
+            partnerType={UserTypeConstants.COMPANY}
+            action={onSearchSubmit}
+          />
 
-      {showScanner && <Scanner onScannerDone={scannerDoneHandler} close={() => setShowScanner(false)} />}
+          <SearchPartnerContainer
+            label={i18n.t('item-warehouse')}
+            partners={pageState?.searchWarehousesIds}
+            addId={addIdToWarehousesIds}
+            removeId={removeIdFromWarehousesId}
+            partnerType={UserTypeConstants.WAREHOUSE}
+            action={onSearchSubmit}
+          />
+        </SearchContainer>
 
-      <BottomSheet
-        visible={showAddToCartModal}
-        onBackButtonPress={() => setShowAddToCartModal(false)}
-        onBackdropPress={() => setShowAddToCartModal(false)}
-      >
-        <AddToCartOffer item={itemToAddToCart} close={() => setShowAddToCartModal(false)} />
-      </BottomSheet>
-    </View>
+        {status !== 'loading' && <PullDownToRefresh />}
+
+        {medicines?.length === 0 && status !== 'loading' && (
+          <NoContent refreshing={refreshing} onRefreshing={onRefreshing} msg="no-offers-at-all" />
+        )}
+
+        {medicines?.length > 0 && (
+          <FlatList
+            data={medicines}
+            keyExtractor={(item, index) => index}
+            refreshControl={
+              <RefreshControl
+                //refresh control used for the Pull to Refresh
+                refreshing={refreshing}
+                onRefresh={onRefreshing}
+              />
+            }
+            contentContainerStyle={{
+              backgroundColor: Colors.WHITE_COLOR,
+              marginStart: 10,
+            }}
+            numColumns={1}
+            onEndReached={handleMoreResult}
+            onEndReachedThreshold={0.1}
+            renderItem={({ item, index }) => (
+              <OfferRow
+                item={item}
+                index={index}
+                navigation={navigation}
+                addToCart={() => {
+                  setTheItemToAddToCartHandler(item);
+                }}
+              />
+            )}
+          />
+        )}
+
+        {status === 'loading' && <LoadingData />}
+
+        {showScanner && <Scanner onScannerDone={scannerDoneHandler} close={() => setShowScanner(false)} />}
+
+        <BottomSheet
+          visible={showAddToCartModal}
+          onBackButtonPress={() => setShowAddToCartModal(false)}
+          onBackdropPress={() => setShowAddToCartModal(false)}
+        >
+          <AddToCartOffer item={itemToAddToCart} close={() => setShowAddToCartModal(false)} />
+        </BottomSheet>
+      </View>
+    </ScreenWrapper>
   ) : null;
 };
 
@@ -200,6 +210,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.WHITE_COLOR,
+    width: '100%',
   },
   barcodeIcon: {
     alignItems: 'center',

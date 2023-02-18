@@ -1,9 +1,5 @@
-import React, { useEffect } from 'react';
-import { FlatList, View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
-import i18n from '../i18n/index';
-
-// components
-import HomeScreenAdvertisementCard from './HomeScreenAdvertisementCard';
+import React, { memo, useEffect } from 'react';
+import { View, StyleSheet } from 'react-native';
 
 // redux stuff
 import { useDispatch, useSelector } from 'react-redux';
@@ -11,13 +7,16 @@ import { selectUserData } from '../redux/auth/authSlice';
 import { selectItemsSectionThreeFromSettings } from '../redux/settings/settingsSlice';
 import { getItemsSectionThree, selectItemsSectionThree } from '../redux/advertisements/itemsSectionThreeSlice';
 
-import { Colors } from '../utils/constants';
+// components
+import LoadingData from './LoadingData';
+import TitleAndDescription from './TitleAndDescription';
+import AdvItemsContainer from './AdvItemsContainer';
 
 const ItemsSectionThree = () => {
   const dispatch = useDispatch();
 
   const { token } = useSelector(selectUserData);
-  const { show, title, description, order } = useSelector(selectItemsSectionThreeFromSettings);
+  const { show, title, description } = useSelector(selectItemsSectionThreeFromSettings);
   const { itemsSectionThree, itemsSectionThreeStatus } = useSelector(selectItemsSectionThree);
 
   useEffect(() => {
@@ -28,56 +27,23 @@ const ItemsSectionThree = () => {
 
   return show ? (
     itemsSectionThreeStatus === 'loading' ? (
-      <View style={styles.loaderView}>
-        <ActivityIndicator size="large" color={Colors.MAIN_COLOR} style={{ flex: 1 }} />
-        <Text
-          style={{
-            color: Colors.MAIN_COLOR,
-          }}
-        >
-          {i18n.t('loading-data')}
-        </Text>
-      </View>
+      <LoadingData />
     ) : itemsSectionThree.length > 0 ? (
       <View style={{ ...styles.container }}>
-        <Text style={styles.title}>{title}</Text>
-        <Text style={styles.description}>{description}</Text>
-        <FlatList
-          data={itemsSectionThree}
-          keyExtractor={(item) => item._id}
-          horizontal={true}
-          renderItem={({ item }) => <HomeScreenAdvertisementCard data={item} type="item" rect="rect" />}
-        />
+        <TitleAndDescription title={title} desc={description} />
+        <AdvItemsContainer items={itemsSectionThree} />
       </View>
     ) : null
   ) : null;
 };
 
 const styles = StyleSheet.create({
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: Colors.MAIN_COLOR,
-    textAlign: 'center',
-    paddingTop: 10,
-  },
-  description: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: Colors.SECONDARY_COLOR,
-    textAlign: 'center',
-  },
-  loaderView: {
-    height: 150,
-    backgroundColor: '#e3e3e3',
-    width: '90%',
-    marginHorizontal: '5%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
-    borderRadius: 15,
-    marginBottom: 20,
+  container: {
+    backgroundColor: '#B56576',
+    borderRadius: 6,
+    marginVertical: 5,
+    marginHorizontal: 10,
   },
 });
 
-export default ItemsSectionThree;
+export default memo(ItemsSectionThree);

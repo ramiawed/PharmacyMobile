@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react';
-import { FlatList, View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
-import i18n from '../i18n/index';
+import React, { memo, useEffect } from 'react';
+import { FlatList, View, StyleSheet } from 'react-native';
+
 // components
-import HomeScreenAdvertisementCard from './HomeScreenAdvertisementCard';
+import PartnerAdvertisementCard from './PartnerAdvertisementCard';
 
 // redux stuff
 import { useDispatch, useSelector } from 'react-redux';
@@ -10,7 +10,8 @@ import { selectUserData } from '../redux/auth/authSlice';
 import { selectWarehousesSectionOneFromSettings } from '../redux/settings/settingsSlice';
 import { getWarehousesSectionOne, selectWarehousesSectionOne } from '../redux/advertisements/warehousesSectionOneSlice';
 
-import { Colors } from '../utils/constants';
+import LoadingData from './LoadingData';
+import TitleAndDescription from './TitleAndDescription';
 
 const WarehousesSectionOne = () => {
   const dispatch = useDispatch();
@@ -27,25 +28,15 @@ const WarehousesSectionOne = () => {
 
   return show ? (
     warehousesSectionOneStatus === 'loading' ? (
-      <View style={styles.loaderView}>
-        <ActivityIndicator size="large" color={Colors.MAIN_COLOR} style={{ flex: 1 }} />
-        <Text
-          style={{
-            color: Colors.MAIN_COLOR,
-          }}
-        >
-          {i18n.t('loading-data')}
-        </Text>
-      </View>
+      <LoadingData />
     ) : warehousesSectionOne.length > 0 ? (
-      <View style={{ ...styles.container }}>
-        <Text style={styles.title}>{title}</Text>
-        <Text style={styles.description}>{description}</Text>
+      <View style={styles.container}>
+        <TitleAndDescription title={title} desc={description} />
         <FlatList
           data={warehousesSectionOne}
           keyExtractor={(item) => item._id}
           horizontal={true}
-          renderItem={({ item }) => <HomeScreenAdvertisementCard data={item} type="warehouse" />}
+          renderItem={({ item }) => <PartnerAdvertisementCard data={item} />}
         />
       </View>
     ) : null
@@ -53,30 +44,13 @@ const WarehousesSectionOne = () => {
 };
 
 const styles = StyleSheet.create({
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: Colors.MAIN_COLOR,
-    textAlign: 'center',
-    paddingTop: 10,
-  },
-  description: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: Colors.SECONDARY_COLOR,
-    textAlign: 'center',
-  },
-  loaderView: {
-    height: 150,
-    backgroundColor: '#e3e3e3',
-    width: '90%',
-    marginHorizontal: '5%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
-    borderRadius: 15,
-    marginBottom: 20,
+  container: {
+    backgroundColor: '#B56576',
+    borderRadius: 6,
+    marginVertical: 5,
+    marginHorizontal: 10,
+    paddingHorizontal: 5,
   },
 });
 
-export default WarehousesSectionOne;
+export default memo(WarehousesSectionOne);

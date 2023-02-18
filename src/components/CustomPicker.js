@@ -11,7 +11,7 @@ const CustomPicker = ({ selectedValue, onChange, data, label, error, forSearch }
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: forSearch ? 0 : 10,
-        width: forSearch ? '100%' : '90%',
+        width: forSearch ? '100%' : '100%',
         borderRadius: forSearch ? 6 : 15,
         paddingStart: forSearch ? 5 : 5,
         borderWidth: forSearch ? 0 : 1,

@@ -8,14 +8,10 @@ let source = null;
 const initialState = {
   status: 'idle',
   companies: [],
-  count: 0,
   error: '',
   pageState: {
     searchName: '',
     searchCity: CitiesName.ALL,
-    displayType: 'list',
-    showFavorites: false,
-    page: 1,
   },
 };
 
@@ -33,25 +29,12 @@ const resetCancelAndSource = () => {
 export const getCompanies = createAsyncThunk(
   'companies/getCompanies',
   async ({ token }, { rejectWithValue, getState }) => {
-    const {
-      companies: { pageState },
-    } = getState();
-
     try {
       CancelToken = axios.CancelToken;
       source = CancelToken.source();
-      let buildUrl = `${BASEURL}/users?type=company&isActive=true&isApproved=true&page=${pageState.page}&limit=15&details=some`;
-
-      if (pageState.searchName.trim() !== '') {
-        buildUrl = buildUrl + `&name=${pageState.searchName.trim()}`;
-      }
-
-      if (pageState.searchCity !== CitiesName.ALL) {
-        buildUrl = buildUrl + `&city=${pageState.searchCity}`;
-      }
+      let buildUrl = `${BASEURL}/users/companies`;
 
       const response = await axios.get(buildUrl, {
-        // timeout: 10000,
         cancelToken: source.token,
         headers: {
           Authorization: `Bearer ${token}`,
@@ -62,6 +45,7 @@ export const getCompanies = createAsyncThunk(
 
       return response.data;
     } catch (err) {
+      resetCancelAndSource();
       if (err.code === 'ECONNABORTED' && err.message.startsWith('timeout')) {
         return rejectWithValue('timeout');
       }
@@ -75,7 +59,6 @@ export const getCompanies = createAsyncThunk(
       }
 
       return rejectWithValue(err.response.data);
-      resetCancelAndSource();
     }
   },
 );
@@ -98,33 +81,24 @@ export const companiesSlice = createSlice({
       };
     },
 
-    changeDisplayType: (state, action) => {
-      state.pageState = {
-        ...state.pageState,
-        displayType: action.payload,
-      };
-    },
+    // : (state, action) => {
+    //   state.pageState = {
+    //     ...state.pageState,
+    //     page: action.payload,
+    //   };
+    // },
 
-    changePage: (state, action) => {
-      state.pageState = {
-        ...state.pageState,
-        page: action.payload,
-      };
-    },
-
-    changeShowFavorites: (state, action) => {
-      state.pageState = {
-        ...state.pageState,
-        showFavorites: action.payload,
-      };
-    },
+    // changeShowFavorites: (state, action) => {
+    //   state.pageState = {
+    //     ...state.pageState,
+    //     showFavorites: action.payload,
+    //   };
+    // },
 
     resetCompaniesPageState: (state) => {
       state.pageState = {
         searchName: '',
         searchCity: CitiesName.ALL,
-        displayType: 'list',
-        page: 1,
       };
     },
     resetCompaniesArray: (state) => {
@@ -148,29 +122,16 @@ export const companiesSlice = createSlice({
     resetCompanies: (state) => {
       state.status = 'idle';
       state.companies = [];
-      state.count = 0;
       state.error = null;
-      state.pageState = {
-        ...state.pageState,
-        page: 1,
-      };
-    },
-
-    resetCount: (state) => {
-      state.count = 0;
     },
 
     companySliceSignOut: (state) => {
       state.status = 'idle';
       state.companies = [];
-      state.count = 0;
       state.error = '';
       state.pageState = {
         searchName: '',
         searchCity: CitiesName.ALL,
-        displayType: 'list',
-        showFavorites: false,
-        page: 1,
       };
     },
   },
@@ -181,12 +142,10 @@ export const companiesSlice = createSlice({
     },
     [getCompanies.fulfilled]: (state, action) => {
       state.status = 'success';
-      state.companies = [...state.companies, ...action.payload.data.users];
-      state.count = action.payload.count;
+      state.companies = [...action.payload.data];
       state.error = null;
       state.pageState = {
         ...state.pageState,
-        page: Math.ceil(state.companies.length / 15) + 1,
       };
     },
     [getCompanies.rejected]: (state, { payload }) => {
@@ -205,6 +164,7 @@ export const companiesSlice = createSlice({
 
 export const selectCompanies = (state) => state.companies;
 export const selectCompaniesPageState = (state) => state.companies.pageState;
+export const selectCompaniesIds = (state) => state.companies.companies.map((c) => c._id);
 
 export const {
   resetError,
@@ -213,10 +173,7 @@ export const {
   resetCompaniesPageState,
   changeSearchName,
   changeSearchCity,
-  changeDisplayType,
-  changePage,
   companySliceSignOut,
-  changeShowFavorites,
   resetCompaniesArray,
 } = companiesSlice.actions;
 

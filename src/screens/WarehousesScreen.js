@@ -1,43 +1,53 @@
 import i18n from '../i18n/index';
 
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet, Animated, RefreshControl } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
 
 // redux stuff
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectUserData } from '../redux/auth/authSlice';
 import {
-  cancelOperation,
   changeSearchCity,
   changeSearchName,
   getWarehouses,
   resetWarehousesArray,
   selectWarehouses,
+  selectWarehousesPageState,
 } from '../redux/warehouse/warehousesSlice';
 
 // components
-import PartnerCard from '../components/PartnerCard';
+import ScreenWrapper from './ScreenWrapper';
+import WarehouseCard from '../components/WarehouseCard';
 import SearchContainer from '../components/SearchContainer';
 import NoContent from '../components/NoContent';
 import SearchInput from '../components/SearchInput';
 import LoadingData from '../components/LoadingData';
 
 // constatns
-import { Colors, UserTypeConstants } from '../utils/constants';
-
-const SPACING = 20;
-
-let timer;
+import { CitiesName, UserTypeConstants } from '../utils/constants';
+import PullDownToRefresh from '../components/PullDownToRefresh';
 
 const WarehousesScreen = ({}) => {
-  const scrollY = React.useRef(new Animated.Value(0)).current;
-
   const dispatch = useDispatch();
 
   const { token, user } = useSelector(selectUserData);
-  const { warehouses, status, count, pageState } = useSelector(selectWarehouses);
+  const { warehouses, status } = useSelector(selectWarehouses);
+  const { searchName, searchCity } = useSelector(selectWarehousesPageState);
+
+  let filteredWarehouses = warehouses.filter((warehouse) => {
+    if (searchName.trim().length > 0) {
+      return warehouse.name.includes(searchName.trim());
+    }
+    return true;
+  });
+
+  filteredWarehouses = filteredWarehouses.filter((warehouse) => {
+    if (searchCity !== CitiesName.ALL) {
+      return warehouse.city === searchCity;
+    }
+    return true;
+  });
 
   const [refreshing, setRefreshing] = useState(false);
 
@@ -53,9 +63,7 @@ const WarehousesScreen = ({}) => {
 
     dispatch(getWarehouses({ token }))
       .then(unwrapResult)
-      .then(() => {
-        setRefreshing(false);
-      });
+      .then(() => setRefreshing(false));
   };
 
   const onSearchSubmit = () => {
@@ -68,78 +76,52 @@ const WarehousesScreen = ({}) => {
     onSearchSubmit();
   };
 
-  const handleMoreResult = () => {
-    if (warehouses.length < count && status !== 'loading') handleSearch();
-  };
-
-  const keyUpHandler = (event) => {
-    if (event.keyCode === 13) return;
-    cancelOperation();
-
-    if (timer) {
-      clearTimeout(timer);
-    }
-
-    timer = setTimeout(() => {
-      onSearchSubmit();
-    }, 500);
-  };
-
-  useFocusEffect(
-    useCallback(() => {
-      // Do something when the screen is focused
-      if (warehouses?.length === 0) handleSearch();
-
-      return () => {
-        cancelOperation();
-      };
-    }, []),
-  );
-
   return (
-    <View style={styles.container}>
-      <SearchContainer>
-        <SearchInput
-          placeholder={i18n.t('search-by-warehouse-name')}
-          onTextChange={(val) => {
-            dispatch(changeSearchName(val));
-          }}
-          onSubmitEditing={onSearchSubmit}
-          onKeyPress={keyUpHandler}
-          value={pageState.searchName}
-        />
-      </SearchContainer>
+    <ScreenWrapper>
+      <View style={styles.container}>
+        <SearchContainer>
+          <SearchInput
+            placeholder={i18n.t('search-by-warehouse-name')}
+            onTextChange={(val) => {
+              dispatch(changeSearchName(val));
+            }}
+            onSubmitEditing={onSearchSubmit}
+            value={searchName}
+          />
+        </SearchContainer>
 
-      {warehouses?.length === 0 && status !== 'loading' && (
-        <NoContent refreshing={refreshing} onRefreshing={onRefreshing} msg="no-warehouses" />
-      )}
+        {status !== 'loading' && <PullDownToRefresh />}
 
-      {warehouses?.length > 0 && (
-        <Animated.FlatList
-          data={warehouses}
-          onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: true })}
-          keyExtractor={(item) => item._id}
-          contentContainerStyle={{
-            padding: SPACING,
-          }}
-          refreshControl={
-            <RefreshControl
-              //refresh control used for the Pull to Refresh
-              refreshing={refreshing}
-              onRefresh={onRefreshing}
-            />
-          }
-          numColumns={2}
-          onEndReached={handleMoreResult}
-          onEndReachedThreshold={0.1}
-          renderItem={({ item }) => {
-            return <PartnerCard partner={item} type="warehouse" />;
-          }}
-        />
-      )}
+        {filteredWarehouses?.length === 0 && status !== 'loading' && (
+          <NoContent refreshing={refreshing} onRefreshing={onRefreshing} msg="no-warehouses" />
+        )}
 
-      {status === 'loading' && <LoadingData />}
-    </View>
+        {filteredWarehouses?.length > 0 && (
+          <Animated.FlatList
+            data={filteredWarehouses}
+            // onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: true })}
+            keyExtractor={(item) => item._id}
+            contentContainerStyle={{
+              padding: 5,
+            }}
+            refreshControl={
+              <RefreshControl
+                //refresh control used for the Pull to Refresh
+                refreshing={refreshing}
+                onRefresh={onRefreshing}
+              />
+            }
+            numColumns={1}
+            onEndReachedThreshold={0.1}
+            renderItem={({ item }) => {
+              return <WarehouseCard warehouse={item} />;
+            }}
+          />
+        )}
+
+        {status === 'loading' && <LoadingData />}
+      </View>
+    </ScreenWrapper>
   );
 };
 
@@ -147,18 +129,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-  },
-  searchWarehousesName: {
-    backgroundColor: Colors.WHITE_COLOR,
-    borderRadius: 6,
-    paddingVertical: 4,
-    paddingHorizontal: 10,
-  },
-  loadingText: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: Colors.SECONDARY_COLOR,
-    marginTop: 20,
+    width: '100%',
   },
 });
 

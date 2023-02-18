@@ -1,5 +1,6 @@
-import React, { memo, useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableWithoutFeedback, Animated, ActivityIndicator } from 'react-native';
+import React, { memo } from 'react';
+import { View, Text, StyleSheet, Image, TouchableWithoutFeedback, Animated } from 'react-native';
+
 import { useNavigation } from '@react-navigation/native';
 
 // redux stuff
@@ -13,7 +14,7 @@ import { selectSettings } from '../redux/settings/settingsSlice';
 // constants
 import { Colors, UserTypeConstants, SERVER_URL } from '../utils/constants';
 
-const HomeScreenAdvertisementCard = ({ data, type, rect }) => {
+const PartnerAdvertisementCard = ({ data }) => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
 
@@ -70,57 +71,29 @@ const HomeScreenAdvertisementCard = ({ data, type, rect }) => {
       dispatch(setSelectedWarehouse(null));
     }
 
-    navigation.navigate('Medicines', {
-      screen: 'AllMedicines',
-    });
-  };
-
-  const dispatchItemSelected = () => {
-    if (user.type === UserTypeConstants.PHARMACY || user.type === UserTypeConstants.GUEST) {
-      dispatch(
-        addStatistics({
-          obj: {
-            sourceUser: user._id,
-            targetItem: data._id,
-            action: 'choose-item',
-          },
-          token,
-        }),
-      );
-    }
-
-    navigation.navigate('Medicines', {
-      screen: 'Medicine',
-      params: {
-        medicineId: data._id,
-      },
+    navigation.navigate('Items', {
+      myCompanies: data.ourCompanies,
     });
   };
 
   return (
     <TouchableWithoutFeedback
       onPress={() => {
-        if (type === 'item') {
-          dispatchItemSelected();
-        } else {
-          dispatchPartnerSelected();
-        }
+        dispatchPartnerSelected();
       }}
     >
       <Animated.View
         style={{
           ...styles.animatedView,
-          flex: 1,
-          marginHorizontal: 4,
-          height: rect === 'rect' ? 250 : 170,
+          // height: rect === 'rect' ? 250 : 170,
         }}
       >
         <View
           style={{
             ...styles.logoView,
-            height: rect === 'rect' ? 170 : 100,
-            width: rect === 'rect' ? 125 : 100,
-            borderRadius: rect === 'rect' ? 12 : 50,
+            // height: rect === 'rect' ? 170 : 100,
+            // width: rect === 'rect' ? 125 : 100,
+            // borderRadius: rect === 'rect' ? 12 : 50,
           }}
         >
           {data.logo_url && data.logo_url.length !== 0 ? (
@@ -142,38 +115,38 @@ const styles = StyleSheet.create({
   animatedView: {
     padding: 10,
     marginHorizontal: 10,
-    backgroundColor: '#f3f3f3',
-    // height: 170,
-    width: 170,
+    backgroundColor: '#fff',
+    width: 140,
+    height: 170,
     marginVertical: 10,
     alignItems: 'center',
     justifyContent: 'space-around',
     borderRadius: 15,
+    flex: 1,
+    marginHorizontal: 4,
   },
   title: {
-    fontSize: 10,
+    fontSize: 14,
     fontWeight: '700',
     color: Colors.MAIN_COLOR,
     textAlign: 'center',
   },
   logoView: {
-    // width: 100,
-    // height: 100,
-    // borderRadius: 50,
-    borderColor: 'red',
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
-    backgroundColor: '#d3d3d3',
+    backgroundColor: '#fff',
     borderWidth: 2,
     borderColor: '#d3d3d3',
+    width: 100,
+    height: 100,
+    borderRadius: 50,
   },
   logo: {
     width: '100%',
     height: '100%',
-    // borderRadius: 45,
     resizeMode: 'contain',
   },
 });
 
-export default memo(HomeScreenAdvertisementCard);
+export default memo(PartnerAdvertisementCard);

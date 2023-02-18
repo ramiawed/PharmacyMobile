@@ -1,21 +1,27 @@
-import React, { memo, useState } from 'react';
-import { useNavigation } from '@react-navigation/native';
-import { View, Text, StyleSheet, TouchableWithoutFeedback, LayoutAnimation } from 'react-native';
-import i18n from 'i18n-js';
+import React, { memo, useState } from "react";
+import { useNavigation } from "@react-navigation/native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableWithoutFeedback,
+  LayoutAnimation,
+} from "react-native";
+import i18n from "i18n-js";
 
 // redux stuff
-import { useDispatch, useSelector } from 'react-redux';
-import { selectUserData } from '../redux/auth/authSlice';
-import { addStatistics } from '../redux/statistics/statisticsSlice';
+import { useDispatch, useSelector } from "react-redux";
+import { selectUserData } from "../redux/auth/authSlice";
+import { addStatistics } from "../redux/statistics/statisticsSlice";
 
 // constants
-import { Colors, UserTypeConstants, OfferTypes } from '../utils/constants';
+import { Colors, UserTypeConstants, OfferTypes } from "../utils/constants";
 
 // icons
-import { AntDesign, Ionicons } from '@expo/vector-icons';
+import { AntDesign, Ionicons } from "@expo/vector-icons";
 
 // components
-import OfferSwipeableRow from './OfferSwipeableRow';
+import OfferSwipeableRow from "./OfferSwipeableRow";
 
 const OfferCard = ({ item, addToCart }) => {
   const navigation = useNavigation();
@@ -28,16 +34,19 @@ const OfferCard = ({ item, addToCart }) => {
   const [expanded, setExpanded] = useState(false);
 
   const dispatchStatisticsHandler = () => {
-    if (user.type === UserTypeConstants.PHARMACY || user.type === UserTypeConstants.GUEST) {
+    if (
+      user.type === UserTypeConstants.PHARMACY ||
+      user.type === UserTypeConstants.GUEST
+    ) {
       dispatch(
         addStatistics({
           obj: {
             sourceUser: user._id,
             targetItem: item._id,
-            action: 'choose-item',
+            action: "choose-item",
           },
           token,
-        }),
+        })
       );
     }
   };
@@ -52,23 +61,24 @@ const OfferCard = ({ item, addToCart }) => {
   };
 
   return user ? (
-    <OfferSwipeableRow user={user} addToCart={() => addToCartHandler(item)} item={item}>
+    <OfferSwipeableRow
+      user={user}
+      addToCart={() => addToCartHandler(item)}
+      item={item}
+    >
       <View
         style={{
           ...styles.container,
         }}
       >
-        <View style={{ flexDirection: 'row' }}>
-          <View style={{ flex: 1, justifyContent: 'space-between' }}>
-            <View style={{ flexDirection: 'row' }}>
+        <View style={{ flexDirection: "row" }}>
+          <View style={{ flex: 1, justifyContent: "space-between" }}>
+            <View style={{ flexDirection: "row" }}>
               <TouchableWithoutFeedback
                 onPress={() => {
                   dispatchStatisticsHandler();
-                  navigation.navigate('Medicines', {
-                    screen: 'Medicine',
-                    params: {
-                      medicineId: item._id,
-                    },
+                  navigation.navigate("ItemDetails", {
+                    medicineId: item._id,
                   });
                 }}
               >
@@ -76,7 +86,12 @@ const OfferCard = ({ item, addToCart }) => {
                   <Text
                     style={{
                       ...styles.title,
-                      fontSize: item.name.length >= 35 ? 16 : item.name.length > 25 ? 18 : 18,
+                      fontSize:
+                        item.name.length >= 35
+                          ? 16
+                          : item.name.length > 25
+                          ? 18
+                          : 18,
                     }}
                   >
                     {item.name}
@@ -90,7 +105,12 @@ const OfferCard = ({ item, addToCart }) => {
                   <Text
                     style={{
                       ...styles.nameAr,
-                      fontSize: item.nameAr.length >= 35 ? 14 : item.nameAr.length > 25 ? 14 : 18,
+                      fontSize:
+                        item.nameAr.length >= 35
+                          ? 14
+                          : item.nameAr.length > 25
+                          ? 14
+                          : 18,
                     }}
                   >
                     {item.nameAr}
@@ -115,12 +135,18 @@ const OfferCard = ({ item, addToCart }) => {
                   {item.price}
                 </Text>
               )}
-              <Text style={{ ...styles.priceValue, color: Colors.FAILED_COLOR }}>{item.customer_price}</Text>
+              <Text
+                style={{ ...styles.priceValue, color: Colors.FAILED_COLOR }}
+              >
+                {item.customer_price}
+              </Text>
             </View>
 
             <View style={styles.subHeader}>
               <View style={styles.fullWidth}>
-                <Text style={styles.warehouseName}>{item.warehouses.warehouse[0].name}</Text>
+                <Text style={styles.warehouseName}>
+                  {item.warehouses.warehouse[0].name}
+                </Text>
               </View>
             </View>
           </View>
@@ -154,21 +180,23 @@ const OfferCard = ({ item, addToCart }) => {
             {item.warehouses.offer.offers.map((o, index) => (
               <View style={styles.offer} key={index}>
                 <View style={styles.offerSection}>
-                  <Text style={styles.label}>{i18n.t('quantity-label')}</Text>
+                  <Text style={styles.label}>{i18n.t("quantity-label")}</Text>
                   <Text style={styles.value}>{o.qty}</Text>
-                  <Text style={styles.label}>{i18n.t('after-quantity-label')}</Text>
+                  <Text style={styles.label}>
+                    {i18n.t("after-quantity-label")}
+                  </Text>
                 </View>
                 <View style={styles.offerSection}>
                   <Text style={styles.label}>
                     {item.warehouses.offer.mode === OfferTypes.PIECES
-                      ? i18n.t('bonus-quantity-label')
-                      : i18n.t('bonus-percentage-label')}
+                      ? i18n.t("bonus-quantity-label")
+                      : i18n.t("bonus-percentage-label")}
                   </Text>
                   <Text style={styles.value}>{o.bonus}</Text>
                   <Text style={styles.label}>
                     {item.warehouses.offer.mode === OfferTypes.PIECES
-                      ? i18n.t('after-bonus-quantity-label')
-                      : i18n.t('after-bonus-percentage-label')}
+                      ? i18n.t("after-bonus-quantity-label")
+                      : i18n.t("after-bonus-percentage-label")}
                   </Text>
                 </View>
               </View>
@@ -182,7 +210,7 @@ const OfferCard = ({ item, addToCart }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'column',
+    flexDirection: "column",
     padding: 5,
     paddingTop: 20,
     paddingBottom: 15,
@@ -191,30 +219,30 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.WHITE_COLOR,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#e3e3e3',
-    width: '95%',
+    borderColor: "#e3e3e3",
+    width: "95%",
   },
   nameAr: {
-    width: '100%',
-    textAlign: 'center',
+    width: "100%",
+    textAlign: "center",
     color: Colors.MAIN_COLOR,
-    writingDirection: 'rtl',
+    writingDirection: "rtl",
     paddingHorizontal: 5,
     marginVertical: 5,
   },
   fullWidth: {
     flex: 1,
-    writingDirection: 'rtl',
-    justifyContent: 'flex-start',
-    alignItems: 'flex-start',
-    flexDirection: 'row',
+    writingDirection: "rtl",
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
+    flexDirection: "row",
   },
   subHeader: {
-    flexDirection: 'row',
+    flexDirection: "row",
   },
   separator: {
     height: 1,
-    width: '100%',
+    width: "100%",
     backgroundColor: Colors.SECONDARY_COLOR,
     marginVertical: 10,
   },
@@ -223,25 +251,25 @@ const styles = StyleSheet.create({
     paddingStart: 6,
   },
   title: {
-    width: '100%',
-    textAlign: 'center',
-    fontWeight: '700',
+    width: "100%",
+    textAlign: "center",
+    fontWeight: "700",
     color: Colors.MAIN_COLOR,
-    writingDirection: 'rtl',
+    writingDirection: "rtl",
     paddingHorizontal: 5,
   },
   companyName: {
     fontSize: 14,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: Colors.SUCCEEDED_COLOR,
   },
   actionIcon: {
     borderWidth: 1,
-    borderColor: '#e3e3e3',
+    borderColor: "#e3e3e3",
     borderRadius: 50,
-    position: 'absolute',
-    justifyContent: 'center',
-    alignItems: 'center',
+    position: "absolute",
+    justifyContent: "center",
+    alignItems: "center",
     zIndex: 10,
     backgroundColor: Colors.WHITE_COLOR,
   },
@@ -261,19 +289,19 @@ const styles = StyleSheet.create({
     bottom: -18,
     width: 36,
     height: 36,
-    alignSelf: 'center',
+    alignSelf: "center",
   },
   offer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     padding: 4,
     backgroundColor: Colors.OFFER_COLOR,
     margin: 4,
     borderRadius: 6,
   },
   offerSection: {
-    flexDirection: 'row',
+    flexDirection: "row",
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   value: {
     borderRadius: 4,
@@ -287,16 +315,16 @@ const styles = StyleSheet.create({
   },
   separator: {
     height: 1,
-    width: '100%',
+    width: "100%",
     backgroundColor: Colors.SECONDARY_COLOR,
     marginVertical: 10,
   },
   warehouseName: {
     flex: 1,
-    textAlign: 'center',
+    textAlign: "center",
     marginVertical: 5,
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: Colors.BLUE_COLOR,
   },
 });
