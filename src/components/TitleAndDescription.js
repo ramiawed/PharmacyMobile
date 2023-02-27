@@ -17,14 +17,14 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   title: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
     color: Colors.WHITE_COLOR,
     textAlign: 'center',
     paddingTop: 10,
   },
   description: {
-    fontSize: 16,
+    fontSize: 14,
     color: Colors.WHITE_COLOR,
     textAlign: 'center',
   },

@@ -1,44 +1,27 @@
-import React, { memo, useState } from "react";
-import { useNavigation } from "@react-navigation/native";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  ActivityIndicator,
-} from "react-native";
+import React, { memo, useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { View, Text, StyleSheet, TouchableWithoutFeedback, ActivityIndicator } from 'react-native';
 
 // libraries
-import { BottomSheet } from "react-native-btr";
+import { BottomSheet } from 'react-native-btr';
 
 // redux stuff
-import { unwrapResult } from "@reduxjs/toolkit";
-import { useDispatch, useSelector } from "react-redux";
-import { selectUserData } from "../redux/auth/authSlice";
-import {
-  addFavoriteItem,
-  removeFavoriteItem,
-  selectFavoritesItems,
-} from "../redux/favorites/favoritesSlice";
-import { addStatistics } from "../redux/statistics/statisticsSlice";
-import {
-  addItemToWarehouse,
-  removeItemFromWarehouse,
-} from "../redux/medicines/medicinesSlices";
+import { unwrapResult } from '@reduxjs/toolkit';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectUserData } from '../redux/auth/authSlice';
+import { addFavoriteItem, removeFavoriteItem, selectFavoritesItems } from '../redux/favorites/favoritesSlice';
+import { addStatistics } from '../redux/statistics/statisticsSlice';
+import { addItemToWarehouse, removeItemFromWarehouse } from '../redux/medicines/medicinesSlices';
 
 // constants
-import {
-  Colors,
-  UserTypeConstants,
-  checkItemExistsInWarehouse,
-} from "../utils/constants";
+import { Colors, UserTypeConstants, checkItemExistsInWarehouse } from '../utils/constants';
 
 // icons
-import { AntDesign, Ionicons } from "@expo/vector-icons";
+import { AntDesign, Ionicons } from '@expo/vector-icons';
 
 // components
-import SwipeableRow from "./SwipeableRow";
-import AddToCart from "./AddToCart";
+import SwipeableRow from './SwipeableRow';
+import AddToCart from './AddToCart';
 
 // if logged user is
 // 1- ADMIN: highlight the row by green color if the medicine has an offer.
@@ -48,10 +31,7 @@ import AddToCart from "./AddToCart";
 // 5- PHARMACY: highlight the row by green if the medicine has an offer by any warehouse
 // in the same city with the logging user
 const checkOffer = (item, user) => {
-  if (
-    user.type === UserTypeConstants.GUEST ||
-    user.type === UserTypeConstants.COMPANY
-  ) {
+  if (user.type === UserTypeConstants.GUEST || user.type === UserTypeConstants.COMPANY) {
     return false;
   }
 
@@ -90,7 +70,7 @@ const checkOffer = (item, user) => {
   return result;
 };
 
-const ItemRow = ({ item, addToCart }) => {
+const ItemRow = ({ item, searchString }) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
@@ -100,22 +80,17 @@ const ItemRow = ({ item, addToCart }) => {
 
   // own state
   const [changeFavoriteLoading, setChangeFavoriteLoading] = useState(false);
-  const [changeAddToWarehouseLoading, setChangeAddToWarehouseLoading] =
-    useState(false);
+  const [changeAddToWarehouseLoading, setChangeAddToWarehouseLoading] = useState(false);
   const [showAddToCartModal, setShowAddToCartModal] = useState(false);
 
-  const canAddToCart =
-    user?.type === UserTypeConstants.PHARMACY &&
-    checkItemExistsInWarehouse(item, user);
+  const canAddToCart = user?.type === UserTypeConstants.PHARMACY && checkItemExistsInWarehouse(item, user);
 
   const isInWarehouse = item.warehouses
     .filter((w) => w.warehouse.isActive)
     .map((w) => w.warehouse._id)
     .includes(user._id);
 
-  const isFavorite = favorites
-    .map((favorite) => favorite._id)
-    .includes(item._id);
+  const isFavorite = favorites.map((favorite) => favorite._id).includes(item._id);
 
   // method to handle add company to user's favorite
   const addItemToFavoriteItems = () => {
@@ -129,9 +104,9 @@ const ItemRow = ({ item, addToCart }) => {
             obj: {
               sourceUser: user._id,
               targetItem: item._id,
-              action: "item-added-to-favorite",
+              action: 'item-added-to-favorite',
             },
-          })
+          }),
         );
         setChangeFavoriteLoading(false);
       })
@@ -164,7 +139,7 @@ const ItemRow = ({ item, addToCart }) => {
           warehouseId: user._id,
         },
         token,
-      })
+      }),
     )
       .then(unwrapResult)
       .then(() => {
@@ -185,7 +160,7 @@ const ItemRow = ({ item, addToCart }) => {
           warehouseId: user._id,
         },
         token,
-      })
+      }),
     )
       .then(unwrapResult)
       .then(() => {
@@ -197,51 +172,83 @@ const ItemRow = ({ item, addToCart }) => {
   };
 
   const dispatchStatisticsHandler = () => {
-    if (
-      user.type === UserTypeConstants.PHARMACY ||
-      user.type === UserTypeConstants.GUEST
-    ) {
+    if (user.type === UserTypeConstants.PHARMACY || user.type === UserTypeConstants.GUEST) {
       dispatch(
         addStatistics({
           obj: {
             sourceUser: user._id,
             targetItem: item._id,
-            action: "choose-item",
+            action: 'choose-item',
           },
           token,
-        })
+        }),
       );
     }
   };
+
+  const itemNameArraySplit = searchString
+    ? item.name.toLowerCase().includes(searchString.toLowerCase())
+      ? item.name.toLowerCase().split(searchString.toLowerCase())
+      : []
+    : [];
+
+  const itemNameArArraySplit = searchString
+    ? item.nameAr.toLowerCase().includes(searchString.toLowerCase())
+      ? item.nameAr.toLowerCase().split(searchString.toLowerCase())
+      : []
+    : [];
+
+  const itemCompositionArraySplit = searchString
+    ? item.composition.toLowerCase().includes(searchString.toLowerCase())
+      ? item.composition.toLowerCase().split(searchString.toLowerCase())
+      : []
+    : [];
 
   return user ? (
     <>
       <View
         style={{
           ...styles.container,
-          backgroundColor: checkOffer(item, user)
-            ? Colors.OFFER_COLOR
-            : Colors.WHITE_COLOR,
+          backgroundColor: checkOffer(item, user) ? Colors.OFFER_COLOR : Colors.WHITE_COLOR,
         }}
       >
         <View style={styles.header}>
           <TouchableWithoutFeedback
             onPress={() => {
               dispatchStatisticsHandler();
-              navigation.navigate("ItemDetails", {
+              navigation.navigate('ItemDetails', {
                 medicineId: item._id,
               });
             }}
           >
             <View style={styles.fullWidth}>
-              <Text
-                style={{
-                  ...styles.title,
-                  fontSize: item.name.length < 25 ? 18 : 14,
-                }}
-              >
-                {item.name}
-              </Text>
+              {itemNameArraySplit.length > 0 ? (
+                <Text
+                  style={{
+                    ...styles.title,
+                    fontSize: item.name.length < 25 ? 14 : 14,
+                  }}
+                >
+                  {itemNameArraySplit[0].toUpperCase()}
+                  <Text
+                    style={{
+                      ...styles.filterResult,
+                    }}
+                  >
+                    {searchString.toUpperCase()}
+                  </Text>
+                  {itemNameArraySplit[1].toUpperCase()}
+                </Text>
+              ) : (
+                <Text
+                  style={{
+                    ...styles.title,
+                    fontSize: item.name.length < 25 ? 14 : 14,
+                  }}
+                >
+                  {item.name}
+                </Text>
+              )}
             </View>
           </TouchableWithoutFeedback>
 
@@ -298,20 +305,45 @@ const ItemRow = ({ item, addToCart }) => {
             />
           )}
         </View>
+
+        <View style={styles.fullWidth}>
+          {itemNameArArraySplit.length > 0 ? (
+            <Text
+              style={{
+                ...styles.title,
+                fontSize: item.name.length < 25 ? 14 : 14,
+              }}
+            >
+              {itemNameArArraySplit[0]}
+              <Text
+                style={{
+                  ...styles.filterResult,
+                }}
+              >
+                {searchString}
+              </Text>
+              {itemNameArArraySplit[1]}
+            </Text>
+          ) : (
+            <Text
+              style={{
+                ...styles.title,
+                fontSize: item.name.length < 25 ? 14 : 14,
+              }}
+            >
+              {item.nameAr}
+            </Text>
+          )}
+        </View>
+
         <View style={styles.subHeader}>
           <View style={styles.fullWidth}>
             <Text style={styles.companyName}>{item.company.name}</Text>
           </View>
           {user.type !== UserTypeConstants.GUEST && (
-            <Text
-              style={{ ...styles.priceValue, color: Colors.SUCCEEDED_COLOR }}
-            >
-              {item.price}
-            </Text>
+            <Text style={{ ...styles.priceValue, color: Colors.SUCCEEDED_COLOR }}>{item.price}</Text>
           )}
-          <Text style={{ ...styles.priceValue, color: Colors.FAILED_COLOR }}>
-            {item.customer_price}
-          </Text>
+          <Text style={{ ...styles.priceValue, color: Colors.FAILED_COLOR }}>{item.customer_price}</Text>
         </View>
         <View style={styles.subHeader}>
           <View style={styles.fullWidth}>
@@ -320,9 +352,21 @@ const ItemRow = ({ item, addToCart }) => {
         </View>
         <View style={styles.subHeader}>
           <View style={styles.fullWidth}>
-            <Text style={styles.composition}>
-              {item.composition.split("+").join(" ")}
-            </Text>
+            {itemCompositionArraySplit.length > 0 ? (
+              <Text style={styles.composition}>
+                {itemCompositionArraySplit[0]}
+                <Text
+                  style={{
+                    ...styles.filterResult,
+                  }}
+                >
+                  {searchString}
+                </Text>
+                {itemCompositionArraySplit[1]}
+              </Text>
+            ) : (
+              <Text style={styles.composition}>{item.composition.split('+').join(' ')}</Text>
+            )}
           </View>
         </View>
       </View>
@@ -339,56 +383,61 @@ const ItemRow = ({ item, addToCart }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "column",
+    flexDirection: 'column',
     padding: 5,
     backgroundColor: Colors.WHITE_COLOR,
     borderBottomWidth: 1,
-    borderBottomColor: "#e3e3e3",
-    width: "100%",
+    borderBottomColor: '#e3e3e3',
+    width: '100%',
   },
   header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "flex-start",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
     marginBottom: 10,
   },
   fullWidth: {
     flex: 1,
-    writingDirection: "rtl",
-    justifyContent: "flex-start",
-    alignItems: "flex-start",
-    flexDirection: "row",
-    flexWrap: "wrap",
+    writingDirection: 'rtl',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
   },
   subHeader: {
-    flexDirection: "row",
-    flexWrap: "wrap",
+    flexDirection: 'row',
+    flexWrap: 'wrap',
   },
   priceValue: {
     fontSize: 14,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     paddingHorizontal: 6,
   },
   title: {
-    fontWeight: "bold",
+    fontWeight: 'bold',
     color: Colors.DARK_COLOR,
-    writingDirection: "rtl",
+    writingDirection: 'rtl',
     paddingHorizontal: 5,
   },
   companyName: {
     fontSize: 14,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     color: Colors.SUCCEEDED_COLOR,
   },
   caliber: {
     fontSize: 14,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     color: Colors.LIGHT_COLOR,
   },
   composition: {
     fontSize: 14,
-    fontWeight: "bold",
     color: Colors.BLUE_COLOR,
+  },
+  filterResult: {
+    backgroundColor: '#FCDA00',
+    color: '#FF0000',
+    borderRadius: 4,
+    fontWeight: 'bold',
   },
 });
 

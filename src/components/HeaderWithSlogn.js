@@ -6,7 +6,7 @@ const HeaderWithSlogn = () => {
   return (
     <View style={styles.headerWithSlogn}>
       <Text style={styles.appName}>Smart Pharma</Text>
-      <Text style={styles.slogn}>be smart work smart</Text>
+      {/* <Text style={styles.slogn}>be smart work smart</Text> */}
     </View>
   );
 };
@@ -17,14 +17,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   appName: {
-    fontSize: 42,
+    fontSize: 28,
     color: Colors.OFFER_COLOR,
     textShadowColor: 'black',
     textShadowOffset: { width: 2, height: 2 },
     textShadowRadius: 5,
   },
   slogn: {
-    fontSize: 22,
+    fontSize: 18,
     color: Colors.WHITE_COLOR,
     fontStyle: 'italic',
     textShadowColor: 'black',

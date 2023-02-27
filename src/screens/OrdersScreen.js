@@ -4,14 +4,15 @@ import i18n from '../i18n';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 // components
+import PullDownToRefresh from '../components/PullDownToRefresh';
 import SearchContainer from '../components/SearchContainer';
 import CustomPicker from '../components/CustomPicker';
-import OrderRow from '../components/OrderRow';
-import Loader from '../components/Loader';
-import Toast from 'react-native-toast-message';
-import NoContent from '../components/NoContent';
-import SearchInput from '../components/SearchInput';
 import LoadingData from '../components/LoadingData';
+import SearchInput from '../components/SearchInput';
+import NoContent from '../components/NoContent';
+import OrderRow from '../components/OrderRow';
+import Toast from 'react-native-toast-message';
+import ScreenWrapper from './ScreenWrapper';
 import Button from '../components/Button';
 
 // redux stuff
@@ -39,16 +40,13 @@ import { Fontisto } from '@expo/vector-icons';
 
 // constants
 import { Colors, DateOptions, OrdersStatusOptions, UserTypeConstants } from '../utils/constants';
-import ScreenWrapper from './ScreenWrapper';
-import PullDownToRefresh from '../components/PullDownToRefresh';
 
-const OrdersScreen = ({ route }) => {
+const OrdersScreen = () => {
   const dispatch = useDispatch();
-  // const { type } = route.params;
 
   // selectors
   const { user, token } = useSelector(selectUserData);
-  const { status, error, count, orders, basketOrdersCount, basketOrders, pageState } = useSelector(selectOrders);
+  const { status, count, orders, basketOrdersCount, basketOrders, pageState } = useSelector(selectOrders);
 
   const [date, setDate] = useState(new Date());
   const [mode, setMode] = useState('date');
@@ -248,7 +246,6 @@ const OrdersScreen = ({ route }) => {
                 dispatch(setSearchWarehouseName(val));
               }}
               onSubmitEditing={onSearchSubmit}
-              // onKeyPress={keyUpHandler}
               value={pageState.searchWarehouseName}
             />
           )}
@@ -289,23 +286,33 @@ const OrdersScreen = ({ route }) => {
           </View>
         </SearchContainer>
 
-        {status !== 'loading' && <PullDownToRefresh />}
         <View style={styles.actions}>
-          <Button
-            text={i18n.t('normal-order')}
-            color={pageState.type === 'normal' ? Colors.DARK_COLOR : Colors.LIGHT_COLOR}
-            pressHandler={() => {
+          <TouchableOpacity
+            style={{
+              ...styles.option,
+              backgroundColor: pageState.type === 'normal' ? Colors.DARK_COLOR : Colors.LIGHT_COLOR,
+            }}
+            onPress={() => {
               changeOrderTypeHandler('normal');
             }}
-          />
-          <View style={{ width: 10 }}></View>
-          <Button
-            text={i18n.t('special-order')}
-            color={pageState.type === 'special' ? Colors.DARK_COLOR : Colors.LIGHT_COLOR}
-            pressHandler={() => changeOrderTypeHandler('special')}
-          />
+          >
+            <Text style={styles.optionText}>{i18n.t('normal-order')}</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={{
+              ...styles.option,
+              backgroundColor: pageState.type === 'special' ? Colors.DARK_COLOR : Colors.LIGHT_COLOR,
+            }}
+            onPress={() => {
+              changeOrderTypeHandler('special');
+            }}
+          >
+            <Text style={styles.optionText}>{i18n.t('special-order')}</Text>
+          </TouchableOpacity>
         </View>
 
+        {status !== 'loading' && <PullDownToRefresh />}
         {pageState.type === 'normal' && count === 0 && status !== 'loading' && (
           <>
             <NoContent refreshing={refreshing} onRefreshing={onRefreshing} msg="no-orders-found" />
@@ -376,8 +383,6 @@ const OrdersScreen = ({ route }) => {
           basketOrdersCount !== 0 && <Text style={styles.noMoreTxt}>{i18n.t('no-more')}</Text>}
 
         {status === 'loading' && <LoadingData />}
-
-        {/* {deleteStatus === 'loading' && <Loader />} */}
       </View>
     </ScreenWrapper>
   ) : (
@@ -418,6 +423,14 @@ const styles = StyleSheet.create({
     color: Colors.DARK_COLOR,
     fontWeight: 'bold',
     paddingVertical: 10,
+  },
+  option: {
+    flex: 1,
+    paddingVertical: 10,
+  },
+  optionText: {
+    color: Colors.WHITE_COLOR,
+    textAlign: 'center',
   },
 });
 

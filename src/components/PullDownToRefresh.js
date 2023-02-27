@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Text, StyleSheet } from 'react-native';
 import i18n from '../i18n';
 import { Colors } from '../utils/constants';
@@ -20,4 +20,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PullDownToRefresh;
+export default memo(PullDownToRefresh);

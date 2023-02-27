@@ -275,6 +275,7 @@ const ItemsScreen = ({ navigation, route }) => {
                 addToCart={() => {
                   setTheItemToAddToCartHandler(item);
                 }}
+                searchString={pageState.searchName}
               />
             )}
           />

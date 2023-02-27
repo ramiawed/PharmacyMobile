@@ -39,7 +39,7 @@ const ItemsSectionTwo = () => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#6D597A',
+    backgroundColor: '#915F78',
     borderRadius: 6,
     marginVertical: 5,
     marginHorizontal: 10,

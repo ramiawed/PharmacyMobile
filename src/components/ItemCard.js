@@ -1,5 +1,5 @@
-import React, { memo, useState } from "react";
-import { useNavigation } from "@react-navigation/native";
+import React, { memo, useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
 import {
   View,
   Text,
@@ -9,46 +9,27 @@ import {
   LayoutAnimation,
   Platform,
   UIManager,
-} from "react-native";
+} from 'react-native';
 
 // redux stuff
-import { unwrapResult } from "@reduxjs/toolkit";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  addFavoriteItem,
-  removeFavoriteItem,
-  selectFavoritesItems,
-} from "../redux/favorites/favoritesSlice";
-import {
-  addSavedItem,
-  removeSavedItem,
-  selectSavedItems,
-} from "../redux/savedItems/savedItemsSlice";
-import {
-  addItemToWarehouse,
-  removeItemFromWarehouse,
-} from "../redux/medicines/medicinesSlices";
-import { addStatistics } from "../redux/statistics/statisticsSlice";
-import { selectUserData } from "../redux/auth/authSlice";
+import { unwrapResult } from '@reduxjs/toolkit';
+import { useDispatch, useSelector } from 'react-redux';
+import { addFavoriteItem, removeFavoriteItem, selectFavoritesItems } from '../redux/favorites/favoritesSlice';
+import { addSavedItem, removeSavedItem, selectSavedItems } from '../redux/savedItems/savedItemsSlice';
+import { addItemToWarehouse, removeItemFromWarehouse } from '../redux/medicines/medicinesSlices';
+import { addStatistics } from '../redux/statistics/statisticsSlice';
+import { selectUserData } from '../redux/auth/authSlice';
 
 // constants
-import {
-  Colors,
-  UserTypeConstants,
-  checkItemExistsInWarehouse,
-} from "../utils/constants";
+import { Colors, UserTypeConstants, checkItemExistsInWarehouse } from '../utils/constants';
 
 // icons
-import {
-  AntDesign,
-  Ionicons,
-  MaterialCommunityIcons,
-} from "@expo/vector-icons";
+import { AntDesign, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
 // components
-import SwipeableRow from "./SwipeableRow";
+import SwipeableRow from './SwipeableRow';
 
-if (Platform.OS === "android") {
+if (Platform.OS === 'android') {
   if (UIManager.setLayoutAnimationEnabledExperimental) {
     UIManager.setLayoutAnimationEnabledExperimental(true);
   }
@@ -62,10 +43,7 @@ if (Platform.OS === "android") {
 // 5- PHARMACY: highlight the row by green if the medicine has an offer by any warehouse
 // in the same city with the logging user
 const checkOffer = (item, user) => {
-  if (
-    user.type === UserTypeConstants.GUEST ||
-    user.type === UserTypeConstants.COMPANY
-  ) {
+  if (user.type === UserTypeConstants.GUEST || user.type === UserTypeConstants.COMPANY) {
     return false;
   }
 
@@ -104,7 +82,7 @@ const checkOffer = (item, user) => {
   return result;
 };
 
-const ItemCard = ({ item, addToCart }) => {
+const ItemCard = ({ item, addToCart, searchString }) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
@@ -116,19 +94,12 @@ const ItemCard = ({ item, addToCart }) => {
   // own state
   const [expanded, setExpanded] = useState(false);
   const [changeFavoriteLoading, setChangeFavoriteLoading] = useState(false);
-  const [changeAddToWarehouseLoading, setChangeAddToWarehouseLoading] =
-    useState(false);
+  const [changeAddToWarehouseLoading, setChangeAddToWarehouseLoading] = useState(false);
   const [changeSaveItemLoading, setChangeSaveItemLoading] = useState(false);
 
-  const canAddToCart =
-    user?.type === UserTypeConstants.PHARMACY &&
-    checkItemExistsInWarehouse(item, user);
-  const isInWarehouse = item.warehouses
-    .map((w) => w.warehouse._id)
-    .includes(user._id);
-  const isFavorite = favorites
-    .map((favorite) => favorite._id)
-    .includes(item._id);
+  const canAddToCart = user?.type === UserTypeConstants.PHARMACY && checkItemExistsInWarehouse(item, user);
+  const isInWarehouse = item.warehouses.map((w) => w.warehouse._id).includes(user._id);
+  const isFavorite = favorites.map((favorite) => favorite._id).includes(item._id);
 
   // method to handle add company to user's favorite
   const addItemToFavoriteItems = () => {
@@ -142,9 +113,9 @@ const ItemCard = ({ item, addToCart }) => {
             obj: {
               sourceUser: user._id,
               targetItem: item._id,
-              action: "item-added-to-favorite",
+              action: 'item-added-to-favorite',
             },
-          })
+          }),
         );
         setChangeFavoriteLoading(false);
       })
@@ -177,7 +148,7 @@ const ItemCard = ({ item, addToCart }) => {
           warehouseId: user._id,
         },
         token,
-      })
+      }),
     )
       .then(unwrapResult)
       .then(() => {
@@ -198,7 +169,7 @@ const ItemCard = ({ item, addToCart }) => {
           warehouseId: user._id,
         },
         token,
-      })
+      }),
     )
       .then(unwrapResult)
       .then(() => {
@@ -210,19 +181,16 @@ const ItemCard = ({ item, addToCart }) => {
   };
 
   const dispatchStatisticsHandler = () => {
-    if (
-      user.type === UserTypeConstants.PHARMACY ||
-      user.type === UserTypeConstants.GUEST
-    ) {
+    if (user.type === UserTypeConstants.PHARMACY || user.type === UserTypeConstants.GUEST) {
       dispatch(
         addStatistics({
           obj: {
             sourceUser: user._id,
             targetItem: item._id,
-            action: "choose-item",
+            action: 'choose-item',
           },
           token,
-        })
+        }),
       );
     }
   };
@@ -262,6 +230,24 @@ const ItemCard = ({ item, addToCart }) => {
   //   setExpanded(!expanded);
   // };
 
+  const itemNameArraySplit = searchString
+    ? item.name.toLowerCase().includes(searchString.toLowerCase())
+      ? item.name.toLowerCase().split(searchString.toLowerCase())
+      : []
+    : [];
+
+  const itemNameArArraySplit = searchString
+    ? item.nameAr.toLowerCase().includes(searchString.toLowerCase())
+      ? item.nameAr.toLowerCase().split(searchString.toLowerCase())
+      : []
+    : [];
+
+  const itemCompositionArraySplit = searchString
+    ? item.composition.toLowerCase().includes(searchString.toLowerCase())
+      ? item.composition.toLowerCase().split(searchString.toLowerCase())
+      : []
+    : [];
+
   return user ? (
     <SwipeableRow
       user={user}
@@ -278,36 +264,58 @@ const ItemCard = ({ item, addToCart }) => {
       <View
         style={{
           ...styles.container,
-          backgroundColor: checkOffer(item, user)
-            ? Colors.OFFER_COLOR
-            : Colors.WHITE_COLOR,
+          backgroundColor: checkOffer(item, user) ? Colors.OFFER_COLOR : Colors.WHITE_COLOR,
         }}
       >
         <View style={styles.contentView}>
           <TouchableWithoutFeedback
             onPress={() => {
               dispatchStatisticsHandler();
-              navigation.navigate("ItemDetails", {
+              navigation.navigate('ItemDetails', {
                 medicineId: item._id,
               });
             }}
           >
-            <View style={{ justifyContent: "space-between", flex: 1 }}>
+            <View style={{ justifyContent: 'space-between', flex: 1 }}>
               <View style={styles.fullWidth}>
-                <Text
+                {itemNameArraySplit.length > 0 ? (
+                  <Text
+                    style={{
+                      ...styles.title,
+                      color: Colors.DARK_COLOR,
+                      fontSize: item.name.length < 25 ? 14 : 14,
+                    }}
+                  >
+                    {itemNameArraySplit[0].toUpperCase()}
+                    <Text
+                      style={{
+                        ...styles.filterResult,
+                      }}
+                    >
+                      {searchString.toUpperCase()}
+                    </Text>
+                    {itemNameArraySplit[1].toUpperCase()}
+                  </Text>
+                ) : (
+                  <Text
+                    style={{
+                      ...styles.title,
+                      color: Colors.DARK_COLOR,
+                      fontSize: item.name.length < 25 ? 14 : 14,
+                    }}
+                  >
+                    {item.name}
+                  </Text>
+                )}
+                {/* <Text
                   style={{
                     ...styles.title,
                     color: Colors.DARK_COLOR,
-                    fontSize:
-                      item.name.length >= 35
-                        ? 18
-                        : item.name.length > 25
-                        ? 18
-                        : 18,
+                    fontSize: item.name.length >= 35 ? 18 : item.name.length > 25 ? 18 : 18,
                   }}
                 >
                   {item.name}
-                </Text>
+                </Text> */}
               </View>
 
               {item.nameAr?.length > 0 ? (
@@ -316,15 +324,36 @@ const ItemCard = ({ item, addToCart }) => {
                     style={{
                       ...styles.nameAr,
                       color: Colors.LIGHT_COLOR,
-                      fontSize:
-                        item.nameAr.length >= 35
-                          ? 16
-                          : item.nameAr.length > 25
-                          ? 16
-                          : 16,
+                      fontSize: item.nameAr.length >= 35 ? 16 : item.nameAr.length > 25 ? 16 : 16,
                     }}
                   >
-                    {item.nameAr}
+                    {itemNameArArraySplit.length > 0 ? (
+                      <Text
+                        style={{
+                          ...styles.title,
+                          fontSize: item.name.length < 25 ? 14 : 14,
+                        }}
+                      >
+                        {itemNameArArraySplit[0]}
+                        <Text
+                          style={{
+                            ...styles.filterResult,
+                          }}
+                        >
+                          {searchString}
+                        </Text>
+                        {itemNameArArraySplit[1]}
+                      </Text>
+                    ) : (
+                      <Text
+                        style={{
+                          ...styles.title,
+                          fontSize: item.name.length < 25 ? 14 : 14,
+                        }}
+                      >
+                        {item.nameAr}
+                      </Text>
+                    )}
                   </Text>
                 </View>
               ) : (
@@ -345,12 +374,50 @@ const ItemCard = ({ item, addToCart }) => {
                     {item.price}
                   </Text>
                 )}
-                <Text
-                  style={{ ...styles.priceValue, color: Colors.FAILED_COLOR }}
-                >
-                  {item.customer_price}
-                </Text>
+                <Text style={{ ...styles.priceValue, color: Colors.FAILED_COLOR }}>{item.customer_price}</Text>
               </View>
+
+              {item.composition?.length > 0 ? (
+                <View style={styles.fullWidth}>
+                  <Text
+                    style={{
+                      ...styles.nameAr,
+                      color: Colors.LIGHT_COLOR,
+                      fontSize: item.nameAr.length >= 35 ? 16 : item.nameAr.length > 25 ? 16 : 16,
+                    }}
+                  >
+                    {itemCompositionArraySplit.length > 0 ? (
+                      <Text
+                        style={{
+                          ...styles.title,
+                          fontSize: item.name.length < 25 ? 14 : 14,
+                        }}
+                      >
+                        {itemCompositionArraySplit[0]}
+                        <Text
+                          style={{
+                            ...styles.filterResult,
+                          }}
+                        >
+                          {searchString}
+                        </Text>
+                        {itemCompositionArraySplit[1]}
+                      </Text>
+                    ) : (
+                      <Text
+                        style={{
+                          ...styles.title,
+                          fontSize: item.name.length < 25 ? 14 : 14,
+                        }}
+                      >
+                        {item.composition}
+                      </Text>
+                    )}
+                  </Text>
+                </View>
+              ) : (
+                <View style={{ height: 5 }}></View>
+              )}
             </View>
           </TouchableWithoutFeedback>
         </View>
@@ -485,7 +552,7 @@ const ItemCard = ({ item, addToCart }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",
+    flexDirection: 'row',
     padding: 5,
     margin: 5,
     borderRadius: 12,
@@ -494,40 +561,46 @@ const styles = StyleSheet.create({
   },
   nameAr: {
     color: Colors.MAIN_COLOR,
-    writingDirection: "rtl",
+    writingDirection: 'rtl',
     marginVertical: 5,
     fontSize: 14,
   },
   fullWidth: {
     flex: 1,
-    writingDirection: "rtl",
-    justifyContent: "flex-start",
-    alignItems: "flex-start",
-    flexDirection: "row",
+    writingDirection: 'rtl',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    flexDirection: 'row',
   },
   row: {
-    flexDirection: "row",
+    flexDirection: 'row',
   },
   priceValue: {
     fontSize: 14,
     paddingStart: 6,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   title: {
-    textAlign: "left",
-    fontWeight: "700",
-    writingDirection: "rtl",
+    textAlign: 'left',
+    fontWeight: '700',
+    writingDirection: 'rtl',
   },
   companyName: {
     fontSize: 14,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     color: Colors.SUCCEEDED_COLOR,
   },
   contentView: {
     flex: 1,
   },
   actionsView: {
-    alignItems: "center",
+    alignItems: 'center',
+  },
+  filterResult: {
+    backgroundColor: '#FCDA00',
+    color: '#FF0000',
+    borderRadius: 4,
+    fontWeight: 'bold',
   },
 });
 

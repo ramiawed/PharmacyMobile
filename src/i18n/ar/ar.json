@@ -514,7 +514,7 @@
   "item-total-price": "القيمة الاجمالية للمنتج",
   "choose-user-type": "اختر نوع الشريك",
   "deliver-cost": "اجور التوصيل",
-  "minimum-invoice-cost": "الحد الادنى للطلبية",
+  "minimum-invoice-cost": "الحد الادنى للطلب من المستودع",
   "minimum-invoice-cost-error": "الحد الادنى للطلبية يجب ان يكون اكثر من الحد الادنى المسموح به ضمن المستودع",
   "fast-deliver": "توصيل سريع بضمان سمارت فارما",
   "dear-partner-pay-when-deliver": "عميلنا العزيز الدفع نقدي عند الاستلام.",

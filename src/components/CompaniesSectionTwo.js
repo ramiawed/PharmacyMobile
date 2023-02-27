@@ -45,7 +45,7 @@ const CompaniesSectionTwo = () => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#E88C7D',
+    backgroundColor: '#915F78',
     borderRadius: 6,
     marginVertical: 5,
     marginHorizontal: 10,
