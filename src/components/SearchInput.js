@@ -36,7 +36,7 @@ const SearchInput = ({ value, onTextChange, placeholder, onSubmitEditing, onKeyP
             color={Colors.MAIN_COLOR}
             onPress={() => {
               onTextChange('');
-              onSubmitEditing();
+              onSubmitEditing && onSubmitEditing();
             }}
           />
         </TouchableOpacity>

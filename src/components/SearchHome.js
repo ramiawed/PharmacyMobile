@@ -2,18 +2,16 @@ import React, { useCallback, useState } from 'react';
 import i18n from '../i18n';
 import axios from 'axios';
 import { StyleSheet, View, ScrollView, TouchableOpacity, TextInput, ActivityIndicator, Text } from 'react-native';
-import { t } from 'i18n-js';
 
 // navigation stuff
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 
 // components
 import Scanner from './Scanner';
 import ItemRow from './ItemRow';
-import Button from './Button';
 
 // constants
-import { BASEURL, Colors, UserTypeConstants } from '../utils/constants';
+import { BASEURL, Colors } from '../utils/constants';
 
 // icons
 import { AntDesign } from '@expo/vector-icons';
@@ -27,6 +25,7 @@ let CancelToken = null;
 let source = null;
 
 const SearchHome = ({ showScanner, setShowScanner }) => {
+  const navigator = useNavigation();
   const { token } = useSelector(selectUserData);
 
   // const [showScanner, setShowScanner] = useState(false);
@@ -130,7 +129,7 @@ const SearchHome = ({ showScanner, setShowScanner }) => {
   );
 
   return (
-    <>
+    <TouchableOpacity onPress={() => navigator.navigate('Search')}>
       <View style={styles.container}>
         <View style={Object.assign({}, styles.searchContainer, showResult ? styles.searchHasValue : {})}>
           <AntDesign name="search1" size={20} color={Colors.MAIN_COLOR} />
@@ -167,7 +166,6 @@ const SearchHome = ({ showScanner, setShowScanner }) => {
                     {items.length} / {count}
                   </Text>
                 </TouchableOpacity>
-                // <Button text={t('more')} color={Colors.SUCCEEDED_COLOR} pressHandler={moreDataHandler} />
               )}
             </ScrollView>
             {loading && <ActivityIndicator size="large" color={Colors.LIGHT_COLOR} />}
@@ -178,7 +176,7 @@ const SearchHome = ({ showScanner, setShowScanner }) => {
       </View>
 
       {showScanner && <Scanner onScannerDone={scannerDoneHandler} close={() => setShowScanner(false)} />}
-    </>
+    </TouchableOpacity>
   );
 };
 

@@ -1,17 +1,17 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
-import { BASEURL } from '../../utils/constants';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
+import { BASEURL } from "../../utils/constants";
 
 let CancelToken;
 let source;
 
 const initialState = {
-  status: 'idle',
+  status: "idle",
   medicines: [],
   count: 0,
-  error: '',
+  error: "",
   pageState: {
-    searchName: '',
+    searchName: "",
     searchCompaniesIds: [],
     searchWarehousesIds: [],
     page: 1,
@@ -20,7 +20,7 @@ const initialState = {
 
 export const cancelOperation = () => {
   if (source) {
-    source.cancel('operation canceled by user');
+    source.cancel("operation canceled by user");
   }
 };
 
@@ -29,26 +29,30 @@ const resetCancelAndSource = () => {
   source = null;
 };
 
-export const getOffers = createAsyncThunk(
-  'offers/getOfferMedicines',
+export const getItemsWithPoints = createAsyncThunk(
+  "itemsWithPoints/getItemsWithPoints",
   async ({ token }, { rejectWithValue, getState }) => {
     try {
       const {
-        offers: { pageState },
+        itemsWithPoints: { pageState },
       } = getState();
       CancelToken = axios.CancelToken;
       source = CancelToken.source();
 
-      let buildUrl = `${BASEURL}/items/items-with-offer?page=${pageState.page}&limit=15`;
+      let buildUrl = `${BASEURL}/items/items-with-points?page=${pageState.page}&limit=15`;
 
-      if (pageState.searchName.trim() !== '') {
+      if (pageState.searchName.trim() !== "") {
         buildUrl = buildUrl + `&itemName=${pageState.searchName}`;
       }
 
       const response = await axios.get(buildUrl, {
         params: {
-          searchCompaniesIds: pageState.searchCompaniesIds.map((company) => company.value),
-          searchWarehousesIds: pageState.searchWarehousesIds.map((warehouse) => warehouse.value),
+          searchCompaniesIds: pageState.searchCompaniesIds.map(
+            (company) => company.value
+          ),
+          searchWarehousesIds: pageState.searchWarehousesIds.map(
+            (warehouse) => warehouse.value
+          ),
         },
         cancelToken: source.token,
         headers: {
@@ -62,33 +66,33 @@ export const getOffers = createAsyncThunk(
     } catch (err) {
       resetCancelAndSource();
 
-      if (err.code === 'ECONNABORTED' && err.message.startsWith('timeout')) {
-        return rejectWithValue('timeout');
+      if (err.code === "ECONNABORTED" && err.message.startsWith("timeout")) {
+        return rejectWithValue("timeout");
       }
       if (axios.isCancel(err)) {
-        return rejectWithValue('cancel');
+        return rejectWithValue("cancel");
       }
 
       if (!err.response) {
-        return rejectWithValue('network failed');
+        return rejectWithValue("network failed");
       }
 
       return rejectWithValue(err.response.data);
     }
-  },
+  }
 );
 
-export const offersSlice = createSlice({
-  name: 'offersSlice',
+export const itemsWithPointsSlice = createSlice({
+  name: "itemsWithPointsSlice",
   initialState,
   reducers: {
     resetStatus: (state) => {
-      state.status = 'idle';
-      state.error = '';
+      state.status = "idle";
+      state.error = "";
     },
 
     resetError: (state) => {
-      state.error = '';
+      state.error = "";
     },
 
     setSearchName: (state, action) => {
@@ -107,17 +111,26 @@ export const offersSlice = createSlice({
 
     addIdToCompaniesIds: (state, action) => {
       const { value } = action.payload;
-      if (state.pageState.searchCompaniesIds.filter((company) => company.value === value).length === 0) {
+      if (
+        state.pageState.searchCompaniesIds.filter(
+          (company) => company.value === value
+        ).length === 0
+      ) {
         state.pageState = {
           ...state.pageState,
-          searchCompaniesIds: [...state.pageState.searchCompaniesIds, action.payload],
+          searchCompaniesIds: [
+            ...state.pageState.searchCompaniesIds,
+            action.payload,
+          ],
         };
       }
     },
 
     removeIdFromCompaniesId: (state, action) => {
       const id = action.payload;
-      const filteredArray = state.pageState.searchCompaniesIds.filter((i) => i.value !== id);
+      const filteredArray = state.pageState.searchCompaniesIds.filter(
+        (i) => i.value !== id
+      );
       state.pageState = {
         ...state.pageState,
         searchCompaniesIds: [...filteredArray],
@@ -126,24 +139,33 @@ export const offersSlice = createSlice({
 
     addIdToWarehousesIds: (state, action) => {
       const { value } = action.payload;
-      if (state.pageState.searchWarehousesIds.filter((warehouse) => warehouse.value === value).length === 0) {
+      if (
+        state.pageState.searchWarehousesIds.filter(
+          (warehouse) => warehouse.value === value
+        ).length === 0
+      ) {
         state.pageState = {
           ...state.pageState,
-          searchWarehousesIds: [...state.pageState.searchWarehousesIds, action.payload],
+          searchWarehousesIds: [
+            ...state.pageState.searchWarehousesIds,
+            action.payload,
+          ],
         };
       }
     },
 
     removeIdFromWarehousesId: (state, action) => {
       const id = action.payload;
-      const filteredArray = state.pageState.searchWarehousesIds.filter((i) => i.value !== id);
+      const filteredArray = state.pageState.searchWarehousesIds.filter(
+        (i) => i.value !== id
+      );
       state.pageState = {
         ...state.pageState,
         searchWarehousesIds: [...filteredArray],
       };
     },
 
-    resetOfferItemsArray: (state) => {
+    resetItemsWithPointsArray: (state) => {
       state.medicines = [];
       state.count = 0;
       state.pageState = {
@@ -152,22 +174,22 @@ export const offersSlice = createSlice({
       };
     },
 
-    resetOfferItemsPageState: (state) => {
+    resetItemsWithPointsPageState: (state) => {
       state.pageState = {
-        searchName: '',
+        searchName: "",
         searchCompaniesIds: [],
         searchWarehousesIds: [],
         page: 1,
       };
     },
 
-    offersSliceSignOut: (state) => {
-      state.status = 'idle';
+    itemsWithPointsSliceSignOut: (state) => {
+      state.status = "idle";
       state.medicines = [];
       state.count = 0;
-      state.error = '';
+      state.error = "";
       state.pageState = {
-        searchName: '',
+        searchName: "",
         searchCompaniesIds: [],
         searchWarehousesIds: [],
         page: 1,
@@ -175,28 +197,28 @@ export const offersSlice = createSlice({
     },
   },
   extraReducers: {
-    [getOffers.pending]: (state) => {
-      state.status = 'loading';
+    [getItemsWithPoints.pending]: (state) => {
+      state.status = "loading";
     },
-    [getOffers.fulfilled]: (state, action) => {
-      state.status = 'succeeded';
+    [getItemsWithPoints.fulfilled]: (state, action) => {
+      state.status = "succeeded";
       state.medicines = [...state.medicines, ...action.payload.data.data];
       state.count = action.payload.count;
-      state.error = '';
+      state.error = "";
       state.pageState = {
         ...state.pageState,
         page: Math.ceil(state.medicines.length / 15) + 1,
       };
     },
-    [getOffers.rejected]: (state, { error, meta, payload }) => {
-      state.status = 'failed';
+    [getItemsWithPoints.rejected]: (state, { error, meta, payload }) => {
+      state.status = "failed";
 
-      if (payload === 'timeout') {
+      if (payload === "timeout") {
         state.error = payload;
-      } else if (payload === 'cancel') {
-        state.error = 'cancel-operation-msg';
-      } else if (payload === 'network failed') {
-        state.error = 'network failed';
+      } else if (payload === "cancel") {
+        state.error = "cancel-operation-msg";
+      } else if (payload === "network failed") {
+        state.error = "network failed";
       } else state.error = payload.message;
     },
   },
@@ -206,17 +228,17 @@ export const {
   resetStatus,
   resetError,
   resetMedicines,
-  offersSliceSignOut,
+  itemsWithPointsSliceSignOut,
   setSearchName,
   setPage,
-  resetOfferItemsArray,
-  resetOfferItemsPageState,
+  resetItemsWithPointsArray,
+  resetItemsWithPointsPageState,
   addIdToCompaniesIds,
   addIdToWarehousesIds,
   removeIdFromCompaniesId,
   removeIdFromWarehousesId,
-} = offersSlice.actions;
+} = itemsWithPointsSlice.actions;
 
-export const selectOfferMedicines = (state) => state.offers;
+export const selectItemsWithPointsMedicines = (state) => state.itemsWithPoints;
 
-export default offersSlice.reducer;
+export default itemsWithPointsSlice.reducer;

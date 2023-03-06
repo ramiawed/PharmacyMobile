@@ -1,40 +1,41 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
-import { BASEURL, UserTypeConstants } from "../../utils/constants";
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import axios from 'axios';
+import { BASEURL, UserTypeConstants } from '../../utils/constants';
 
 let CancelToken;
 let source;
 
 const initialState = {
-  status: "idle",
+  status: 'idle',
   medicines: [],
   count: 0,
-  error: "",
-  addToWarehouseStatus: "idle",
-  addToWarehouseError: "",
-  removeFromWarehouseStatus: "idle",
-  removeFromWarehouseError: "",
+  error: '',
+  addToWarehouseStatus: 'idle',
+  addToWarehouseError: '',
+  removeFromWarehouseStatus: 'idle',
+  removeFromWarehouseError: '',
   pageState: {
-    searchName: "",
+    searchName: '',
     searchWarehouseId: null,
     searchCompanyId: null,
-    searchCompanyName: "",
+    searchCompanyName: '',
     searchCompaniesIds: [],
     searchWarehousesIds: [],
     searchWarehouseCompanyId: null,
-    searchWarehouseName: "",
+    searchWarehouseName: '',
     searchInWarehouse: false,
     searchOutWarehouse: false,
     searchHaveOffer: false,
-    city: "",
-    displayType: "list",
+    searchHavePoint: false,
+    city: '',
+    displayType: 'list',
     page: 1,
   },
 };
 
 export const cancelOperation = () => {
   if (source) {
-    source.cancel("operation canceled by user");
+    source.cancel('operation canceled by user');
   }
 };
 
@@ -44,7 +45,7 @@ const resetCancelAndSource = () => {
 };
 
 export const getMedicines = createAsyncThunk(
-  "medicines/getMedicines",
+  'medicines/getMedicines',
   async ({ token }, { rejectWithValue, getState }) => {
     try {
       const {
@@ -58,7 +59,7 @@ export const getMedicines = createAsyncThunk(
 
       let buildUrl = `${BASEURL}/items?forAdmin=false&isActive=true&page=${pageState.page}&limit=15`;
 
-      if (pageState.searchName.trim() !== "") {
+      if (pageState.searchName.trim() !== '') {
         buildUrl = buildUrl + `&itemName=${pageState.searchName}`;
       }
 
@@ -71,23 +72,21 @@ export const getMedicines = createAsyncThunk(
       }
 
       if (pageState.searchWarehouseCompanyId !== null) {
-        buildUrl =
-          buildUrl +
-          `&searchWarehouseCompanyId=${pageState.searchWarehouseCompanyId}`;
+        buildUrl = buildUrl + `&searchWarehouseCompanyId=${pageState.searchWarehouseCompanyId}`;
       }
 
       if (pageState.searchHaveOffer) {
         buildUrl = buildUrl + `&haveOffer=true`;
       }
 
+      if (pageState.searchHavePoint) {
+        buildUrl = buildUrl + `&havePoint=true`;
+      }
+
       const response = await axios.get(buildUrl, {
         params: {
-          searchCompaniesIds: pageState.searchCompaniesIds.map(
-            (company) => company.value
-          ),
-          searchWarehousesIds: pageState.searchWarehousesIds.map(
-            (warehouse) => warehouse.value
-          ),
+          searchCompaniesIds: pageState.searchCompaniesIds.map((company) => company.value),
+          searchWarehousesIds: pageState.searchWarehousesIds.map((warehouse) => warehouse.value),
           searchInWarehouses: pageState.searchInWarehouse
             ? user.type === UserTypeConstants.WAREHOUSE
               ? user._id
@@ -103,11 +102,7 @@ export const getMedicines = createAsyncThunk(
               : null
             : null,
           userWarehouses:
-            user.type === UserTypeConstants.WAREHOUSE
-              ? user._id
-              : warehouses
-              ? warehouses.map((w) => w._id)
-              : [],
+            user.type === UserTypeConstants.WAREHOUSE ? user._id : warehouses ? warehouses.map((w) => w._id) : [],
         },
         cancelToken: source.token,
         headers: {
@@ -121,24 +116,24 @@ export const getMedicines = createAsyncThunk(
     } catch (err) {
       resetCancelAndSource();
 
-      if (err.code === "ECONNABORTED" && err.message.startsWith("timeout")) {
-        return rejectWithValue("timeout");
+      if (err.code === 'ECONNABORTED' && err.message.startsWith('timeout')) {
+        return rejectWithValue('timeout');
       }
       if (axios.isCancel(err)) {
-        return rejectWithValue("cancel");
+        return rejectWithValue('cancel');
       }
 
       if (!err.response) {
-        return rejectWithValue("network failed");
+        return rejectWithValue('network failed');
       }
 
       return rejectWithValue(err.response.data);
     }
-  }
+  },
 );
 
 export const addItemToWarehouse = createAsyncThunk(
-  "medicines/addToWarehouse",
+  'medicines/addToWarehouse',
   async ({ obj, token }, { rejectWithValue }) => {
     try {
       CancelToken = axios.CancelToken;
@@ -153,7 +148,7 @@ export const addItemToWarehouse = createAsyncThunk(
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       resetCancelAndSource();
@@ -162,24 +157,24 @@ export const addItemToWarehouse = createAsyncThunk(
     } catch (err) {
       resetCancelAndSource();
 
-      if (err.code === "ECONNABORTED" && err.message.startsWith("timeout")) {
-        return rejectWithValue("timeout");
+      if (err.code === 'ECONNABORTED' && err.message.startsWith('timeout')) {
+        return rejectWithValue('timeout');
       }
       if (axios.isCancel(err)) {
-        return rejectWithValue("cancel");
+        return rejectWithValue('cancel');
       }
 
       if (!err.response) {
-        return rejectWithValue("network failed");
+        return rejectWithValue('network failed');
       }
 
       return rejectWithValue(err.response.data);
     }
-  }
+  },
 );
 
 export const removeItemFromWarehouse = createAsyncThunk(
-  "medicines/removeFromWarehouse",
+  'medicines/removeFromWarehouse',
   async ({ obj, token }, { rejectWithValue }) => {
     try {
       CancelToken = axios.CancelToken;
@@ -194,7 +189,7 @@ export const removeItemFromWarehouse = createAsyncThunk(
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       resetCancelAndSource();
@@ -203,51 +198,51 @@ export const removeItemFromWarehouse = createAsyncThunk(
     } catch (err) {
       resetCancelAndSource();
 
-      if (err.code === "ECONNABORTED" && err.message.startsWith("timeout")) {
-        return rejectWithValue("timeout");
+      if (err.code === 'ECONNABORTED' && err.message.startsWith('timeout')) {
+        return rejectWithValue('timeout');
       }
       if (axios.isCancel(err)) {
-        return rejectWithValue("cancel");
+        return rejectWithValue('cancel');
       }
 
       if (!err.response) {
-        return rejectWithValue("network failed");
+        return rejectWithValue('network failed');
       }
 
       return rejectWithValue(err.response.data);
     }
-  }
+  },
 );
 
 export const medicinesSlice = createSlice({
-  name: "medicinesSlice",
+  name: 'medicinesSlice',
   initialState,
   reducers: {
     resetStatus: (state) => {
-      state.status = "idle";
-      state.error = "";
+      state.status = 'idle';
+      state.error = '';
     },
 
     resetError: (state) => {
-      state.error = "";
+      state.error = '';
     },
 
     resetAddToWarehouseStatus: (state) => {
-      state.addToWarehouseStatus = "idle";
-      state.addToWarehouseError = "";
+      state.addToWarehouseStatus = 'idle';
+      state.addToWarehouseError = '';
     },
 
     resetAddToWarehouseError: (state) => {
-      state.addToWarehouseError = "";
+      state.addToWarehouseError = '';
     },
 
     resetRemoveFromWarehouseStatus: (state) => {
-      state.removeFromWarehouseStatus = "idle";
-      state.removeFromWarehouseError = "";
+      state.removeFromWarehouseStatus = 'idle';
+      state.removeFromWarehouseError = '';
     },
 
     resetRemoveFromWarehouseError: (state) => {
-      state.removeFromWarehouseError = "";
+      state.removeFromWarehouseError = '';
     },
 
     setSearchName: (state, action) => {
@@ -313,6 +308,13 @@ export const medicinesSlice = createSlice({
       };
     },
 
+    setSearchHavePoint: (state, action) => {
+      state.pageState = {
+        ...state.pageState,
+        searchHavePoint: action.payload,
+      };
+    },
+
     setPage: (state, action) => {
       state.pageState = {
         ...state.pageState,
@@ -336,26 +338,17 @@ export const medicinesSlice = createSlice({
 
     addIdToCompaniesIds: (state, action) => {
       const { value } = action.payload;
-      if (
-        state.pageState.searchCompaniesIds.filter(
-          (company) => company.value === value
-        ).length === 0
-      ) {
+      if (state.pageState.searchCompaniesIds.filter((company) => company.value === value).length === 0) {
         state.pageState = {
           ...state.pageState,
-          searchCompaniesIds: [
-            ...state.pageState.searchCompaniesIds,
-            action.payload,
-          ],
+          searchCompaniesIds: [...state.pageState.searchCompaniesIds, action.payload],
         };
       }
     },
 
     removeIdFromCompaniesId: (state, action) => {
       const id = action.payload;
-      const filteredArray = state.pageState.searchCompaniesIds.filter(
-        (i) => i.value !== id
-      );
+      const filteredArray = state.pageState.searchCompaniesIds.filter((i) => i.value !== id);
       state.pageState = {
         ...state.pageState,
         searchCompaniesIds: [...filteredArray],
@@ -364,26 +357,17 @@ export const medicinesSlice = createSlice({
 
     addIdToWarehousesIds: (state, action) => {
       const { value } = action.payload;
-      if (
-        state.pageState.searchWarehousesIds.filter(
-          (warehouse) => warehouse.value === value
-        ).length === 0
-      ) {
+      if (state.pageState.searchWarehousesIds.filter((warehouse) => warehouse.value === value).length === 0) {
         state.pageState = {
           ...state.pageState,
-          searchWarehousesIds: [
-            ...state.pageState.searchWarehousesIds,
-            action.payload,
-          ],
+          searchWarehousesIds: [...state.pageState.searchWarehousesIds, action.payload],
         };
       }
     },
 
     removeIdFromWarehousesId: (state, action) => {
       const id = action.payload;
-      const filteredArray = state.pageState.searchWarehousesIds.filter(
-        (i) => i.value !== id
-      );
+      const filteredArray = state.pageState.searchWarehousesIds.filter((i) => i.value !== id);
       state.pageState = {
         ...state.pageState,
         searchWarehousesIds: [...filteredArray],
@@ -426,107 +410,110 @@ export const medicinesSlice = createSlice({
 
     resetMedicinesPageState: (state) => {
       state.pageState = {
-        searchName: "",
-        searchCompanyName: "",
-        searchWarehouseName: "",
+        searchName: '',
+        searchCompanyName: '',
+        searchWarehouseName: '',
         searchWarehouseId: null,
         searchCompanyId: null,
         searchWarehouseCompanyId: null,
         searchInWarehouse: false,
         searchOutWarehouse: false,
         searchHaveOffer: false,
+        searchHavePoint: false,
         searchCompaniesIds: [],
         searchWarehousesIds: [],
-        city: "",
-        displayType: "list",
+        city: '',
+        displayType: 'list',
         page: 1,
       };
     },
 
     resetMedicines: (state) => {
-      state.status = "idle";
+      state.status = 'idle';
       state.medicines = [];
       state.count = 0;
-      state.error = "";
-      state.addToWarehouseStatus = "idle";
-      state.addToWarehouseError = "";
-      state.removeFromWarehouseStatus = "idle";
-      state.removeFromWarehouseError = "";
+      state.error = '';
+      state.addToWarehouseStatus = 'idle';
+      state.addToWarehouseError = '';
+      state.removeFromWarehouseStatus = 'idle';
+      state.removeFromWarehouseError = '';
       state.pageState = {
-        searchName: "",
-        searchCompanyName: "",
-        searchWarehouseName: "",
+        searchName: '',
+        searchCompanyName: '',
+        searchWarehouseName: '',
         searchWarehouseId: null,
         searchCompanyId: null,
         searchWarehouseCompanyId: null,
         searchInWarehouse: false,
         searchOutWarehouse: false,
         searchHaveOffer: false,
+        searchHavePoint: false,
         searchCompaniesIds: [],
         searchWarehousesIds: [],
-        city: "",
-        displayType: "list",
+        city: '',
+        displayType: 'list',
         page: 1,
       };
     },
 
     medicinesSliceSignOut: (state) => {
-      state.status = "idle";
+      state.status = 'idle';
       state.medicines = [];
       state.count = 0;
-      state.error = "";
-      state.addToWarehouseStatus = "idle";
-      state.addToWarehouseError = "";
-      state.removeFromWarehouseStatus = "idle";
-      state.removeFromWarehouseError = "";
+      state.error = '';
+      state.addToWarehouseStatus = 'idle';
+      state.addToWarehouseError = '';
+      state.removeFromWarehouseStatus = 'idle';
+      state.removeFromWarehouseError = '';
       state.pageState = {
-        searchName: "",
-        searchCompanyName: "",
-        searchWarehouseName: "",
+        searchName: '',
+        searchCompanyName: '',
+        searchWarehouseName: '',
         searchWarehouseId: null,
         searchCompanyId: null,
         searchWarehouseCompanyId: null,
         searchInWarehouse: false,
         searchOutWarehouse: false,
         searchHaveOffer: false,
+        searchHavePoint: false,
         searchCompaniesIds: [],
         searchWarehousesIds: [],
-        city: "",
-        displayType: "list",
+        city: '',
+        displayType: 'list',
         page: 1,
       };
     },
   },
   extraReducers: {
     [getMedicines.pending]: (state) => {
-      state.status = "loading";
+      state.status = 'loading';
     },
     [getMedicines.fulfilled]: (state, action) => {
-      state.status = "succeeded";
+      state.status = 'succeeded';
       state.medicines = [...state.medicines, ...action.payload.data.items];
       state.count = action.payload.count;
-      state.error = "";
+      state.error = '';
       state.pageState = {
         ...state.pageState,
         page: Math.ceil(state.medicines.length / 15) + 1,
       };
     },
     [getMedicines.rejected]: (state, { error, meta, payload }) => {
-      state.status = "failed";
+      state.status = 'failed';
 
-      if (payload === "timeout") {
+      if (payload === 'timeout') {
         state.error = payload;
-      } else if (payload === "cancel") {
-        state.error = "cancel-operation-msg";
-      } else if (payload === "network failed") {
-        state.error = "network failed";
+      } else if (payload === 'cancel') {
+        state.error = 'cancel-operation-msg';
+      } else if (payload === 'network failed') {
+        state.error = 'network failed';
       } else state.error = payload.message;
     },
     [addItemToWarehouse.pending]: (state) => {
-      state.addToWarehouseStatus = "loading";
+      state.addToWarehouseStatus = 'loading';
     },
     [addItemToWarehouse.fulfilled]: (state, action) => {
-      state.addToWarehouseStatus = "succeeded";
+      state.addToWarehouseStatus = 'succeeded';
 
       const newItems = state.medicines.map((item) => {
         if (item._id === action.payload.data.item._id) {
@@ -537,21 +524,21 @@ export const medicinesSlice = createSlice({
       state.medicines = newItems;
     },
     [addItemToWarehouse.rejected]: (state, { error, meta, payload }) => {
-      state.addToWarehouseStatus = "failed";
+      state.addToWarehouseStatus = 'failed';
 
-      if (payload === "timeout") {
+      if (payload === 'timeout') {
         state.addToWarehouseError = payload;
-      } else if (payload === "cancel") {
-        state.addToWarehouseError = "cancel-operation-msg";
-      } else if (payload === "network failed") {
-        state.addToWarehouseError = "network failed";
+      } else if (payload === 'cancel') {
+        state.addToWarehouseError = 'cancel-operation-msg';
+      } else if (payload === 'network failed') {
+        state.addToWarehouseError = 'network failed';
       } else state.addToWarehouseError = payload.message;
     },
     [removeItemFromWarehouse.pending]: (state, action) => {
-      state.removeFromWarehouseStatus = "loading";
+      state.removeFromWarehouseStatus = 'loading';
     },
     [removeItemFromWarehouse.fulfilled]: (state, action) => {
-      state.removeFromWarehouseStatus = "succeeded";
+      state.removeFromWarehouseStatus = 'succeeded';
       const newItems = state.medicines.map((item) => {
         if (item._id === action.payload.data.item._id) {
           return action.payload.data.item;
@@ -561,14 +548,14 @@ export const medicinesSlice = createSlice({
       state.medicines = newItems;
     },
     [removeItemFromWarehouse.rejected]: (state, { error, meta, payload }) => {
-      state.removeFromWarehouseStatus = "failed";
+      state.removeFromWarehouseStatus = 'failed';
 
-      if (payload === "timeout") {
+      if (payload === 'timeout') {
         state.removeFromWarehouseError = payload;
-      } else if (payload === "cancel") {
-        state.removeFromWarehouseError = "cancel-operation-msg";
-      } else if (payload === "network failed") {
-        state.removeFromWarehouseError = "network failed";
+      } else if (payload === 'cancel') {
+        state.removeFromWarehouseError = 'cancel-operation-msg';
+      } else if (payload === 'network failed') {
+        state.removeFromWarehouseError = 'network failed';
       } else state.removeFromWarehouseError = payload.message;
     },
   },
@@ -591,6 +578,7 @@ export const {
   setSearchInWarehouse,
   setSearchOutWarehouse,
   setSearchHaveOffer,
+  setSearchHavePoint,
   setPage,
   setCity,
   setDisplayType,

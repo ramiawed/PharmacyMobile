@@ -14,6 +14,7 @@ import { getHeaderTitle } from '@react-navigation/elements';
 // screen
 import NotificationDetailsScreen from '../screens/NotificationDetailsScreen';
 import BasketOrderDetailsScreen from '../screens/BasketOrderDetailsScreen';
+import ItemsWithPointsScreen from '../screens/ItemsWithPointsScreen';
 import NotificationsScreen from '../screens/NotificationsScreen';
 import OrderDetailsScreen from '../screens/OrderDetailsScreen';
 import ItemDetailsScreen from '../screens/ItemDetailsScreen';
@@ -28,6 +29,7 @@ import ItemsScreen from '../screens/ItemsScreen';
 import HomeScreen from '../screens/HomeScreen';
 import CartScreen from '../screens/CartScreen';
 import Loader from '../components/Loader';
+import MyPointsScreen from '../screens/MyPointsScreen';
 
 // icons
 import { AntDesign, Ionicons } from '@expo/vector-icons';
@@ -45,6 +47,7 @@ import { selectAdvertisements } from '../redux/advertisements/advertisementsSlic
 import { resetCompanies } from '../redux/company/companySlice';
 import SavedItemsScreen from '../screens/SavedItemsScreen';
 import { selectMenuSettings } from '../redux/menu/menuSlice';
+import SearchScreen from '../screens/SearchScreen';
 
 const mainStack = createStackNavigator();
 
@@ -125,6 +128,7 @@ const MainStack = () => {
         <mainStack.Screen name="Companies" component={CompaniesScreen} />
         <mainStack.Screen name="Warehouses" component={WarehousesScreen} />
         <mainStack.Screen name="Offers" component={OffersScreen} />
+        <mainStack.Screen name="ItemsWithPoints" component={ItemsWithPointsScreen} />
         <mainStack.Screen name="Cart" component={CartScreen} />
         <mainStack.Screen name="Notifications" component={NotificationsScreen} />
         <mainStack.Screen name="NotificationDetails" component={NotificationDetailsScreen} />
@@ -135,6 +139,8 @@ const MainStack = () => {
         <mainStack.Screen name="BasketOrderDetails" component={BasketOrderDetailsScreen} />
         <mainStack.Screen name="Profile" component={ProfileScreen} />
         <mainStack.Screen name="SavedItems" component={SavedItemsScreen} />
+        <mainStack.Screen name="MyPoints" component={MyPointsScreen} />
+        <mainStack.Screen name="Search" component={SearchScreen} />
       </mainStack.Navigator>
     )
   ) : (
@@ -149,83 +155,95 @@ function MainStackHeader({ navigation, route, options }) {
   // selectors
   const user = useSelector(selectUser);
   const cartCount = useSelector(selectCartItemCount);
+
   const { open } = useSelector(selectMenuSettings);
+
   const newTitle =
     title.toLocaleLowerCase() === 'orders'
       ? user.type === UserTypeConstants.ADMIN
         ? 'orders'
         : 'my orders'
       : title.toLocaleLowerCase();
+
   return user ? (
-    <>
-      <View
-        style={{
-          ...styles.stackHeader,
-          paddingTop: insets.top,
-          backgroundColor: open ? '#000' : Colors.MAIN_COLOR,
-          opacity: open ? 0.7 : 1,
-        }}
-      >
-        <View style={styles.stackHeaderContent}>
-          <Text style={styles.headerTitle}>{i18n.t(newTitle)}</Text>
-          {user.type === UserTypeConstants.PHARMACY && (
-            <View style={styles.favoriteIcon}>
-              <Ionicons
-                name="cart"
-                size={28}
-                color={title === 'Cart' ? Colors.FAILED_COLOR : Colors.WHITE_COLOR}
-                onPress={() => {
-                  if (!open) navigation.navigate('Cart');
-                }}
-              />
-              {cartCount > 0 && <View style={styles.cartNotEmpty}></View>}
-            </View>
-          )}
-
-          <View style={styles.favoriteIcon}>
+    <View
+      style={{
+        ...styles.stackHeader,
+        paddingTop: insets.top,
+        backgroundColor: open ? '#000' : Colors.MAIN_COLOR,
+        opacity: open ? 0.7 : 1,
+      }}
+    >
+      <View style={styles.stackHeaderContent}>
+        <Text style={styles.headerTitle}>{i18n.t(newTitle)}</Text>
+        <View style={styles.icon}>
+          <AntDesign
+            name="search1"
+            size={24}
+            color={title === 'Search' ? Colors.FAILED_COLOR : Colors.WHITE_COLOR}
+            onPress={() => {
+              if (!open) navigation.navigate('Search');
+            }}
+          />
+          {cartCount > 0 && <View style={styles.cartNotEmpty}></View>}
+        </View>
+        {user.type === UserTypeConstants.PHARMACY && (
+          <View style={styles.icon}>
             <Ionicons
-              name="notifications"
-              size={28}
-              color={title === 'Notifications' ? Colors.FAILED_COLOR : Colors.WHITE_COLOR}
+              name="cart"
+              size={24}
+              color={title === 'Cart' ? Colors.FAILED_COLOR : Colors.WHITE_COLOR}
               onPress={() => {
-                if (!open)
-                  navigation.navigate('Notifications', {
-                    screen: 'allNotifications',
-                  });
+                if (!open) navigation.navigate('Cart');
               }}
             />
+            {cartCount > 0 && <View style={styles.cartNotEmpty}></View>}
           </View>
+        )}
 
-          <View style={styles.favoriteIcon}>
-            <AntDesign
-              name="star"
-              size={28}
-              color={title === 'Favorites' ? Colors.FAILED_COLOR : Colors.WHITE_COLOR}
-              onPress={() => {
-                if (!open) navigation.navigate('Favorites');
-              }}
-            />
-          </View>
+        <View style={styles.icon}>
+          <Ionicons
+            name="notifications"
+            size={24}
+            color={title === 'Notifications' ? Colors.FAILED_COLOR : Colors.WHITE_COLOR}
+            onPress={() => {
+              if (!open)
+                navigation.navigate('Notifications', {
+                  screen: 'allNotifications',
+                });
+            }}
+          />
+        </View>
 
-          <View style={styles.favoriteIcon}>
-            <TouchableOpacity
-              onPress={() => {
-                if (!open) navigation.navigate('Home');
-              }}
-            >
-              <Image source={logo} style={styles.image} />
-            </TouchableOpacity>
-          </View>
+        <View style={styles.icon}>
+          <AntDesign
+            name="star"
+            size={24}
+            color={title === 'Favorites' ? Colors.FAILED_COLOR : Colors.WHITE_COLOR}
+            onPress={() => {
+              if (!open) navigation.navigate('Favorites');
+            }}
+          />
+        </View>
+
+        <View style={styles.icon}>
+          <TouchableOpacity
+            onPress={() => {
+              if (!open) navigation.navigate('Home');
+            }}
+          >
+            <Image source={logo} style={styles.image} />
+          </TouchableOpacity>
         </View>
       </View>
-    </>
+    </View>
   ) : (
     <></>
   );
 }
 
 const styles = StyleSheet.create({
-  favoriteIcon: {
+  icon: {
     alignItems: 'center',
     justifyContent: 'center',
     marginHorizontal: 10,

@@ -1,5 +1,5 @@
 import React, { memo, useEffect } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, FlatList } from 'react-native';
 
 // redux stuff
 import { useDispatch, useSelector } from 'react-redux';
@@ -31,7 +31,14 @@ const ItemsSectionTwo = () => {
     ) : itemsSectionTwo.length > 0 ? (
       <View style={styles.container}>
         <TitleAndDescription title={title} desc={description} />
-        <AdvItemsContainer items={itemsSectionTwo} />
+        {itemsSectionTwo?.length > 0 && (
+          <FlatList
+            data={itemsSectionTwo}
+            keyExtractor={(item) => item._id}
+            horizontal={true}
+            renderItem={({ item }) => <AdvItemsContainer item={item} />}
+          />
+        )}
       </View>
     ) : null
   ) : null;

@@ -15,13 +15,12 @@ import Toast from 'react-native-toast-message';
 
 // component
 import CartItem from './CartItem';
-import Loader from './Loader';
 import ConfirmBottomSheet from './ConfirmBottomSheet';
 
 // redux stuff
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectUserData } from '../redux/auth/authSlice';
+import { changeMyPoints, selectUserData } from '../redux/auth/authSlice';
 import { resetCartItems, selectCartItems } from '../redux/cart/cartSlice';
 import { saveOrder } from '../redux/orders/ordersSlice';
 import { addStatistics } from '../redux/statistics/statisticsSlice';
@@ -51,25 +50,31 @@ const CartWarehouse = ({ warehouse, index }) => {
   const [showWarningMsg, setShowWarningMsg] = useState(false);
   const [expanded, setExpanded] = useState(false);
 
-  const computeTotalPrice = () => {
-    let total = 0;
+  const computeTotalPrice = (() => {
+    let invoiceTotal = 0;
+    let itemsPoints = 0;
 
     cartItems
-      .filter((item) => item.warehouse.warehouse.name === warehouse.name)
-      .forEach((item) => {
-        total =
-          total +
-          item.qty * item.item.price -
-          (item.bonus && item.bonusType === OfferTypes.PERCENTAGE
-            ? (item.qty * item.item.price * item.bonus) / 100
-            : 0);
+      .filter((ci) => ci.warehouse.name === warehouse.name)
+      .forEach((ci) => {
+        invoiceTotal =
+          invoiceTotal +
+          ci.qty * ci.item.price -
+          (ci.bonus && ci.bonusType === OfferTypes.PERCENTAGE ? (ci.qty * ci.item.price * ci.bonus) / 100 : 0);
+
+        itemsPoints = itemsPoints + ci.point;
       });
 
-    return total;
-  };
+    return { invoiceTotal, itemsPoints };
+  })();
+
+  const numbersOfPoint =
+    warehouse.includeInPointSystem && warehouse.pointForAmount && warehouse.amountToGetPoint
+      ? Math.floor(computeTotalPrice.invoiceTotal / warehouse.amountToGetPoint) * warehouse.pointForAmount
+      : 0;
 
   const checkOrderHandler = () => {
-    if (warehouse.invoiceMinTotal > 0 && computeTotalPrice() < warehouse.invoiceMinTotal) {
+    if (warehouse.invoiceMinTotal > 0 && computeTotalPrice.invoiceTotal < warehouse.invoiceMinTotal) {
       setShowWarningMsg(true);
       return;
     }
@@ -82,20 +87,20 @@ const CartWarehouse = ({ warehouse, index }) => {
 
     let obj = {
       pharmacy: user._id,
-      warehouse: cartItems.filter((item) => item.warehouse.warehouse.name === warehouse.name)[0].warehouse.warehouse
-        ._id,
+      warehouse: warehouse._id,
       items: cartItems
-        .filter((item) => item.warehouse.warehouse.name === warehouse.name)
-        .map((e) => {
+        .filter((ci) => ci.warehouse.name === warehouse.name)
+        .map((ci) => {
           return {
-            item: e.item._id,
-            qty: e.qty,
-            bonus: e.bonus,
-            bonusType: e.bonusType,
-            price: e.item.price,
-            customer_price: e.item.customer_price,
+            item: ci.item._id,
+            qty: ci.qty,
+            bonus: ci.bonus,
+            bonusType: ci.bonusType,
+            price: ci.item.price,
           };
         }),
+      totalInvoicePrice: computeTotalPrice.invoiceTotal,
+      totalInvoicePoints: numbersOfPoint + computeTotalPrice.itemsPoints,
       status: OrdersStatusOptions.SENT_BY_PHARMACY,
     };
 
@@ -113,6 +118,21 @@ const CartWarehouse = ({ warehouse, index }) => {
           }),
         );
         dispatch(resetCartItems(warehouse));
+
+        if (numbersOfPoint + computeTotalPrice.itemsPoints > 0) {
+          try {
+            dispatch(
+              changeMyPoints({
+                token,
+                obj: {
+                  id: user._id,
+                  amount: numbersOfPoint + computeTotalPrice.itemsPoints,
+                },
+              }),
+            );
+          } catch (err) {}
+        }
+
         setShowConfirmSaveOrder(false);
         setShowLoadingModal(false);
         Toast.show({
@@ -141,40 +161,46 @@ const CartWarehouse = ({ warehouse, index }) => {
     <>
       <ScrollView>
         <View style={{ ...styles.container, backgroundColor: index % 2 === 0 ? Colors.WHITE_COLOR : '#ffe' }}>
-          <View style={styles.headerView}>
-            <Text style={styles.title}>{warehouse.name}</Text>
-            <Text style={styles.totalPrice}>
-              {i18n.t('order-total-price')} {computeTotalPrice()}
+          <View>
+            <Text style={{ ...styles.text, ...styles.bold, color: Colors.DARK_COLOR }}>{warehouse.name}</Text>
+            <Text style={{ ...styles.text, color: Colors.SUCCEEDED_COLOR }}>
+              {i18n.t('order-total-price')} {computeTotalPrice.invoiceTotal}
             </Text>
+
+            <Text style={{ ...styles.text, color: Colors.SUCCEEDED_COLOR }}>
+              {i18n.t('number of points that you get')} {computeTotalPrice.itemsPoints + numbersOfPoint}
+            </Text>
+
             {warehouse.costOfDeliver > 0 && (
-              <Text style={styles.infoText}>
+              <Text style={{ ...styles.text, color: Colors.LIGHT_COLOR }}>
                 {i18n.t('deliver-cost')}: {warehouse.costOfDeliver} %
               </Text>
             )}
 
             {warehouse.invoiceMinTotal > 0 && (
-              <Text style={styles.infoText}>
+              <Text style={{ ...styles.text, color: Colors.LIGHT_COLOR }}>
                 {i18n.t('minimum-invoice-cost')}: {warehouse.invoiceMinTotal}
               </Text>
             )}
 
-            {warehouse.fastDeliver && (
-              <Text style={{ ...styles.infoText, ...styles.fastDeliver }}>{i18n.t('fast-deliver')}</Text>
-            )}
-            <TouchableOpacity
-              onPress={checkOrderHandler}
-              style={{ ...styles.actionView, flex: 3, backgroundColor: Colors.BLUE_COLOR }}
-            >
+            <TouchableOpacity onPress={checkOrderHandler} style={{ ...styles.actionView }}>
               <FontAwesome name="send" size={16} color={Colors.WHITE_COLOR} style={{ marginEnd: 10 }} />
               <Text style={{ ...styles.actionText }}>{i18n.t('send-order')}</Text>
             </TouchableOpacity>
-            <Text style={styles.payCash}>{i18n.t('dear-partner-pay-when-deliver')}</Text>
+            {warehouse.fastDeliver && (
+              <Text style={{ ...styles.text, color: Colors.DARK_COLOR }}>{i18n.t('fast-deliver')}</Text>
+            )}
+            {warehouse.payAtDeliver && (
+              <Text style={{ ...styles.text, color: Colors.FAILED_COLOR }}>
+                {i18n.t('dear-partner-pay-when-deliver')}
+              </Text>
+            )}
           </View>
 
           {expanded &&
             cartItems
-              .filter((item) => item.warehouse.warehouse.name === warehouse.name)
-              .map((item, index) => <CartItem item={item} key={index} />)}
+              .filter((ci) => ci.warehouse.name === warehouse.name)
+              .map((ci, index) => <CartItem cartItem={ci} key={index} />)}
 
           <View style={styles.expandedIcon}>
             <AntDesign
@@ -220,8 +246,6 @@ const CartWarehouse = ({ warehouse, index }) => {
           cancelAction={() => setShowWarningMsg(false)}
         />
       </BottomSheet>
-
-      {showLoadingModal && <Loader />}
     </>
   );
 };
@@ -237,44 +261,6 @@ const styles = StyleSheet.create({
     borderColor: '#e3e3e3',
     borderRadius: 12,
   },
-  totalPrice: {
-    color: Colors.SUCCEEDED_COLOR,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    fontSize: 18,
-    marginVertical: 10,
-  },
-  title: { color: Colors.MAIN_COLOR, fontSize: 18, fontWeight: 'bold', textAlign: 'center' },
-  sendBtn: {
-    backgroundColor: Colors.SUCCEEDED_COLOR,
-    marginHorizontal: 5,
-    padding: 5,
-    borderRadius: 6,
-  },
-  bottomNavigationView: {
-    backgroundColor: '#fff',
-    width: '100%',
-    height: 170,
-    justifyContent: 'center',
-    paddingBottom: 20,
-    paddingHorizontal: 20,
-  },
-  okBtn: {
-    backgroundColor: Colors.SUCCEEDED_COLOR,
-    color: Colors.WHITE_COLOR,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 6,
-    marginHorizontal: 5,
-  },
-  cancelBtn: {
-    backgroundColor: Colors.FAILED_COLOR,
-    color: Colors.WHITE_COLOR,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 6,
-    marginHorizontal: 5,
-  },
   actionText: {
     fontSize: 16,
     textAlign: 'center',
@@ -284,10 +270,11 @@ const styles = StyleSheet.create({
   },
   actionView: {
     flexDirection: 'row',
-    backgroundColor: Colors.SUCCEEDED_COLOR,
+    backgroundColor: Colors.BLUE_COLOR,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 6,
+    marginVertical: 5,
   },
   expandedIcon: {
     borderWidth: 1,
@@ -302,21 +289,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#e3e3e3',
     alignSelf: 'center',
   },
-  infoText: {
-    textAlign: 'center',
-    color: Colors.DARK_COLOR,
+  text: {
     fontSize: 16,
-    marginBottom: 5,
-  },
-  fastDeliver: {
-    fontWeight: 'bold',
-    fontSize: 18,
-  },
-  payCash: {
-    fontWeight: 'bold',
     textAlign: 'center',
-    color: Colors.FAILED_COLOR,
-    marginTop: 10,
+  },
+  bold: {
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 });
 

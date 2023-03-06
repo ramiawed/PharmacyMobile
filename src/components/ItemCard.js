@@ -1,15 +1,6 @@
 import React, { memo, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  ActivityIndicator,
-  LayoutAnimation,
-  Platform,
-  UIManager,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableWithoutFeedback, ActivityIndicator, Platform, UIManager } from 'react-native';
 
 // redux stuff
 import { unwrapResult } from '@reduxjs/toolkit';
@@ -28,6 +19,9 @@ import { AntDesign, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'
 
 // components
 import SwipeableRow from './SwipeableRow';
+import FilteredText from './FilteredText';
+import ItemPrices from './ItemPrices';
+import ItemNames from './ItemNames';
 
 if (Platform.OS === 'android') {
   if (UIManager.setLayoutAnimationEnabledExperimental) {
@@ -92,7 +86,6 @@ const ItemCard = ({ item, addToCart, searchString }) => {
   const { savedItems } = useSelector(selectSavedItems);
 
   // own state
-  const [expanded, setExpanded] = useState(false);
   const [changeFavoriteLoading, setChangeFavoriteLoading] = useState(false);
   const [changeAddToWarehouseLoading, setChangeAddToWarehouseLoading] = useState(false);
   const [changeSaveItemLoading, setChangeSaveItemLoading] = useState(false);
@@ -225,29 +218,6 @@ const ItemCard = ({ item, addToCart, searchString }) => {
       });
   };
 
-  // const changeExpandedStatus = () => {
-  //   LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-  //   setExpanded(!expanded);
-  // };
-
-  const itemNameArraySplit = searchString
-    ? item.name.toLowerCase().includes(searchString.toLowerCase())
-      ? item.name.toLowerCase().split(searchString.toLowerCase())
-      : []
-    : [];
-
-  const itemNameArArraySplit = searchString
-    ? item.nameAr.toLowerCase().includes(searchString.toLowerCase())
-      ? item.nameAr.toLowerCase().split(searchString.toLowerCase())
-      : []
-    : [];
-
-  const itemCompositionArraySplit = searchString
-    ? item.composition.toLowerCase().includes(searchString.toLowerCase())
-      ? item.composition.toLowerCase().split(searchString.toLowerCase())
-      : []
-    : [];
-
   return user ? (
     <SwipeableRow
       user={user}
@@ -276,275 +246,126 @@ const ItemCard = ({ item, addToCart, searchString }) => {
               });
             }}
           >
-            <View style={{ justifyContent: 'space-between', flex: 1 }}>
-              <View style={styles.fullWidth}>
-                {itemNameArraySplit.length > 0 ? (
-                  <Text
-                    style={{
-                      ...styles.title,
-                      color: Colors.DARK_COLOR,
-                      fontSize: item.name.length < 25 ? 14 : 14,
-                    }}
-                  >
-                    {itemNameArraySplit[0].toUpperCase()}
-                    <Text
-                      style={{
-                        ...styles.filterResult,
-                      }}
-                    >
-                      {searchString.toUpperCase()}
-                    </Text>
-                    {itemNameArraySplit[1].toUpperCase()}
-                  </Text>
-                ) : (
-                  <Text
-                    style={{
-                      ...styles.title,
-                      color: Colors.DARK_COLOR,
-                      fontSize: item.name.length < 25 ? 14 : 14,
-                    }}
-                  >
-                    {item.name}
-                  </Text>
-                )}
-                {/* <Text
-                  style={{
-                    ...styles.title,
-                    color: Colors.DARK_COLOR,
-                    fontSize: item.name.length >= 35 ? 18 : item.name.length > 25 ? 18 : 18,
-                  }}
-                >
-                  {item.name}
-                </Text> */}
+            <View>
+              <View style={styles.row}>
+                <ItemNames item={item} searchString={searchString} />
+                <View style={styles.actionsView}>
+                  {changeAddToWarehouseLoading ? (
+                    <View>
+                      <ActivityIndicator size="small" color={Colors.YELLOW_COLOR} />
+                    </View>
+                  ) : (
+                    user.type === UserTypeConstants.WAREHOUSE && (
+                      <View>
+                        {isInWarehouse ? (
+                          <AntDesign
+                            name="delete"
+                            size={28}
+                            color={Colors.FAILED_COLOR}
+                            style={{ paddingHorizontal: 2, marginVertical: 4 }}
+                            onPress={removeItemFromWarehouseHandler}
+                          />
+                        ) : (
+                          <Ionicons
+                            name="add-circle"
+                            size={28}
+                            color={Colors.SUCCEEDED_COLOR}
+                            style={{ paddingHorizontal: 2, marginVertical: 4 }}
+                            onPress={addItemToWarehouseHandler}
+                          />
+                        )}
+                      </View>
+                    )
+                  )}
+                  {user?.type === UserTypeConstants.PHARMACY ? (
+                    checkItemExistsInWarehouse(item, user) ? (
+                      <View>
+                        <Ionicons
+                          name="cart"
+                          size={28}
+                          color={Colors.SUCCEEDED_COLOR}
+                          style={{ paddingHorizontal: 2, marginVertical: 4 }}
+                          onPress={() => addToCart(item)}
+                        />
+                      </View>
+                    ) : changeSaveItemLoading ? (
+                      <View>
+                        <ActivityIndicator size="small" color={Colors.YELLOW_COLOR} />
+                      </View>
+                    ) : savedItems.map((si) => si._id).includes(item._id) ? (
+                      <View>
+                        <MaterialCommunityIcons
+                          name="bookmark-minus"
+                          size={28}
+                          color={Colors.FAILED_COLOR}
+                          style={{ paddingHorizontal: 2, marginVertical: 4 }}
+                          onPress={removeItemFromSavedItemsHandler}
+                        />
+                      </View>
+                    ) : (
+                      <View>
+                        <MaterialCommunityIcons
+                          name="bookmark-plus"
+                          size={28}
+                          color={Colors.SUCCEEDED_COLOR}
+                          style={{ paddingHorizontal: 2, marginVertical: 4 }}
+                          onPress={addItemToSavedItemsHandler}
+                        />
+                      </View>
+                    )
+                  ) : (
+                    <></>
+                  )}
+                  {changeFavoriteLoading ? (
+                    <View style={{ ...styles.actionIcon, ...styles.favIcon }}>
+                      <ActivityIndicator size="small" color={Colors.YELLOW_COLOR} />
+                    </View>
+                  ) : (
+                    <View style={{ ...styles.actionIcon, ...styles.favIcon }}>
+                      {isFavorite ? (
+                        <AntDesign
+                          name="star"
+                          size={28}
+                          color={Colors.YELLOW_COLOR}
+                          style={{ paddingHorizontal: 2, marginVertical: 4 }}
+                          onPress={removeItemFromFavoritesItems}
+                        />
+                      ) : (
+                        <AntDesign
+                          name="staro"
+                          size={28}
+                          color={Colors.YELLOW_COLOR}
+                          style={{ paddingHorizontal: 2, marginVertical: 4 }}
+                          onPress={addItemToFavoriteItems}
+                        />
+                      )}
+                    </View>
+                  )}
+                </View>
               </View>
 
-              {item.nameAr?.length > 0 ? (
-                <View style={styles.fullWidth}>
-                  <Text
-                    style={{
-                      ...styles.nameAr,
-                      color: Colors.LIGHT_COLOR,
-                      fontSize: item.nameAr.length >= 35 ? 16 : item.nameAr.length > 25 ? 16 : 16,
-                    }}
-                  >
-                    {itemNameArArraySplit.length > 0 ? (
-                      <Text
-                        style={{
-                          ...styles.title,
-                          fontSize: item.name.length < 25 ? 14 : 14,
-                        }}
-                      >
-                        {itemNameArArraySplit[0]}
-                        <Text
-                          style={{
-                            ...styles.filterResult,
-                          }}
-                        >
-                          {searchString}
-                        </Text>
-                        {itemNameArArraySplit[1]}
-                      </Text>
-                    ) : (
-                      <Text
-                        style={{
-                          ...styles.title,
-                          fontSize: item.name.length < 25 ? 14 : 14,
-                        }}
-                      >
-                        {item.nameAr}
-                      </Text>
-                    )}
-                  </Text>
-                </View>
-              ) : (
-                <View style={{ height: 5 }}></View>
-              )}
-
-              <View style={styles.row}>
-                <View style={styles.fullWidth}>
-                  <Text style={styles.companyName}>{item.company.name}</Text>
-                </View>
-                {user.type !== UserTypeConstants.GUEST && (
-                  <Text
-                    style={{
-                      ...styles.priceValue,
-                      color: Colors.SUCCEEDED_COLOR,
-                    }}
-                  >
-                    {item.price}
-                  </Text>
-                )}
-                <Text style={{ ...styles.priceValue, color: Colors.FAILED_COLOR }}>{item.customer_price}</Text>
+              <View style={{ ...styles.row, marginVertical: 4, alignItems: 'center' }}>
+                <Text style={styles.companyName}>{item.company.name}</Text>
+                <ItemPrices
+                  price={item.price}
+                  customerPrice={item.customer_price}
+                  showCustomerPrice={user.type !== UserTypeConstants.GUEST}
+                  showPrice={true}
+                />
               </View>
 
               {item.composition?.length > 0 ? (
-                <View style={styles.fullWidth}>
-                  <Text
-                    style={{
-                      ...styles.nameAr,
-                      color: Colors.LIGHT_COLOR,
-                      fontSize: item.nameAr.length >= 35 ? 16 : item.nameAr.length > 25 ? 16 : 16,
-                    }}
-                  >
-                    {itemCompositionArraySplit.length > 0 ? (
-                      <Text
-                        style={{
-                          ...styles.title,
-                          fontSize: item.name.length < 25 ? 14 : 14,
-                        }}
-                      >
-                        {itemCompositionArraySplit[0]}
-                        <Text
-                          style={{
-                            ...styles.filterResult,
-                          }}
-                        >
-                          {searchString}
-                        </Text>
-                        {itemCompositionArraySplit[1]}
-                      </Text>
-                    ) : (
-                      <Text
-                        style={{
-                          ...styles.title,
-                          fontSize: item.name.length < 25 ? 14 : 14,
-                        }}
-                      >
-                        {item.composition}
-                      </Text>
-                    )}
-                  </Text>
-                </View>
+                <FilteredText
+                  searchText={searchString}
+                  value={item.composition.replaceAll('+', ' ')}
+                  style={styles.composition}
+                />
               ) : (
-                <View style={{ height: 5 }}></View>
+                <></>
               )}
             </View>
           </TouchableWithoutFeedback>
         </View>
-
-        <View style={styles.actionsView}>
-          {changeAddToWarehouseLoading ? (
-            <View>
-              <ActivityIndicator size="small" color={Colors.YELLOW_COLOR} />
-            </View>
-          ) : (
-            user.type === UserTypeConstants.WAREHOUSE && (
-              <View>
-                {isInWarehouse ? (
-                  <AntDesign
-                    name="delete"
-                    size={28}
-                    color={Colors.FAILED_COLOR}
-                    style={{ paddingHorizontal: 2, marginVertical: 4 }}
-                    onPress={removeItemFromWarehouseHandler}
-                  />
-                ) : (
-                  <Ionicons
-                    name="add-circle"
-                    size={28}
-                    color={Colors.SUCCEEDED_COLOR}
-                    style={{ paddingHorizontal: 2, marginVertical: 4 }}
-                    onPress={addItemToWarehouseHandler}
-                  />
-                )}
-              </View>
-            )
-          )}
-          {user?.type === UserTypeConstants.PHARMACY ? (
-            checkItemExistsInWarehouse(item, user) ? (
-              <View>
-                <Ionicons
-                  name="cart"
-                  size={28}
-                  color={Colors.SUCCEEDED_COLOR}
-                  style={{ paddingHorizontal: 2, marginVertical: 4 }}
-                  onPress={() => addToCart(item)}
-                />
-              </View>
-            ) : changeSaveItemLoading ? (
-              <View>
-                <ActivityIndicator size="small" color={Colors.YELLOW_COLOR} />
-              </View>
-            ) : savedItems.map((si) => si._id).includes(item._id) ? (
-              <View>
-                <MaterialCommunityIcons
-                  name="bookmark-minus"
-                  size={28}
-                  color={Colors.FAILED_COLOR}
-                  style={{ paddingHorizontal: 2, marginVertical: 4 }}
-                  onPress={removeItemFromSavedItemsHandler}
-                />
-              </View>
-            ) : (
-              <View>
-                <MaterialCommunityIcons
-                  name="bookmark-plus"
-                  size={28}
-                  color={Colors.SUCCEEDED_COLOR}
-                  style={{ paddingHorizontal: 2, marginVertical: 4 }}
-                  onPress={addItemToSavedItemsHandler}
-                />
-              </View>
-            )
-          ) : (
-            <></>
-          )}
-          {changeFavoriteLoading ? (
-            <View style={{ ...styles.actionIcon, ...styles.favIcon }}>
-              <ActivityIndicator size="small" color={Colors.YELLOW_COLOR} />
-            </View>
-          ) : (
-            <View style={{ ...styles.actionIcon, ...styles.favIcon }}>
-              {isFavorite ? (
-                <AntDesign
-                  name="star"
-                  size={28}
-                  color={Colors.YELLOW_COLOR}
-                  style={{ paddingHorizontal: 2, marginVertical: 4 }}
-                  onPress={removeItemFromFavoritesItems}
-                />
-              ) : (
-                <AntDesign
-                  name="staro"
-                  size={28}
-                  color={Colors.YELLOW_COLOR}
-                  style={{ paddingHorizontal: 2, marginVertical: 4 }}
-                  onPress={addItemToFavoriteItems}
-                />
-              )}
-            </View>
-          )}
-        </View>
-
-        {/* {item.caliber.length === 0 && item.packing.length === 0 && item.composition.length === 0 ? (
-          <></>
-        ) : (
-          <TouchableWithoutFeedback onPress={changeExpandedStatus}>
-            <View style={{ ...styles.actionIcon, ...styles.expandedIcon }}>
-              {expanded ? (
-                <AntDesign name="caretup" size={16} color={Colors.MAIN_COLOR} />
-              ) : (
-                <AntDesign name="caretdown" size={16} color={Colors.MAIN_COLOR} />
-              )}
-            </View>
-          </TouchableWithoutFeedback>
-        )} */}
-
-        {/* {expanded && (
-          <>
-            <View style={styles.separator}></View>
-            <View>
-              {item.packing ? <LabelValueRow label={`${i18n.t('item-packing')}:`} value={item.packing} /> : null}
-              {item.caliber ? <LabelValueRow label={`${i18n.t('item-caliber')}:`} value={item.caliber} /> : null}
-              {item.composition ? (
-                <LabelValueRow
-                  label={`${i18n.t('item-composition')}:`}
-                  value={item.composition?.split('+').join(' ')}
-                />
-              ) : null}
-            </View>
-          </>
-        )} */}
       </View>
     </SwipeableRow>
   ) : null;
@@ -559,48 +380,28 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.LIGHT_GREY_COLOR,
   },
-  nameAr: {
-    color: Colors.MAIN_COLOR,
-    writingDirection: 'rtl',
-    marginVertical: 5,
-    fontSize: 14,
-  },
-  fullWidth: {
-    flex: 1,
-    writingDirection: 'rtl',
-    justifyContent: 'flex-start',
-    alignItems: 'flex-start',
-    flexDirection: 'row',
-  },
   row: {
     flexDirection: 'row',
   },
-  priceValue: {
-    fontSize: 14,
-    paddingStart: 6,
-    fontWeight: 'bold',
-  },
-  title: {
-    textAlign: 'left',
-    fontWeight: '700',
-    writingDirection: 'rtl',
-  },
   companyName: {
+    flex: 1,
     fontSize: 14,
     fontWeight: 'bold',
     color: Colors.SUCCEEDED_COLOR,
+  },
+  composition: {
+    flex: 1,
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: Colors.BLUE_COLOR,
+    alignItems: 'flex-start',
+    textAlign: 'center',
   },
   contentView: {
     flex: 1,
   },
   actionsView: {
     alignItems: 'center',
-  },
-  filterResult: {
-    backgroundColor: '#FCDA00',
-    color: '#FF0000',
-    borderRadius: 4,
-    fontWeight: 'bold',
   },
 });
 

@@ -31,7 +31,7 @@ const HomeScreen = ({}) => {
     <ScreenWrapper>
       <View style={styles.container}>
         <SocketObserver />
-        <SearchHome showScanner={showScanner} setShowScanner={setShowScanner} />
+        {/* <SearchHome showScanner={showScanner} setShowScanner={setShowScanner} /> */}
         <ScrollView>
           <Advertisements />
           <ItemsSectionOne />

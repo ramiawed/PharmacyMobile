@@ -1,11 +1,10 @@
-import i18n from '../i18n/index';
-
 import React, { useCallback, useState } from 'react';
+import i18n from '../i18n/index';
 import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, StyleSheet, RefreshControl, FlatList } from 'react-native';
+// libraries
 import { Picker } from '@react-native-picker/picker';
 import CheckBox from 'expo-checkbox';
-// libraries
 import { BottomSheet } from 'react-native-btr';
 
 // redux stuff
@@ -27,25 +26,26 @@ import {
   addIdToWarehousesIds,
   removeIdFromWarehousesId,
   setSearchWarehouseCompanyId,
+  setSearchHavePoint,
 } from '../redux/medicines/medicinesSlices';
 
 // components
-import ItemCard from '../components/ItemCard';
+import SearchPartnerContainer from '../components/SearchPartnerContainer';
+import PullDownToRefresh from '../components/PullDownToRefresh';
 import SearchContainer from '../components/SearchContainer';
-import AddToCart from '../components/AddToCart';
-import Scanner from '../components/Scanner';
-import NoContent from '../components/NoContent';
 import SearchInput from '../components/SearchInput';
 import LoadingData from '../components/LoadingData';
+import AddToCart from '../components/AddToCart';
+import NoContent from '../components/NoContent';
+import ItemCard from '../components/ItemCard';
+import ScreenWrapper from './ScreenWrapper';
+import Scanner from '../components/Scanner';
 
 // constants
 import { Colors, UserTypeConstants } from '../utils/constants';
 
 // icons
 import { AntDesign } from '@expo/vector-icons';
-import SearchPartnerContainer from '../components/SearchPartnerContainer';
-import ScreenWrapper from './ScreenWrapper';
-import PullDownToRefresh from '../components/PullDownToRefresh';
 
 let timer;
 
@@ -154,6 +154,11 @@ const ItemsScreen = ({ navigation, route }) => {
     onSearchSubmit();
   };
 
+  const havePointCheckBoxHandler = () => {
+    dispatch(setSearchHavePoint(!pageState.searchHavePoint));
+    onSearchSubmit();
+  };
+
   useFocusEffect(
     useCallback(() => {
       // Do something when the screen is focused
@@ -243,6 +248,13 @@ const ItemsScreen = ({ navigation, route }) => {
             <View style={styles.checkBoxView}>
               <CheckBox value={pageState.searchHaveOffer} onValueChange={haveOfferCheckBoxHandler} />
               <Text style={{ color: Colors.MAIN_COLOR, marginStart: 8 }}>{i18n.t('medicies-have-offer-label')}</Text>
+            </View>
+          )}
+
+          {user.type !== UserTypeConstants.GUEST && (
+            <View style={styles.checkBoxView}>
+              <CheckBox value={pageState.searchHavePoint} onValueChange={havePointCheckBoxHandler} />
+              <Text style={{ color: Colors.MAIN_COLOR, marginStart: 8 }}>{i18n.t('medicies-have-point-label')}</Text>
             </View>
           )}
         </SearchContainer>

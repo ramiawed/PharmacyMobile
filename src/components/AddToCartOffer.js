@@ -1,52 +1,21 @@
-import i18n from "../i18n/index";
-import React, { useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-} from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import i18n from '../i18n/index';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+
+// components
+import PointDetailsRow from './PointDetailRow';
+import OfferDetailsRow from './OfferDetailsRow';
+import Separator from './Separator';
 
 // redux stuff
-import { useDispatch, useSelector } from "react-redux";
-import { selectUserData } from "../redux/auth/authSlice";
-import { addItemToCart } from "../redux/cart/cartSlice";
-import { addStatistics } from "../redux/statistics/statisticsSlice";
+import { addStatistics } from '../redux/statistics/statisticsSlice';
+import { selectUserData } from '../redux/auth/authSlice';
+import { addItemToCart } from '../redux/cart/cartSlice';
+import { useDispatch, useSelector } from 'react-redux';
 
 // constants
-import { Colors, OfferTypes } from "../utils/constants";
-
-const checkOfferQty = (selectedWarehouse, qty) => {
-  // check if the specified warehouse has an offer
-  if (selectedWarehouse.offer.offers.length > 0) {
-    // through all the offers, check if the entered quantity has an offer
-    for (let i = 0; i < selectedWarehouse.offer.offers.length; i++) {
-      // check if the entered quantity has an offer
-      if (qty >= selectedWarehouse.offer.offers[i].qty) {
-        // if it has return:
-        // 1- mode of the offer (pieces, percentage)
-        // 2- bonus
-        // 2-1: if the mode is pieces return the bonus * (entered qty / bonus qty)
-        // 2-2: if the mode is percentage return the bonus
-        if (selectedWarehouse.offer.mode === OfferTypes.PERCENTAGE) {
-          return selectedWarehouse.offer.offers[i].bonus;
-        } else {
-          return (
-            selectedWarehouse.offer.offers[i].bonus +
-            checkOfferQty(
-              selectedWarehouse,
-              qty - selectedWarehouse.offer.offers[i].qty
-            )
-          );
-        }
-      }
-    }
-  }
-
-  return 0;
-};
+import { Colors } from '../utils/constants';
 
 const AddToCartOffer = ({ item, close }) => {
   const addToCartItem = {
@@ -55,18 +24,20 @@ const AddToCartOffer = ({ item, close }) => {
       _id: item.company[0]._id,
       name: item.company[0].name,
     },
-    warehouses: {
-      ...item.warehouses,
-      warehouse: {
-        _id: item.warehouses.warehouse[0]._id,
-        name: item.warehouses.warehouse[0].name,
-        city: item.warehouses.warehouse[0].city,
-        isActive: item.warehouses.warehouse[0].isActive,
-        invoiceMinTotal: item.warehouses.warehouse[0].invoiceMinTotal,
-        costOfDeliver: item.warehouses.warehouse[0].costOfDeliver,
-        fastDeliver: item.warehouses.warehouse[0].fastDeliver,
+    warehouses: [
+      {
+        ...item.warehouses,
+        warehouse: {
+          _id: item.warehouses.warehouse[0]._id,
+          name: item.warehouses.warehouse[0].name,
+          city: item.warehouses.warehouse[0].city,
+          isActive: item.warehouses.warehouse[0].isActive,
+          invoiceMinTotal: item.warehouses.warehouse[0].invoiceMinTotal,
+          costOfDeliver: item.warehouses.warehouse[0].costOfDeliver,
+          fastDeliver: item.warehouses.warehouse[0].fastDeliver,
+        },
       },
-    },
+    ],
   };
 
   const dispatch = useDispatch();
@@ -74,7 +45,7 @@ const AddToCartOffer = ({ item, close }) => {
   // selectors
   const { token, user } = useSelector(selectUserData);
 
-  const [qty, setQty] = useState("");
+  const [qty, setQty] = useState('');
   const [qtyError, setQtyError] = useState(false);
 
   const handleAddItemToCart = () => {
@@ -88,16 +59,23 @@ const AddToCartOffer = ({ item, close }) => {
       return;
     }
 
-    const bonusQty = checkOfferQty(addToCartItem.warehouses, qty);
+    const { warehouses, ...item } = addToCartItem;
+
+    const w = {
+      maxQty: warehouses[0].maxQty,
+      offerMode: warehouses[0].offer?.mode ? warehouses[0].offer?.mode : '',
+      offers: warehouses[0].offer?.offers ? warehouses[0].offer?.offers : [],
+      points: warehouses[0].points,
+      ...warehouses[0].warehouse,
+    };
 
     dispatch(
       addItemToCart({
-        item: addToCartItem,
-        warehouse: addToCartItem.warehouses,
+        key: `${item._id}${warehouses[0].warehouse._id}`,
+        item,
+        warehouse: w,
         qty: qty,
-        bonus: bonusQty > 0 ? bonusQty : null,
-        bonusType: bonusQty > 0 ? addToCartItem.warehouses.offer.mode : null,
-      })
+      }),
     );
 
     dispatch(
@@ -105,10 +83,10 @@ const AddToCartOffer = ({ item, close }) => {
         obj: {
           sourceUser: user._id,
           targetItem: addToCartItem._id,
-          action: "item-added-to-cart",
+          action: 'item-added-to-cart',
         },
         token,
-      })
+      }),
     );
 
     close();
@@ -120,28 +98,24 @@ const AddToCartOffer = ({ item, close }) => {
         backgroundColor: Colors.WHITE_COLOR,
       }}
     >
-      <Text style={styles.header}>{i18n.t("add-to-cart")}</Text>
+      <Text style={styles.header}>{i18n.t('add-to-cart')}</Text>
       <View style={styles.body}>
         <View style={styles.row}>
-          <Text style={{ fontSize: 14, color: Colors.MAIN_COLOR }}>
-            {addToCartItem.warehouses.warehouse.name}
-          </Text>
+          <Text style={{ fontSize: 14, color: Colors.MAIN_COLOR }}>{addToCartItem.warehouses[0].warehouse.name}</Text>
         </View>
         <View style={styles.row}>
-          <Text style={styles.rowLabel}>{i18n.t("item-max-qty")}</Text>
+          <Text style={styles.rowLabel}>{i18n.t('item-max-qty')}</Text>
           <Text style={{ fontSize: 14, color: Colors.MAIN_COLOR }}>
-            {addToCartItem.warehouses.maxQty === 0
-              ? i18n.t("no-limit-qty")
-              : addToCartItem.warehouses.maxQty}
+            {addToCartItem.warehouses[0].maxQty === 0 ? '-' : addToCartItem.warehouses.maxQty}
           </Text>
         </View>
         <View
           style={{
             ...styles.row,
-            borderBottomColor: qtyError ? Colors.FAILED_COLOR : "#e3e3e3",
+            borderBottomColor: qtyError ? Colors.FAILED_COLOR : '#e3e3e3',
           }}
         >
-          <Text style={styles.rowLabel}>{i18n.t("selected-qty")}</Text>
+          <Text style={styles.rowLabel}>{i18n.t('selected-qty')}</Text>
           <TextInput
             value={qty}
             onChangeText={(val) => {
@@ -154,27 +128,14 @@ const AddToCartOffer = ({ item, close }) => {
         </View>
       </View>
 
-      {addToCartItem.warehouses.offer.offers.map((o, index) => (
-        <View style={styles.offerRow} key={index}>
-          <View style={styles.offerRowFirst}>
-            <Text style={styles.label}>{i18n.t("quantity-label")}</Text>
-            <Text style={styles.value}>{o.qty}</Text>
-            <Text style={styles.label}>{i18n.t("after-quantity-label")}</Text>
-          </View>
-          <View style={styles.offerRowSecond}>
-            <Text style={styles.label}>
-              {addToCartItem.warehouses.offer.mode === OfferTypes.PIECES
-                ? i18n.t("bonus-quantity-label")
-                : i18n.t("bonus-percentage-label")}
-            </Text>
-            <Text style={styles.value}>{o.bonus}</Text>
-            <Text style={styles.label}>
-              {addToCartItem.warehouses.offer.mode === OfferTypes.PIECES
-                ? i18n.t("after-bonus-quantity-label")
-                : i18n.t("after-bonus-percentage-label")}
-            </Text>
-          </View>
-        </View>
+      {addToCartItem.warehouses[0].offer.offers.map((o, index) => (
+        <OfferDetailsRow offerMode={addToCartItem.warehouses[0].offer.mode} key={index} offer={o} />
+      ))}
+
+      {addToCartItem.warehouses[0].points && <Separator />}
+
+      {addToCartItem.warehouses[0].points?.map((o, index) => (
+        <PointDetailsRow key={index} point={o} />
       ))}
 
       <View style={styles.actions}>
@@ -186,13 +147,8 @@ const AddToCartOffer = ({ item, close }) => {
             backgroundColor: Colors.SUCCEEDED_COLOR,
           }}
         >
-          <Ionicons
-            name="cart"
-            size={24}
-            color={Colors.WHITE_COLOR}
-            style={{ marginEnd: 10 }}
-          />
-          <Text style={{ ...styles.actionText }}>{i18n.t("add-to-cart")}</Text>
+          <Ionicons name="cart" size={24} color={Colors.WHITE_COLOR} style={{ marginEnd: 10 }} />
+          <Text style={{ ...styles.actionText }}>{i18n.t('add-to-cart')}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={close}
@@ -202,7 +158,7 @@ const AddToCartOffer = ({ item, close }) => {
             backgroundColor: Colors.FAILED_COLOR,
           }}
         >
-          <Text style={{ ...styles.actionText }}>{i18n.t("cancel-label")}</Text>
+          <Text style={{ ...styles.actionText }}>{i18n.t('cancel-label')}</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -211,7 +167,7 @@ const AddToCartOffer = ({ item, close }) => {
 
 const styles = StyleSheet.create({
   textInput: {
-    width: "90%",
+    width: '90%',
     marginHorizontal: 10,
     paddingVertical: 5,
     paddingHorizontal: 10,
@@ -220,61 +176,34 @@ const styles = StyleSheet.create({
   },
   row: {
     backgroundColor: Colors.WHITE_COLOR,
-    width: "90%",
+    width: '90%',
     borderBottomWidth: 1,
-    borderBottomColor: "#e3e3e3",
+    borderBottomColor: '#e3e3e3',
     padding: 10,
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 10,
-  },
-  offerRow: {
-    backgroundColor: Colors.OFFER_COLOR,
-    width: "90%",
-    borderWidth: 1,
-    borderRadius: 15,
-    padding: 10,
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-    marginBottom: 10,
-    borderColor: "#e3e3e3",
-    marginHorizontal: 20,
-  },
-  offerRowFirst: {
-    flexDirection: "row",
-  },
-  offerRowSecond: {
-    flexDirection: "row",
-  },
-  value: {
-    color: Colors.FAILED_COLOR,
-    marginHorizontal: 10,
-    fontWeight: "bold",
-  },
-  label: {
-    color: Colors.MAIN_COLOR,
   },
   rowLabel: { fontSize: 10, marginEnd: 10 },
   actions: {
-    width: "90%",
-    flexDirection: "row",
-    alignItems: "stretch",
+    width: '90%',
+    flexDirection: 'row',
+    alignItems: 'stretch',
     marginHorizontal: 20,
     marginBottom: 10,
   },
   actionView: {
     flex: 3,
     marginEnd: 10,
-    flexDirection: "row",
+    flexDirection: 'row',
     backgroundColor: Colors.SUCCEEDED_COLOR,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     borderRadius: 6,
   },
   actionText: {
     fontSize: 14,
-    textAlign: "center",
+    textAlign: 'center',
     color: Colors.WHITE_COLOR,
     paddingVertical: 10,
   },
@@ -283,14 +212,14 @@ const styles = StyleSheet.create({
     color: Colors.WHITE_COLOR,
     paddingVertical: 20,
     fontSize: 18,
-    fontWeight: "bold",
-    textAlign: "center",
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
   body: {
-    alignItems: "center",
+    alignItems: 'center',
     paddingTop: 10,
   },
-  selectedQty: { flex: 1, writingDirection: "rtl", textAlign: "right" },
+  selectedQty: { flex: 1, writingDirection: 'rtl', textAlign: 'right' },
 });
 
 export default AddToCartOffer;

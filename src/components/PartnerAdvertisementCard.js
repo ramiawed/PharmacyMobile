@@ -85,15 +85,11 @@ const PartnerAdvertisementCard = ({ data }) => {
       <Animated.View
         style={{
           ...styles.animatedView,
-          // height: rect === 'rect' ? 250 : 170,
         }}
       >
         <View
           style={{
             ...styles.logoView,
-            // height: rect === 'rect' ? 170 : 100,
-            // width: rect === 'rect' ? 125 : 100,
-            // borderRadius: rect === 'rect' ? 12 : 50,
           }}
         >
           {data.logo_url && data.logo_url.length !== 0 ? (

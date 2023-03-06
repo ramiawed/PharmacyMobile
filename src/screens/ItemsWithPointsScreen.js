@@ -11,23 +11,22 @@ import { unwrapResult } from '@reduxjs/toolkit';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectUserData } from '../redux/auth/authSlice';
 import {
-  getOffers,
-  selectOfferMedicines,
+  getItemsWithPoints,
+  selectItemsWithPointsMedicines,
   cancelOperation,
   setSearchName,
-  resetOfferItemsArray,
+  resetItemsWithPointsArray,
   addIdToCompaniesIds,
   removeIdFromCompaniesId,
   addIdToWarehousesIds,
   removeIdFromWarehousesId,
-} from '../redux/itemsWithOffers/itemsWithOffersSlices';
+} from '../redux/itemsWithPoints/itemsWithPointsSlices';
 
 // components
 import SearchPartnerContainer from '../components/SearchPartnerContainer';
 import PullDownToRefresh from '../components/PullDownToRefresh';
 import SearchContainer from '../components/SearchContainer';
 import AddToCartOffer from '../components/AddToCartOffer';
-import ItemOfferCard from '../components/ItemOfferCard';
 import SearchInput from '../components/SearchInput';
 import LoadingData from '../components/LoadingData';
 import NoContent from '../components/NoContent';
@@ -39,15 +38,16 @@ import { Colors, UserTypeConstants } from '../utils/constants';
 
 // icons
 import { AntDesign } from '@expo/vector-icons';
+import ItemOfferCard from '../components/ItemOfferCard';
 
 let timer;
 
-const OffersScreen = ({ navigation }) => {
+const ItemsWithPointsScreen = ({ navigation }) => {
   const dispatch = useDispatch();
 
   // selectors
   const { token, user } = useSelector(selectUserData);
-  const { medicines, status, pageState, count } = useSelector(selectOfferMedicines);
+  const { medicines, status, pageState, count } = useSelector(selectItemsWithPointsMedicines);
 
   // own state
   const [showAddToCartModal, setShowAddToCartModal] = useState(false);
@@ -57,7 +57,7 @@ const OffersScreen = ({ navigation }) => {
 
   // search handler
   const handleSearch = () => {
-    dispatch(getOffers({ token }))
+    dispatch(getItemsWithPoints({ token }))
       .then(unwrapResult)
       .then(() => {
         setRefreshing(false);
@@ -70,7 +70,7 @@ const OffersScreen = ({ navigation }) => {
   };
 
   const onSearchSubmit = () => {
-    dispatch(resetOfferItemsArray());
+    dispatch(resetItemsWithPointsArray());
     handleSearch();
   };
 
@@ -106,7 +106,7 @@ const OffersScreen = ({ navigation }) => {
   useFocusEffect(
     useCallback(() => {
       // Do something when the screen is focused
-      dispatch(resetOfferItemsArray());
+      dispatch(resetItemsWithPointsArray());
       handleSearch();
 
       return () => {
@@ -185,7 +185,7 @@ const OffersScreen = ({ navigation }) => {
                 addToCart={() => {
                   setTheItemToAddToCartHandler(item);
                 }}
-                type="offer"
+                type="point"
                 searchString={pageState.searchName}
               />
             )}
@@ -224,4 +224,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default OffersScreen;
+export default ItemsWithPointsScreen;

@@ -1,39 +1,24 @@
-import React, { useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  TouchableWithoutFeedback,
-  Animated,
-  ActivityIndicator,
-} from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Image, TouchableWithoutFeedback, Animated, ActivityIndicator } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 // icons
-import { AntDesign } from "@expo/vector-icons";
+import { AntDesign } from '@expo/vector-icons';
 
 // redux stuff
-import { unwrapResult } from "@reduxjs/toolkit";
-import {
-  resetMedicines,
-  setSearchWarehouseId,
-  setSearchCompanyId,
-} from "../redux/medicines/medicinesSlices";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  addFavorite,
-  removeFavorite,
-  selectFavoritesPartners,
-} from "../redux/favorites/favoritesSlice";
-import { addStatistics } from "../redux/statistics/statisticsSlice";
-import { selectUserData } from "../redux/auth/authSlice";
-import { setSelectedWarehouse } from "../redux/warehouse/warehousesSlice";
-import { selectSettings } from "../redux/settings/settingsSlice";
+import { unwrapResult } from '@reduxjs/toolkit';
+import { resetMedicines, setSearchWarehouseId, setSearchCompanyId } from '../redux/medicines/medicinesSlices';
+import { useDispatch, useSelector } from 'react-redux';
+import { addFavorite, removeFavorite, selectFavoritesPartners } from '../redux/favorites/favoritesSlice';
+import { addStatistics } from '../redux/statistics/statisticsSlice';
+import { selectUserData } from '../redux/auth/authSlice';
+import { setSelectedWarehouse } from '../redux/warehouse/warehousesSlice';
+import { selectSettings } from '../redux/settings/settingsSlice';
 
 // constants
-import { Colors, UserTypeConstants, SERVER_URL } from "../utils/constants";
-import { t } from "i18n-js";
+import { Colors, UserTypeConstants, SERVER_URL } from '../utils/constants';
+import { t } from 'i18n-js';
+import i18n from '../i18n';
 
 const SPACING = 10;
 
@@ -52,9 +37,7 @@ const WarehouseCard = ({ warehouse }) => {
   const allowShowingWarehouseMedicines =
     user.type === UserTypeConstants.ADMIN ||
     warehouse.type === UserTypeConstants.COMPANY ||
-    (warehouse.type === UserTypeConstants.WAREHOUSE &&
-      showWarehouseItem &&
-      warehouse.allowShowingMedicines);
+    (warehouse.type === UserTypeConstants.WAREHOUSE && showWarehouseItem && warehouse.allowShowingMedicines);
 
   // method to handle add company to user's favorite
   const addWarehouseToFavorites = () => {
@@ -69,10 +52,10 @@ const WarehouseCard = ({ warehouse }) => {
             obj: {
               sourceUser: user._id,
               targetUser: warehouse._id,
-              action: "user-added-to-favorite",
+              action: 'user-added-to-favorite',
             },
             token,
-          })
+          }),
         );
       })
       .catch(() => {
@@ -113,16 +96,13 @@ const WarehouseCard = ({ warehouse }) => {
         dispatch(setSearchWarehouseId(warehouse._id));
       }
 
-      if (
-        warehouse.type === UserTypeConstants.WAREHOUSE &&
-        user.type === UserTypeConstants.PHARMACY
-      ) {
+      if (warehouse.type === UserTypeConstants.WAREHOUSE && user.type === UserTypeConstants.PHARMACY) {
         dispatch(setSelectedWarehouse(warehouse._id));
       } else {
         dispatch(setSelectedWarehouse(null));
       }
 
-      navigation.navigate("Items", {
+      navigation.navigate('Items', {
         myCompanies: warehouse.ourCompanies,
       });
     }
@@ -139,10 +119,7 @@ const WarehouseCard = ({ warehouse }) => {
           <View style={styles.favoriteIcon}>
             {changeFavoriteLoading ? (
               <ActivityIndicator size="small" color={Colors.YELLOW_COLOR} />
-            ) : favorites &&
-              favorites
-                .map((favorite) => favorite._id)
-                .includes(warehouse?._id) ? (
+            ) : favorites && favorites.map((favorite) => favorite._id).includes(warehouse?._id) ? (
               <AntDesign
                 name="star"
                 size={24}
@@ -162,37 +139,35 @@ const WarehouseCard = ({ warehouse }) => {
 
         <View>
           {warehouse.logo_url && warehouse.logo_url.length !== 0 ? (
-            <Image
-              source={{ uri: `${SERVER_URL}/profiles/${warehouse.logo_url}` }}
-              style={styles.logo}
-            />
+            <Image source={{ uri: `${SERVER_URL}/profiles/${warehouse.logo_url}` }} style={styles.logo} />
           ) : (
-            <Image
-              source={require("../../assets/logo.png")}
-              style={styles.logo}
-            />
+            <Image source={require('../../assets/logo.png')} style={styles.logo} />
           )}
         </View>
         <View style={styles.contentView}>
           <Text
             style={{
               ...styles.title,
-              fontSize: warehouse.name.length > 30 ? 16 : 18,
             }}
           >
             {warehouse.name}
           </Text>
+          {user.type === UserTypeConstants.PHARMACY && warehouse.pointForAmount ? (
+            <Text style={styles.pointHint}>
+              {i18n.t('number of points that you get when buy from warehouse')} {i18n.t('every')}{' '}
+              {warehouse.amountToGetPoint} {i18n.t('get points')} {warehouse.pointForAmount} {i18n.t('point')}
+            </Text>
+          ) : (
+            <></>
+          )}
+
           {warehouse.fastDeliver && (
             <View style={styles.fastDeliverView}>
               <Image
-                source={require("../../assets/small-logo.png")}
+                source={require('../../assets/small-logo.png')}
                 style={{ width: 24, height: 24, marginHorizontal: 10 }}
               />
-              <Text
-                style={{ color: Colors.SUCCEEDED_COLOR, fontWeight: "bold" }}
-              >
-                {t("fast-deliver")}
-              </Text>
+              <Text style={{ color: Colors.SUCCEEDED_COLOR, fontWeight: 'bold' }}>{t('fast-deliver')}</Text>
             </View>
           )}
         </View>
@@ -203,10 +178,10 @@ const WarehouseCard = ({ warehouse }) => {
 
 const styles = StyleSheet.create({
   animatedView: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: SPACING,
-    backgroundColor: "rgba(255,255,255, 1)",
+    backgroundColor: 'rgba(255,255,255, 1)',
     borderRadius: 12,
     shadowColor: Colors.SECONDARY_COLOR,
     shadowOffset: {
@@ -216,18 +191,24 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.43,
     shadowRadius: 9.51,
     elevation: 10,
-    justifyContent: "flex-start",
+    justifyContent: 'flex-start',
     paddingVertical: 10,
   },
   title: {
-    // fontSize: 16,
-    fontWeight: "bold",
+    fontSize: 16,
+    fontWeight: 'bold',
     color: Colors.MAIN_COLOR,
-    flexWrap: "wrap",
-    textAlign: "center",
+    flexWrap: 'wrap',
+    textAlign: 'center',
+  },
+  pointHint: {
+    color: Colors.BLUE_COLOR,
+    fontSize: 12,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
   favoriteIcon: {
-    position: "absolute",
+    position: 'absolute',
     top: 5,
     right: 5,
   },
@@ -236,13 +217,13 @@ const styles = StyleSheet.create({
     height: 85,
     marginHorizontal: 5,
     borderRadius: 12,
-    resizeMode: "contain",
+    resizeMode: 'contain',
   },
   contentView: {
     flex: 1,
   },
   fastDeliverView: {
-    flexDirection: "row",
+    flexDirection: 'row',
     marginTop: 10,
   },
 });

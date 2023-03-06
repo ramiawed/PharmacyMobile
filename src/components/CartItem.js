@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import i18n from '../i18n/index';
 import { View, Text, StyleSheet, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
 
+// components
+import ItemNames from './ItemNames';
+import ItemPrices from './ItemPrices';
 // redux stuff
 import { useDispatch } from 'react-redux';
 import { decreaseItemQty, increaseItemQty, removeItemFromCart } from '../redux/cart/cartSlice';
@@ -11,114 +14,90 @@ import { AntDesign, Ionicons, MaterialIcons } from '@expo/vector-icons';
 
 // constants
 import { Colors, OfferTypes } from '../utils/constants';
-import { t } from 'i18n-js';
 
-const CartItem = ({ item, inOrderDetails }) => {
+const CartItem = ({ cartItem, inOrderDetails }) => {
   const dispatch = useDispatch();
-  const [expanded, setExpanded] = useState(false);
 
   return (
     <View style={{ ...styles.container }}>
-      {!inOrderDetails && (
-        <View style={{ ...styles.deleteIcon, ...styles.icon }}>
-          <MaterialIcons
-            name="delete"
-            size={24}
-            color={Colors.FAILED_COLOR}
-            onPress={() => dispatch(removeItemFromCart(item))}
-          />
-        </View>
-      )}
-      <View style={styles.header}>
-        <Text
-          style={{
-            ...styles.name,
-            fontSize: item.item.name.length >= 35 ? 16 : item.item.name.length > 25 ? 16 : 18,
-          }}
-        >
-          {item.item.name}
-        </Text>
-        {item.item.nameAr ? (
-          <Text
-            style={{
-              ...styles.name,
-              fontSize: item.item.nameAr.length >= 35 ? 14 : item.item.nameAr.length > 14 ? 14 : 16,
-            }}
-          >
-            {item.item.nameAr}
-          </Text>
-        ) : (
-          <></>
+      <View style={styles.row}>
+        <ItemNames item={cartItem.item} />
+        {!inOrderDetails && (
+          <View>
+            <MaterialIcons
+              name="delete"
+              size={28}
+              color={Colors.FAILED_COLOR}
+              onPress={() => dispatch(removeItemFromCart(cartItem))}
+            />
+          </View>
         )}
+      </View>
 
-        <View style={{ height: 5 }}></View>
-
-        {!item.bonus && !inOrderDetails && (
-          <TouchableOpacity
-            style={{ ...styles.minusIcon, ...styles.icon, top: item.item.nameAr ? 50 : 35 }}
-            onPress={() => {
-              if (item.qty > 1) dispatch(decreaseItemQty(item));
-            }}
-          >
-            <View>
-              <AntDesign name="minus" size={24} color={Colors.FAILED_COLOR} />
-            </View>
-          </TouchableOpacity>
-        )}
-        <View style={{ flexDirection: 'row' }}>
-          <Text style={styles.qty}>{item.qty}</Text>
-
-          {item.bonus && (
-            <>
-              <View style={{ padding: 5, justifyContent: 'center', alignItems: 'center' }}>
-                <Text>+</Text>
+      <View style={{ ...styles.row, justifyContent: 'space-around', alignItems: 'center' }}>
+        <View style={styles.icons}>
+          {!inOrderDetails && (
+            <TouchableOpacity
+              style={{ backgroundColor: Colors.FAILED_COLOR }}
+              onPress={() => {
+                if (cartItem.qty > 1) dispatch(decreaseItemQty(cartItem.key));
+              }}
+            >
+              <View>
+                <AntDesign name="minus" size={32} color={Colors.WHITE_COLOR} />
               </View>
-              <Text style={styles.qty}>
-                {item.bonus}{' '}
-                {item.bonus
-                  ? item.bonusType === OfferTypes.PERCENTAGE
-                    ? i18n.t('after-bonus-percentage-label')
-                    : i18n.t('after-quantity-label')
-                  : '-'}
-              </Text>
-            </>
+            </TouchableOpacity>
+          )}
+
+          <Text style={styles.qty}>{cartItem.qty}</Text>
+
+          {!inOrderDetails && (
+            <TouchableOpacity
+              style={{ backgroundColor: Colors.SUCCEEDED_COLOR }}
+              onPress={() => {
+                if (cartItem.warehouse.maxQty !== 0 && cartItem.qty < cartItem.warehouse.maxQty)
+                  dispatch(increaseItemQty(cartItem.key));
+                else if (cartItem.warehouse.maxQty === 0) {
+                  dispatch(increaseItemQty(cartItem.key));
+                }
+              }}
+            >
+              <View>
+                <Ionicons name="md-add" size={32} color={Colors.WHITE_COLOR} />
+              </View>
+            </TouchableOpacity>
           )}
         </View>
 
-        {!item.bonus && !inOrderDetails && (
-          <TouchableOpacity
-            style={{ ...styles.addIcon, ...styles.icon, top: item.item.nameAr ? 50 : 35 }}
-            onPress={() => {
-              if (item.warehouse.maxQty !== 0 && item.qty < item.warehouse.maxQty) dispatch(increaseItemQty(item));
-              else if (item.warehouse.maxQty === 0) {
-                dispatch(increaseItemQty(item));
-              }
-            }}
-          >
-            <View>
-              <Ionicons name="md-add" size={24} color={Colors.SUCCEEDED_COLOR} />
-            </View>
-          </TouchableOpacity>
-        )}
+        <Text style={styles.offer}>
+          {cartItem.bonus && cartItem.bonus}{' '}
+          {cartItem.bonus
+            ? cartItem.bonusType === OfferTypes.PERCENTAGE
+              ? i18n.t('after-bonus-percentage-label')
+              : i18n.t('after-quantity-label')
+            : ''}
+        </Text>
 
-        <View style={{ height: 5 }}></View>
+        <Text style={styles.point}>
+          {cartItem.point} {i18n.t('point')}
+        </Text>
 
-        <View style={styles.row}>
-          <Text style={styles.company}>{item.item.company.name}</Text>
-          <Text style={styles.price}>{item.item.price}</Text>
-        </View>
+        <Text style={styles.totalPrice}>
+          {cartItem.qty * (inOrderDetails ? cartItem.price : cartItem.item.price) -
+            (cartItem.bonus && cartItem.bonusType === OfferTypes.PERCENTAGE
+              ? (cartItem.qty * (inOrderDetails ? cartItem.price : cartItem.item.price) * cartItem.bonus) / 100
+              : 0)}
+        </Text>
+      </View>
 
-        <View style={{ height: 1, backgroundColor: '#e3e3e3', width: '100%' }}></View>
-
-        <View style={{ ...styles.row, borderBottomWidth: 0, justifyContent: 'flex-end' }}>
-          <Text style={styles.totalPrice}>{t('item-total-price')}</Text>
-          <Text style={styles.totalPrice}>
-            {item.qty * (inOrderDetails ? item.price : item.item.price) -
-              (item.bonus && item.bonusType === OfferTypes.PERCENTAGE
-                ? (item.qty * (inOrderDetails ? item.price : item.item.price) * item.bonus) / 100
-                : 0)}
-          </Text>
-        </View>
+      <View style={styles.row}>
+        <Text style={styles.company}>{cartItem.item.company.name}</Text>
+        <ItemPrices
+          showCustomerPrice={false}
+          showPrice={true}
+          price={cartItem.item.price}
+          customerPrice={cartItem.item.custmer_price}
+        />
       </View>
     </View>
   );
@@ -126,25 +105,12 @@ const CartItem = ({ item, inOrderDetails }) => {
 
 const styles = StyleSheet.create({
   container: {
+    marginTop: 10,
     flexDirection: 'column',
     borderWidth: 1,
     borderColor: '#e3e3e3',
     borderRadius: 6,
-    marginTop: 22,
-    marginHorizontal: 12,
-    paddingTop: 20,
-  },
-  header: {
-    flexDirection: 'column',
-    alignItems: 'center',
-    width: '100%',
     padding: 5,
-  },
-  name: {
-    color: Colors.MAIN_COLOR,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginStart: 10,
   },
   row: {
     flexDirection: 'row',
@@ -156,39 +122,31 @@ const styles = StyleSheet.create({
   company: {
     color: Colors.SUCCEEDED_COLOR,
   },
-  price: {
-    color: Colors.SUCCEEDED_COLOR,
-  },
-  icon: {
-    borderWidth: 1,
-    borderColor: '#e3e3e3',
-    width: 36,
-    height: 36,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 18,
-    position: 'absolute',
-    backgroundColor: Colors.WHITE_COLOR,
-  },
-  minusIcon: {
-    left: 50,
-  },
-  addIcon: {
-    right: 50,
-  },
-  deleteIcon: {
-    top: -18,
-    alignSelf: 'center',
-  },
   qty: {
-    fontSize: 20,
+    fontSize: 18,
     color: Colors.BLUE_COLOR,
     paddingHorizontal: 10,
     borderRadius: 6,
+    width: 50,
+    textAlign: 'center',
   },
   totalPrice: {
+    fontSize: 14,
     color: Colors.SUCCEEDED_COLOR,
-    marginStart: 10,
+  },
+  icons: {
+    flexDirection: 'row',
+    borderRadius: 4,
+    overflow: 'hidden',
+    alignItems: 'center',
+  },
+  offer: {
+    fontSize: 14,
+    color: Colors.BLUE_COLOR,
+  },
+  point: {
+    fontSize: 14,
+    color: Colors.POINTS_OFFER_COLOR,
   },
 });
 

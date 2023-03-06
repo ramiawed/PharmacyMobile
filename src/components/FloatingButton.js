@@ -16,7 +16,6 @@ import { Colors, UserTypeConstants } from '../utils/constants';
 
 // navigation stuff
 import { useNavigation } from '@react-navigation/native';
-import { useFocusEffect } from '@react-navigation/native';
 
 import { signoutHandler } from '../utils/functions';
 
@@ -48,22 +47,6 @@ const FloatingButton = ({ style, animation, toggleMenu }) => {
     };
   };
 
-  const signOutStyle = () => {
-    return {
-      transform: [
-        {
-          scale: animation,
-        },
-        {
-          translateX: animation.interpolate({
-            inputRange: [0, 1],
-            outputRange: [0, -200],
-          }),
-        },
-      ],
-    };
-  };
-
   const rotation = {
     transform: [
       {
@@ -89,17 +72,6 @@ const FloatingButton = ({ style, animation, toggleMenu }) => {
     toggleMenu();
     index.current = 0;
   };
-
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     return () => {
-  //       // dispatch(setSearchWarehouseId(null));
-  //       // dispatch(setSearchCompanyId(null));
-  //       // if (open === true) toggleMenu();
-  //       // index.current = 0;
-  //     };
-  //   }, [open])
-  // );
 
   return (
     <>
@@ -139,12 +111,21 @@ const FloatingButton = ({ style, animation, toggleMenu }) => {
         )}
 
         {(user.type === UserTypeConstants.ADMIN || user.type === UserTypeConstants.PHARMACY) && (
-          <TouchableWithoutFeedback onPress={() => goTo('Offers')}>
-            <Animated.View style={[styles.button, styles.secondary, getStyle(), opacityStyle]}>
-              <MaterialIcons name="local-offer" size={24} color={Colors.WHITE_COLOR} />
-              <Text style={styles.optionText}>{i18n.t('offers')}</Text>
-            </Animated.View>
-          </TouchableWithoutFeedback>
+          <>
+            <TouchableWithoutFeedback onPress={() => goTo('Offers')}>
+              <Animated.View style={[styles.button, styles.secondary, getStyle(), opacityStyle]}>
+                <MaterialIcons name="local-offer" size={24} color={Colors.WHITE_COLOR} />
+                <Text style={styles.optionText}>{i18n.t('offers')}</Text>
+              </Animated.View>
+            </TouchableWithoutFeedback>
+
+            <TouchableWithoutFeedback onPress={() => goTo('ItemsWithPoints')}>
+              <Animated.View style={[styles.button, styles.secondary, getStyle(), opacityStyle]}>
+                <MaterialIcons name="local-offer" size={24} color={Colors.WHITE_COLOR} />
+                <Text style={styles.optionText}>{i18n.t('itemswithpoints')}</Text>
+              </Animated.View>
+            </TouchableWithoutFeedback>
+          </>
         )}
 
         {user.type !== UserTypeConstants.GUEST && user.type !== UserTypeConstants.COMPANY && (
@@ -172,6 +153,15 @@ const FloatingButton = ({ style, animation, toggleMenu }) => {
               <Text style={styles.optionText}>
                 {i18n.t(user.type === UserTypeConstants.ADMIN ? 'orders' : 'my orders')}
               </Text>
+            </Animated.View>
+          </TouchableWithoutFeedback>
+        )}
+
+        {user.type === UserTypeConstants.PHARMACY && (
+          <TouchableWithoutFeedback onPress={() => goTo('MyPoints')}>
+            <Animated.View style={[styles.button, styles.secondary, getStyle(), opacityStyle]}>
+              <FontAwesome name="money" size={24} color={Colors.WHITE_COLOR} />
+              <Text style={styles.optionText}>{i18n.t('my points')}</Text>
             </Animated.View>
           </TouchableWithoutFeedback>
         )}
