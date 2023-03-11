@@ -1,6 +1,7 @@
 import React, { memo, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { View, Text, StyleSheet, TouchableWithoutFeedback, ActivityIndicator, Platform, UIManager } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 
 // redux stuff
 import { unwrapResult } from '@reduxjs/toolkit';
@@ -12,7 +13,7 @@ import { addStatistics } from '../redux/statistics/statisticsSlice';
 import { selectUserData } from '../redux/auth/authSlice';
 
 // constants
-import { Colors, UserTypeConstants, checkItemExistsInWarehouse } from '../utils/constants';
+import { Colors, UserTypeConstants, checkItemExistsInWarehouse, checkOffer, checkPoints } from '../utils/constants';
 
 // icons
 import { AntDesign, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -29,52 +30,52 @@ if (Platform.OS === 'android') {
   }
 }
 
-// if logged user is
-// 1- ADMIN: highlight the row by green color if the medicine has an offer.
-// 2- COMPANY: don't highlight the row never.
-// 3- GUEST: don't highlight the row never.
-// 4- WAREHOUSE: highlight the row by green if the medicine has an offer by logging warehouse.
-// 5- PHARMACY: highlight the row by green if the medicine has an offer by any warehouse
-// in the same city with the logging user
-const checkOffer = (item, user) => {
-  if (user.type === UserTypeConstants.GUEST || user.type === UserTypeConstants.COMPANY) {
-    return false;
-  }
+// // if logged user is
+// // 1- ADMIN: highlight the row by green color if the medicine has an offer.
+// // 2- COMPANY: don't highlight the row never.
+// // 3- GUEST: don't highlight the row never.
+// // 4- WAREHOUSE: highlight the row by green if the medicine has an offer by logging warehouse.
+// // 5- PHARMACY: highlight the row by green if the medicine has an offer by any warehouse
+// // in the same city with the logging user
+// const checkOffer = (item, user) => {
+//   if (user.type === UserTypeConstants.GUEST || user.type === UserTypeConstants.COMPANY) {
+//     return false;
+//   }
 
-  let result = false;
+//   let result = false;
 
-  if (user?.type === UserTypeConstants.ADMIN) {
-    item.warehouses
-      .filter((w) => w.warehouse.isActive)
-      .forEach((w) => {
-        if (w.offer.offers.length > 0) {
-          result = true;
-        }
-      });
-  }
+//   if (user?.type === UserTypeConstants.ADMIN) {
+//     item.warehouses
+//       .filter((w) => w.warehouse.isActive)
+//       .forEach((w) => {
+//         if (w.offer.offers.length > 0) {
+//           result = true;
+//         }
+//       });
+//   }
 
-  if (user?.type === UserTypeConstants.WAREHOUSE) {
-    item.warehouses
-      .filter((w) => w.warehouse._id === user._id)
-      .forEach((w) => {
-        if (w.offer.offers.length > 0) {
-          result = true;
-        }
-      });
-  }
+//   if (user?.type === UserTypeConstants.WAREHOUSE) {
+//     item.warehouses
+//       .filter((w) => w.warehouse._id === user._id)
+//       .forEach((w) => {
+//         if (w.offer.offers.length > 0) {
+//           result = true;
+//         }
+//       });
+//   }
 
-  if (user?.type === UserTypeConstants.PHARMACY) {
-    item.warehouses
-      .filter((w) => w.warehouse.isActive)
-      .forEach((w) => {
-        if (w.warehouse.city === user.city && w.offer.offers.length > 0) {
-          result = true;
-        }
-      });
-  }
+//   if (user?.type === UserTypeConstants.PHARMACY) {
+//     item.warehouses
+//       .filter((w) => w.warehouse.isActive)
+//       .forEach((w) => {
+//         if (w.warehouse.city === user.city && w.offer.offers.length > 0) {
+//           result = true;
+//         }
+//       });
+//   }
 
-  return result;
-};
+//   return result;
+// };
 
 const ItemCard = ({ item, addToCart, searchString }) => {
   const navigation = useNavigation();
@@ -218,6 +219,9 @@ const ItemCard = ({ item, addToCart, searchString }) => {
       });
   };
 
+  const hasOffer = checkOffer(item, user);
+  const hasPoint = checkPoints(item, user);
+
   return user ? (
     <SwipeableRow
       user={user}
@@ -234,9 +238,16 @@ const ItemCard = ({ item, addToCart, searchString }) => {
       <View
         style={{
           ...styles.container,
-          backgroundColor: checkOffer(item, user) ? Colors.OFFER_COLOR : Colors.WHITE_COLOR,
         }}
       >
+        {hasOffer && hasPoint ? (
+          <LinearGradient colors={['#a4bfb4f1', '#DCEEFF']} style={styles.gradient} />
+        ) : hasOffer ? (
+          <LinearGradient colors={['#DCEEFF', '#DCEEFF']} style={styles.gradient} />
+        ) : hasPoint ? (
+          <LinearGradient colors={['#a4bfb4f1', '#a4bfb4f1']} style={styles.gradient} />
+        ) : undefined}
+
         <View style={styles.contentView}>
           <TouchableWithoutFeedback
             onPress={() => {
@@ -374,7 +385,7 @@ const ItemCard = ({ item, addToCart, searchString }) => {
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    padding: 5,
+    // padding: 5,
     margin: 5,
     borderRadius: 12,
     borderWidth: 1,
@@ -398,10 +409,18 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   contentView: {
+    padding: 5,
     flex: 1,
   },
   actionsView: {
     alignItems: 'center',
+  },
+  gradient: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+
+    borderRadius: 6,
   },
 });
 

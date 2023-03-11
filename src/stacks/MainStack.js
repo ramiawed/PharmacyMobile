@@ -185,7 +185,6 @@ function MainStackHeader({ navigation, route, options }) {
               if (!open) navigation.navigate('Search');
             }}
           />
-          {cartCount > 0 && <View style={styles.cartNotEmpty}></View>}
         </View>
         {user.type === UserTypeConstants.PHARMACY && (
           <View style={styles.icon}>

@@ -70,7 +70,7 @@ const CartItem = ({ cartItem, inOrderDetails }) => {
         </View>
 
         <Text style={styles.offer}>
-          {cartItem.bonus && cartItem.bonus}{' '}
+          {cartItem.bonus ? cartItem.bonus : '-'}{' '}
           {cartItem.bonus
             ? cartItem.bonusType === OfferTypes.PERCENTAGE
               ? i18n.t('after-bonus-percentage-label')
@@ -78,9 +78,7 @@ const CartItem = ({ cartItem, inOrderDetails }) => {
             : ''}
         </Text>
 
-        <Text style={styles.point}>
-          {cartItem.point} {i18n.t('point')}
-        </Text>
+        <Text style={styles.point}>{cartItem.point ? `${cartItem.point} ${i18n.t('point')}` : '-'}</Text>
 
         <Text style={styles.totalPrice}>
           {cartItem.qty * (inOrderDetails ? cartItem.price : cartItem.item.price) -

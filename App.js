@@ -1,65 +1,50 @@
-import "react-native-gesture-handler";
+import 'react-native-gesture-handler';
 
 // libraries
-import Toast from "react-native-toast-message";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import Toast from 'react-native-toast-message';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { StatusBar } from 'expo-status-bar';
 
-import React, { useEffect, useState, useRef } from "react";
-import * as Notifications from "expo-notifications";
-import { I18nManager } from "react-native";
+import React, { useEffect, useState, useRef } from 'react';
+import * as Notifications from 'expo-notifications';
+import { I18nManager } from 'react-native';
+import axios from 'axios';
 
-import "./src/i18n/index";
+import './src/i18n/index';
 
 // redux stuff
-import { unwrapResult } from "@reduxjs/toolkit";
-import { Provider, useDispatch, useSelector } from "react-redux";
-import { getFavorites } from "./src/redux/favorites/favoritesSlice";
-import { getAllAdvertisements } from "./src/redux/advertisements/advertisementsSlice";
-import {
-  selectToken,
-  selectUser,
-  authSignWithToken,
-} from "./src/redux/auth/authSlice";
-import { addStatistics } from "./src/redux/statistics/statisticsSlice";
-import { getAllSettings } from "./src/redux/settings/settingsSlice";
-import { getSavedItems } from "./src/redux/savedItems/savedItemsSlice";
+import { unwrapResult } from '@reduxjs/toolkit';
+import { Provider, useDispatch, useSelector } from 'react-redux';
+import { getFavorites } from './src/redux/favorites/favoritesSlice';
+import { getAllAdvertisements } from './src/redux/advertisements/advertisementsSlice';
+import { selectToken, selectUser, authSignWithToken } from './src/redux/auth/authSlice';
+import { addStatistics } from './src/redux/statistics/statisticsSlice';
+import { getAllSettings } from './src/redux/settings/settingsSlice';
+import { getSavedItems } from './src/redux/savedItems/savedItemsSlice';
+import { getCompanies } from './src/redux/company/companySlice';
+import { getWarehouses } from './src/redux/warehouse/warehousesSlice';
 
 // screens
-import SignInScreen from "./src/screens/SignInScreen";
-import SignupScreen from "./src/screens/SignupScreen";
-// import DrawerScreen from "./src/screens/DrawerScreen";
-import ApproveScreen from "./src/screens/ApproveScreen";
-import SplashScreen from "./src/screens/SplashScreen";
-import LogoutScreen from "./src/screens/LogoutScreen";
-import UpdateScreen from "./src/screens/UpdateScreen";
+import SignInScreen from './src/screens/SignInScreen';
+import SignupScreen from './src/screens/SignupScreen';
+import ApproveScreen from './src/screens/ApproveScreen';
+import SplashScreen from './src/screens/SplashScreen';
+import LogoutScreen from './src/screens/LogoutScreen';
+import UpdateScreen from './src/screens/UpdateScreen';
+import MainStack from './src/stacks/MainStack';
 
 // constants
-import {
-  Colors,
-  BASEURL,
-  UserTypeConstants,
-  VERSION,
-} from "./src/utils/constants";
+import { Colors, BASEURL, UserTypeConstants, VERSION } from './src/utils/constants';
 
 // configuration for store
-import { persistStore } from "redux-persist";
-import { PersistGate } from "redux-persist/integration/react";
-import store from "./src/app/store";
+import { persistStore } from 'redux-persist';
+import { PersistGate } from 'redux-persist/integration/react';
+import store from './src/app/store';
 let persistor = persistStore(store);
 
 // navigation's stuff
-import {
-  NavigationContainer,
-  createNavigationContainerRef,
-} from "@react-navigation/native";
-import {
-  createStackNavigator,
-  CardStyleInterpolators,
-} from "@react-navigation/stack";
-import { getCompanies } from "./src/redux/company/companySlice";
-import { getWarehouses } from "./src/redux/warehouse/warehousesSlice";
-import MainStack from "./src/stacks/MainStack";
-import axios from "axios";
+import { NavigationContainer, createNavigationContainerRef } from '@react-navigation/native';
+import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
 const Stack = createStackNavigator();
 const navigationRef = createNavigationContainerRef();
 
@@ -87,62 +72,57 @@ const App = () => {
 
   useEffect(() => {
     // This listener is fired whenever a notification is received while the app is foregrounded
-    notificationListener.current =
-      Notifications.addNotificationReceivedListener((notification) => {
-        setNotification(notification);
-      });
+    notificationListener.current = Notifications.addNotificationReceivedListener((notification) => {
+      setNotification(notification);
+    });
 
     // This listener is fired whenever a user taps on or interacts with a notification (works when app is foregrounded, backgrounded, or killed)
-    responseListener.current =
-      Notifications.addNotificationResponseReceivedListener((response) => {
-        if (response.notification.request.content.data) {
-          const { screen, notificationId, orderId } =
-            response.notification.request.content.data;
-          if (screen === "notification") {
-            if (navigationRef.isReady()) {
-              navigationRef.navigate("Notifications", {
-                screen: "Notification",
-                params: {
-                  notificationId,
-                },
-              });
-            }
-          }
-
-          if (screen === "order") {
-            if (navigationRef.isReady()) {
-              navigationRef.navigate("Orders", {
-                screen: "orders",
-                params: {
-                  screen: "Order",
-                  params: {
-                    orderId,
-                  },
-                },
-              });
-            }
-          }
-
-          if (screen === "basket order") {
-            if (navigationRef.isReady()) {
-              navigationRef.navigate("Orders", {
-                screen: "baskets-orders",
-                params: {
-                  screen: "BasketOrder",
-                  params: {
-                    orderId,
-                  },
-                },
-              });
-            }
+    responseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
+      if (response.notification.request.content.data) {
+        const { screen, notificationId, orderId } = response.notification.request.content.data;
+        if (screen === 'notification') {
+          if (navigationRef.isReady()) {
+            navigationRef.navigate('Notifications', {
+              screen: 'Notification',
+              params: {
+                notificationId,
+              },
+            });
           }
         }
-      });
+
+        if (screen === 'order') {
+          if (navigationRef.isReady()) {
+            navigationRef.navigate('Orders', {
+              screen: 'orders',
+              params: {
+                screen: 'Order',
+                params: {
+                  orderId,
+                },
+              },
+            });
+          }
+        }
+
+        if (screen === 'basket order') {
+          if (navigationRef.isReady()) {
+            navigationRef.navigate('Orders', {
+              screen: 'baskets-orders',
+              params: {
+                screen: 'BasketOrder',
+                params: {
+                  orderId,
+                },
+              },
+            });
+          }
+        }
+      }
+    });
 
     const timer = setTimeout(async () => {
-      const response = await axios.get(
-        `${BASEURL}/users/check-version/${VERSION}`
-      );
+      const response = await axios.get(`${BASEURL}/users/check-version/${VERSION}`);
       if (response.data.check) {
         if (token) {
           dispatch(authSignWithToken({ token, version: VERSION }))
@@ -152,10 +132,10 @@ const App = () => {
                 addStatistics({
                   obj: {
                     targetUser: result.data.user._id,
-                    action: "user-sign-in",
+                    action: 'user-sign-in',
                   },
                   token: result.token,
-                })
+                }),
               );
               dispatch(getAllSettings({ token: result.token }));
               dispatch(getFavorites({ token: result.token }));
@@ -180,9 +160,7 @@ const App = () => {
 
     return () => {
       clearTimeout(timer);
-      Notifications.removeNotificationSubscription(
-        notificationListener.current
-      );
+      Notifications.removeNotificationSubscription(notificationListener.current);
       Notifications.removeNotificationSubscription(responseListener.current);
     };
   }, []);
@@ -221,6 +199,7 @@ const App = () => {
           )}
         </Stack.Navigator>
       </NavigationContainer>
+      <StatusBar style="light" backgroundColor={Colors.MAIN_COLOR} />
     </SafeAreaProvider>
   );
 };
@@ -236,10 +215,7 @@ export default () => {
       <PersistGate loading={null} persistor={persistor}>
         <App />
       </PersistGate>
-      <Toast
-        style={{ backgroundColor: Colors.SECONDARY_COLOR }}
-        ref={(ref) => Toast.setRef(ref)}
-      />
+      <Toast style={{ backgroundColor: Colors.SECONDARY_COLOR }} ref={(ref) => Toast.setRef(ref)} />
     </Provider>
   );
 };

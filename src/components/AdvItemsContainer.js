@@ -65,14 +65,17 @@ const AdvItemsContainer = ({ item }) => {
 
 const styles = StyleSheet.create({
   container: {
+    // width: 250,
     borderRadius: 10,
     backgroundColor: Colors.WHITE_COLOR,
     overflow: 'hidden',
     margin: 5,
   },
   logoContainer: {
-    width: 300,
-    height: 300,
+    width: 250,
+    height: 250,
+    maxWidth: 250,
+    maxHeight: 250,
     alignSelf: 'center',
     margin: 10,
   },

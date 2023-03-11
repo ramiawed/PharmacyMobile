@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { View, StyleSheet, TouchableOpacity, Keyboard, FlatList, Text, RefreshControl } from 'react-native';
 import Voice from '@react-native-voice/voice';
@@ -29,6 +29,8 @@ let source = null;
 
 const SearchScreen = () => {
   const { token } = useSelector(selectUserData);
+
+  const inputRef = useRef();
 
   const [searchName, setSearchName] = useState('');
   const [showScanner, setShowScanner] = useState(false);
@@ -84,14 +86,6 @@ const SearchScreen = () => {
     }
   };
 
-  const clearResultHandler = () => {
-    if (source) {
-      source.cancel('operation canceled by user');
-    }
-    setSearchName('');
-    setItems([]);
-  };
-
   const onRefreshing = () => {
     setRefreshing(true);
     setPage(1);
@@ -128,33 +122,37 @@ const SearchScreen = () => {
     setShowScanner(true);
   };
 
-  const startSpeechToText = async () => {
-    await Voice.start('ar-SY');
-    setVoiceStarted(true);
-  };
+  // useEffect(() => {
+  //   inputRef.current.focus();
+  // }, []);
 
-  const stopSpeechToText = async () => {
-    await Voice.stop();
-    setVoiceStarted(false);
-  };
+  // const startSpeechToText = async () => {
+  //   await Voice.start('ar-SY');
+  //   setVoiceStarted(true);
+  // };
 
-  const onSpeechError = (error) => {
-    console.log(error);
-  };
+  // const stopSpeechToText = async () => {
+  //   await Voice.stop();
+  //   setVoiceStarted(false);
+  // };
 
-  const onSpeechResults = (result) => {
-    setResults(result.value);
-    setSearchName(result.value.join(' '));
-  };
+  // const onSpeechError = (error) => {
+  //   console.log(error);
+  // };
 
-  useEffect(() => {
-    Voice.onSpeechError = onSpeechError;
-    Voice.onSpeechResults = onSpeechResults;
+  // const onSpeechResults = (result) => {
+  //   setResults(result.value);
+  //   setSearchName(result.value.join(' '));
+  // };
 
-    return () => {
-      Voice.destroy.then(Voice.removeAllListeners);
-    };
-  }, []);
+  // useEffect(() => {
+  //   Voice.onSpeechError = onSpeechError;
+  //   Voice.onSpeechResults = onSpeechResults;
+
+  //   return () => {
+  //     Voice.destroy.then(Voice.removeAllListeners);
+  //   };
+  // }, []);
 
   return (
     <ScreenWrapper>
@@ -166,6 +164,8 @@ const SearchScreen = () => {
               onTextChangeHandler(val);
             }}
             value={searchName}
+            focus={true}
+            refrence={inputRef}
           />
         </SearchContainer>
 
@@ -174,12 +174,12 @@ const SearchScreen = () => {
             style={{
               ...styles.option,
             }}
-            onPress={() => {}}
+            onPress={openScanner}
           >
             <AntDesign name="barcode" size={28} color={Colors.WHITE_COLOR} onPress={openScanner} />
           </TouchableOpacity>
 
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={{
               ...styles.option,
             }}
@@ -192,14 +192,14 @@ const SearchScreen = () => {
             {voiceStarted ? (
               <FontAwesome name="microphone-slash" size={28} color={Colors.WHITE_COLOR} onPress={stopSpeechToText} />
             ) : undefined}
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
 
         {searchName.length < 3 ? (
           <View style={styles.centerContainer}>
             <Text style={styles.text}>{i18n.t('type 3 characters to begin search')}</Text>
             <Text style={styles.text}>{i18n.t('press on barcode icon')}</Text>
-            <Text style={styles.text}>{i18n.t('press on microphone icon')}</Text>
+            {/* <Text style={styles.text}>{i18n.t('press on microphone icon')}</Text> */}
           </View>
         ) : undefined}
 
@@ -221,7 +221,7 @@ const SearchScreen = () => {
                 onRefresh={onRefreshing}
               />
             }
-            contentContainerStyle={{ backgroundColor: Colors.BLUE_COLOR }}
+            contentContainerStyle={{ padding: 5 }}
             numColumns={1}
             renderItem={({ item, index }) => <ItemRow key={index} item={item} searchString={searchName} />}
           />

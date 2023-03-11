@@ -1,12 +1,19 @@
 import React from 'react';
 import { View, StyleSheet, TextInput, Text, TouchableOpacity } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 
 // icons
 import { AntDesign } from '@expo/vector-icons';
 
 import { Colors } from '../utils/constants';
 
-const SearchInput = ({ value, onTextChange, placeholder, onSubmitEditing, onKeyPress }) => {
+const SearchInput = ({ value, onTextChange, placeholder, onSubmitEditing, onKeyPress, focus, refrence }) => {
+  useFocusEffect(
+    React.useCallback(() => {
+      if (refrence) refrence.current.focus();
+    }, []),
+  );
+
   return (
     <View style={{ ...styles.container }}>
       <TextInput
@@ -17,6 +24,8 @@ const SearchInput = ({ value, onTextChange, placeholder, onSubmitEditing, onKeyP
         onChangeText={onTextChange}
         onSubmitEditing={onSubmitEditing}
         onKeyPress={onKeyPress}
+        autoFocus={focus}
+        ref={refrence}
       />
       {placeholder?.length && value.trim().length === 0 && (
         <View

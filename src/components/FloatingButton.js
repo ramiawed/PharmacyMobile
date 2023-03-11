@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { View, StyleSheet, Animated, TouchableWithoutFeedback, Text } from 'react-native';
+import { View, StyleSheet, Animated, TouchableWithoutFeedback, Text, Keyboard } from 'react-native';
 import i18n from '../i18n';
 
 // redux stuff
@@ -190,6 +190,7 @@ const FloatingButton = ({ style, animation, toggleMenu }) => {
           onPress={() => {
             toggleMenu();
             index.current = 0;
+            Keyboard.dismiss();
           }}
         >
           <Animated.View style={[styles.button, styles.menu, rotation]}>

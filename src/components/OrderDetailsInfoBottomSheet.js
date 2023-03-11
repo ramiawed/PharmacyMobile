@@ -19,7 +19,7 @@ const OrderDetailsInfoBottomSheet = ({ orderDetails, computeTotalPrice, cancelAc
         <LabelValueRow label={i18n.t('date-label')} value={new Date(orderDetails.createdAt).toLocaleDateString()} />
         {computeTotalPrice && (
           <>
-            <LabelValueRow label={i18n.t('total-invoice-price')} value={computeTotalPrice()} />
+            <LabelValueRow label={i18n.t('total-invoice-price')} value={computeTotalPrice} />
           </>
         )}
       </View>

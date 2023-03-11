@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, Image } from 'react-native';
+import { Colors } from '../utils/constants';
 
 const SplashScreen = () => {
   return (
@@ -11,6 +12,7 @@ const SplashScreen = () => {
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: Colors.WHITE_COLOR,
     width: '100%',
     width: '100%',
     flex: 1,

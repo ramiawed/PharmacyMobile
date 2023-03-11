@@ -5,7 +5,7 @@ import i18n from 'i18n-js';
 import { BottomSheet } from 'react-native-btr';
 import Toast from 'react-native-toast-message';
 
-import { View, StyleSheet, FlatList, Text } from 'react-native';
+import { View, StyleSheet, FlatList, Text, TouchableOpacity } from 'react-native';
 
 // redux stuff
 import { unwrapResult } from '@reduxjs/toolkit';
@@ -69,18 +69,18 @@ const OrderDetailsScreen = ({ route }) => {
     setLoading(false);
   };
 
-  const computeTotalPrice = () => {
-    let total = 0;
+  // const computeTotalPrice = () => {
+  //   let total = 0;
 
-    orderDetails.items.forEach((item) => {
-      total =
-        total +
-        item.qty * item.price -
-        (item.bonus && item.bonusType === OfferTypes.PERCENTAGE ? (item.qty * item.price * item.bonus) / 100 : 0);
-    });
+  //   orderDetails.items.forEach((item) => {
+  //     total =
+  //       total +
+  //       item.qty * item.price -
+  //       (item.bonus && item.bonusType === OfferTypes.PERCENTAGE ? (item.qty * item.price * item.bonus) / 100 : 0);
+  //   });
 
-    return total;
-  };
+  //   return total;
+  // };
 
   const showToast = (type, msg) => {
     Toast.show({
@@ -190,44 +190,63 @@ const OrderDetailsScreen = ({ route }) => {
   ) : orderDetails ? (
     <ScreenWrapper>
       <View style={styles.container}>
-        <View style={styles.actionsView}>
-          <Button
-            color={Colors.LIGHT_COLOR}
-            pressHandler={() => {
+        <View style={styles.actions}>
+          <TouchableOpacity
+            style={{
+              ...styles.option,
+            }}
+            onPress={() => {
               setShowOrderDetailsInfo(true);
             }}
-            text={i18n.t('order-details')}
-          />
+          >
+            <Text style={styles.optionText}>{i18n.t('order-details')}</Text>
+          </TouchableOpacity>
+
           {(user.type === UserTypeConstants.ADMIN || user.type === UserTypeConstants.WAREHOUSE) && (
             <>
-              <Button
-                color={Colors.LIGHT_COLOR}
-                pressHandler={() => {
+              <TouchableOpacity
+                style={{
+                  ...styles.option,
+                }}
+                onPress={() => {
                   setShowConfirmDontServeModal(true);
                 }}
-                text={i18n.t('will-dont-serve-label')}
-              />
-              <Button
-                color={Colors.LIGHT_COLOR}
-                pressHandler={() => {
+              >
+                <Text style={styles.optionText}>{i18n.t('will-dont-serve-label')}</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={{
+                  ...styles.option,
+                }}
+                onPress={() => {
                   setShowConfirmDateBottomSheet(true);
                 }}
-                text={i18n.t('confirm-order-label')}
-              />
-              <Button
-                color={Colors.LIGHT_COLOR}
-                pressHandler={() => {
+              >
+                <Text style={styles.optionText}>{i18n.t('confirm-order-label')}</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={{
+                  ...styles.option,
+                }}
+                onPress={() => {
                   setShowDeliverDateBottomSheet(true);
                 }}
-                text={i18n.t('deliver-order-label')}
-              />
-              <Button
-                color={Colors.LIGHT_COLOR}
-                pressHandler={() => {
+              >
+                <Text style={styles.optionText}>{i18n.t('deliver-order-label')}</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={{
+                  ...styles.option,
+                }}
+                onPress={() => {
                   setShowShippedDateBottomSheet(true);
                 }}
-                text={i18n.t('shipped-order-label')}
-              />
+              >
+                <Text style={styles.optionText}>{i18n.t('shipped-order-label')}</Text>
+              </TouchableOpacity>
             </>
           )}
         </View>
@@ -259,7 +278,7 @@ const OrderDetailsScreen = ({ route }) => {
           keyExtractor={(item) => item._id}
           contentContainerStyle={{ backgroundColor: Colors.WHITE_COLOR }}
           numColumns={1}
-          renderItem={({ item, index }) => <CartItem item={item} key={index} inOrderDetails={true} />}
+          renderItem={({ item, index }) => <CartItem cartItem={item} key={index} inOrderDetails={true} />}
         />
 
         <BottomSheet
@@ -272,7 +291,7 @@ const OrderDetailsScreen = ({ route }) => {
             header="order-details"
             cancelAction={() => setShowOrderDetailsInfo(false)}
             orderDetails={orderDetails}
-            computeTotalPrice={computeTotalPrice}
+            computeTotalPrice={orderDetails.totalInvoicePrice}
           />
         </BottomSheet>
 
@@ -347,6 +366,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.WHITE_COLOR,
     width: '100%',
+    paddingHorizontal: 5,
   },
   actionsView: {
     flexDirection: 'row',
@@ -367,6 +387,23 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   center: { alignItems: 'center', justifyContent: 'center' },
+  actions: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    flexWrap: 'wrap',
+  },
+  option: {
+    width: '48%',
+    backgroundColor: Colors.DARK_COLOR,
+    paddingVertical: 5,
+    marginVertical: 2,
+    marginHorizontal: 2,
+    borderRadius: 6,
+  },
+  optionText: {
+    color: Colors.WHITE_COLOR,
+    textAlign: 'center',
+  },
 });
 
 export default OrderDetailsScreen;
