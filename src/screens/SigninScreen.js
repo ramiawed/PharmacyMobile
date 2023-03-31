@@ -54,8 +54,8 @@ const SignInScreen = ({ navigation }) => {
     if (username.length === 0 && password.length === 0) {
       setPreSignError({
         ...preSignError,
-        username: 'enter-username',
-        password: 'enter-password',
+        username: 'enter username',
+        password: 'enter password',
       });
       return;
     }
@@ -64,7 +64,7 @@ const SignInScreen = ({ navigation }) => {
     if (username.length === 0) {
       setPreSignError({
         ...preSignError,
-        username: 'enter-password',
+        username: 'enter password',
       });
       return;
     }
@@ -73,7 +73,7 @@ const SignInScreen = ({ navigation }) => {
     if (password.length === 0) {
       setPreSignError({
         ...preSignError,
-        password: 'enter-password',
+        password: 'enter password',
       });
       return;
     }
@@ -135,11 +135,11 @@ const SignInScreen = ({ navigation }) => {
                   setGlobalError('');
                   dispatch(resetError());
                 }}
-                placeholder={i18n.t('enter-username')}
+                placeholder={i18n.t('enter username')}
                 icon={<AntDesign name="user" size={24} color={Colors.MAIN_COLOR} />}
                 border={1}
                 error={preSignError?.username}
-                label={i18n.t('user-username')}
+                label={i18n.t('user username')}
               />
               <Input
                 value={password}
@@ -152,12 +152,12 @@ const SignInScreen = ({ navigation }) => {
                   setGlobalError('');
                   dispatch(resetError());
                 }}
-                placeholder={i18n.t('enter-password')}
+                placeholder={i18n.t('enter password')}
                 password={true}
                 icon={<FontAwesome name="lock" size={24} color={Colors.MAIN_COLOR} />}
                 border={1}
                 error={preSignError?.password}
-                label={i18n.t('user-password')}
+                label={i18n.t('user password')}
               />
 
               {error ? <Text style={{ color: Colors.FAILED_COLOR }}>{i18n.t(error)}</Text> : null}
@@ -173,7 +173,7 @@ const SignInScreen = ({ navigation }) => {
               >
                 {i18n.t('forget-password')}
               </Text>
-              <Button text={i18n.t('sign-in')} color={Colors.FAILED_COLOR} pressHandler={signinHanlder} />
+              <Button text={i18n.t('sign in')} color={Colors.FAILED_COLOR} pressHandler={signinHanlder} />
             </View>
             <NavigateBetweenSign isSignIn={true} pressHandler={goToSignUpHandler} />
           </View>

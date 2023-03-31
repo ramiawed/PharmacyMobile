@@ -309,7 +309,7 @@ const OrderDetailsScreen = ({ route }) => {
             }}
             okLabel="ok-label"
             cancelAction={() => setShowConfirmDontServeModal(false)}
-            cancelLabel="cancel-label"
+            cancelLabel="cancel"
           />
         </BottomSheet>
 

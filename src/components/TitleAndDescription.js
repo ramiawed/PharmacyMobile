@@ -19,13 +19,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: Colors.WHITE_COLOR,
+    color: Colors.DARK_COLOR,
     textAlign: 'center',
     paddingTop: 10,
   },
   description: {
     fontSize: 14,
-    color: Colors.WHITE_COLOR,
+    color: Colors.LIGHT_COLOR,
     textAlign: 'center',
   },
 });

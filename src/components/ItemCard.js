@@ -1,7 +1,6 @@
 import React, { memo, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { View, Text, StyleSheet, TouchableWithoutFeedback, ActivityIndicator, Platform, UIManager } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 
 // redux stuff
 import { unwrapResult } from '@reduxjs/toolkit';
@@ -13,7 +12,14 @@ import { addStatistics } from '../redux/statistics/statisticsSlice';
 import { selectUserData } from '../redux/auth/authSlice';
 
 // constants
-import { Colors, UserTypeConstants, checkItemExistsInWarehouse, checkOffer, checkPoints } from '../utils/constants';
+import {
+  Colors,
+  UserTypeConstants,
+  checkItemExistsInWarehouse,
+  checkOffer,
+  checkPoints,
+  LinearGradientColors,
+} from '../utils/constants';
 
 // icons
 import { AntDesign, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -23,6 +29,8 @@ import SwipeableRow from './SwipeableRow';
 import FilteredText from './FilteredText';
 import ItemPrices from './ItemPrices';
 import ItemNames from './ItemNames';
+import CustomLinearGradient from './CustomLinearGradient';
+import i18n from '../i18n';
 
 if (Platform.OS === 'android') {
   if (UIManager.setLayoutAnimationEnabledExperimental) {
@@ -223,173 +231,181 @@ const ItemCard = ({ item, addToCart, searchString }) => {
   const hasPoint = checkPoints(item, user);
 
   return user ? (
-    <SwipeableRow
-      user={user}
-      addItemToWarehouse={addItemToWarehouseHandler}
-      removeItemFromWarehouse={removeItemFromWarehouseHandler}
-      addItemToFavorite={addItemToFavoriteItems}
-      removeItemFromFavorite={removeItemFromFavoritesItems}
-      canAddToCart={canAddToCart}
-      isInWarehouse={isInWarehouse}
-      isFavorite={isFavorite}
-      addToCart={() => addToCartHandler(item)}
-      item={item}
+    // <SwipeableRow
+    //   user={user}
+    //   addItemToWarehouse={addItemToWarehouseHandler}
+    //   removeItemFromWarehouse={removeItemFromWarehouseHandler}
+    //   addItemToFavorite={addItemToFavoriteItems}
+    //   removeItemFromFavorite={removeItemFromFavoritesItems}
+    //   canAddToCart={canAddToCart}
+    //   isInWarehouse={isInWarehouse}
+    //   isFavorite={isFavorite}
+    //   addToCart={() => addToCartHandler(item)}
+    //   item={item}
+    // >
+    <View
+      style={{
+        ...styles.container,
+      }}
     >
-      <View
-        style={{
-          ...styles.container,
-        }}
-      >
-        {hasOffer && hasPoint ? (
-          <LinearGradient colors={['#a4bfb4f1', '#DCEEFF']} style={styles.gradient} />
-        ) : hasOffer ? (
-          <LinearGradient colors={['#DCEEFF', '#DCEEFF']} style={styles.gradient} />
-        ) : hasPoint ? (
-          <LinearGradient colors={['#a4bfb4f1', '#a4bfb4f1']} style={styles.gradient} />
-        ) : undefined}
+      {hasOffer && hasPoint ? (
+        <View style={styles.offerHilightView}>
+          <Text style={styles.higlightText}>
+            {i18n.t('offer')} + {i18n.t('itemswithpoints')}
+          </Text>
+        </View>
+      ) : hasOffer ? (
+        <View style={styles.offerHilightView}>
+          <Text style={styles.higlightText}>{i18n.t('offer')}</Text>
+        </View>
+      ) : hasPoint ? (
+        <View style={styles.offerHilightView}>
+          <Text style={styles.higlightText}>{i18n.t('itemswithpoints')}</Text>
+        </View>
+      ) : undefined}
 
-        <View style={styles.contentView}>
-          <TouchableWithoutFeedback
-            onPress={() => {
-              dispatchStatisticsHandler();
-              navigation.navigate('ItemDetails', {
-                medicineId: item._id,
-              });
-            }}
-          >
-            <View>
-              <View style={styles.row}>
-                <ItemNames item={item} searchString={searchString} />
-                <View style={styles.actionsView}>
-                  {changeAddToWarehouseLoading ? (
+      <View style={styles.contentView}>
+        <TouchableWithoutFeedback
+          onPress={() => {
+            dispatchStatisticsHandler();
+            navigation.navigate('ItemDetails', {
+              medicineId: item._id,
+            });
+          }}
+        >
+          <View>
+            <View style={styles.row}>
+              <ItemNames item={item} searchString={searchString} />
+              <View style={styles.actionsView}>
+                {changeAddToWarehouseLoading ? (
+                  <View>
+                    <ActivityIndicator size="small" color={Colors.YELLOW_COLOR} />
+                  </View>
+                ) : (
+                  user.type === UserTypeConstants.WAREHOUSE && (
                     <View>
-                      <ActivityIndicator size="small" color={Colors.YELLOW_COLOR} />
-                    </View>
-                  ) : (
-                    user.type === UserTypeConstants.WAREHOUSE && (
-                      <View>
-                        {isInWarehouse ? (
-                          <AntDesign
-                            name="delete"
-                            size={28}
-                            color={Colors.FAILED_COLOR}
-                            style={{ paddingHorizontal: 2, marginVertical: 4 }}
-                            onPress={removeItemFromWarehouseHandler}
-                          />
-                        ) : (
-                          <Ionicons
-                            name="add-circle"
-                            size={28}
-                            color={Colors.SUCCEEDED_COLOR}
-                            style={{ paddingHorizontal: 2, marginVertical: 4 }}
-                            onPress={addItemToWarehouseHandler}
-                          />
-                        )}
-                      </View>
-                    )
-                  )}
-                  {user?.type === UserTypeConstants.PHARMACY ? (
-                    checkItemExistsInWarehouse(item, user) ? (
-                      <View>
-                        <Ionicons
-                          name="cart"
-                          size={28}
-                          color={Colors.SUCCEEDED_COLOR}
-                          style={{ paddingHorizontal: 2, marginVertical: 4 }}
-                          onPress={() => addToCart(item)}
-                        />
-                      </View>
-                    ) : changeSaveItemLoading ? (
-                      <View>
-                        <ActivityIndicator size="small" color={Colors.YELLOW_COLOR} />
-                      </View>
-                    ) : savedItems.map((si) => si._id).includes(item._id) ? (
-                      <View>
-                        <MaterialCommunityIcons
-                          name="bookmark-minus"
+                      {isInWarehouse ? (
+                        <AntDesign
+                          name="delete"
                           size={28}
                           color={Colors.FAILED_COLOR}
                           style={{ paddingHorizontal: 2, marginVertical: 4 }}
-                          onPress={removeItemFromSavedItemsHandler}
+                          onPress={removeItemFromWarehouseHandler}
                         />
-                      </View>
-                    ) : (
-                      <View>
-                        <MaterialCommunityIcons
-                          name="bookmark-plus"
+                      ) : (
+                        <Ionicons
+                          name="add-circle"
                           size={28}
                           color={Colors.SUCCEEDED_COLOR}
                           style={{ paddingHorizontal: 2, marginVertical: 4 }}
-                          onPress={addItemToSavedItemsHandler}
-                        />
-                      </View>
-                    )
-                  ) : (
-                    <></>
-                  )}
-                  {changeFavoriteLoading ? (
-                    <View style={{ ...styles.actionIcon, ...styles.favIcon }}>
-                      <ActivityIndicator size="small" color={Colors.YELLOW_COLOR} />
-                    </View>
-                  ) : (
-                    <View style={{ ...styles.actionIcon, ...styles.favIcon }}>
-                      {isFavorite ? (
-                        <AntDesign
-                          name="star"
-                          size={28}
-                          color={Colors.YELLOW_COLOR}
-                          style={{ paddingHorizontal: 2, marginVertical: 4 }}
-                          onPress={removeItemFromFavoritesItems}
-                        />
-                      ) : (
-                        <AntDesign
-                          name="staro"
-                          size={28}
-                          color={Colors.YELLOW_COLOR}
-                          style={{ paddingHorizontal: 2, marginVertical: 4 }}
-                          onPress={addItemToFavoriteItems}
+                          onPress={addItemToWarehouseHandler}
                         />
                       )}
                     </View>
-                  )}
-                </View>
+                  )
+                )}
+                {user?.type === UserTypeConstants.PHARMACY ? (
+                  checkItemExistsInWarehouse(item, user) ? (
+                    <View>
+                      <Ionicons
+                        name="cart"
+                        size={28}
+                        color={Colors.SUCCEEDED_COLOR}
+                        style={{ paddingHorizontal: 2, marginVertical: 4 }}
+                        onPress={() => addToCart(item)}
+                      />
+                    </View>
+                  ) : changeSaveItemLoading ? (
+                    <View>
+                      <ActivityIndicator size="small" color={Colors.YELLOW_COLOR} />
+                    </View>
+                  ) : savedItems.map((si) => si._id).includes(item._id) ? (
+                    <View>
+                      <MaterialCommunityIcons
+                        name="bookmark-minus"
+                        size={28}
+                        color={Colors.FAILED_COLOR}
+                        style={{ paddingHorizontal: 2, marginVertical: 4 }}
+                        onPress={removeItemFromSavedItemsHandler}
+                      />
+                    </View>
+                  ) : (
+                    <View>
+                      <MaterialCommunityIcons
+                        name="bookmark-plus"
+                        size={28}
+                        color={Colors.SUCCEEDED_COLOR}
+                        style={{ paddingHorizontal: 2, marginVertical: 4 }}
+                        onPress={addItemToSavedItemsHandler}
+                      />
+                    </View>
+                  )
+                ) : (
+                  <></>
+                )}
+                {changeFavoriteLoading ? (
+                  <View style={{ ...styles.actionIcon, ...styles.favIcon }}>
+                    <ActivityIndicator size="small" color={Colors.YELLOW_COLOR} />
+                  </View>
+                ) : (
+                  <View style={{ ...styles.actionIcon, ...styles.favIcon }}>
+                    {isFavorite ? (
+                      <AntDesign
+                        name="star"
+                        size={28}
+                        color={Colors.YELLOW_COLOR}
+                        style={{ paddingHorizontal: 2, marginVertical: 4 }}
+                        onPress={removeItemFromFavoritesItems}
+                      />
+                    ) : (
+                      <AntDesign
+                        name="staro"
+                        size={28}
+                        color={Colors.YELLOW_COLOR}
+                        style={{ paddingHorizontal: 2, marginVertical: 4 }}
+                        onPress={addItemToFavoriteItems}
+                      />
+                    )}
+                  </View>
+                )}
               </View>
-
-              <View style={{ ...styles.row, marginVertical: 4, alignItems: 'center' }}>
-                <Text style={styles.companyName}>{item.company.name}</Text>
-                <ItemPrices
-                  price={item.price}
-                  customerPrice={item.customer_price}
-                  showCustomerPrice={user.type !== UserTypeConstants.GUEST}
-                  showPrice={true}
-                />
-              </View>
-
-              {item.composition?.length > 0 ? (
-                <FilteredText
-                  searchText={searchString}
-                  value={item.composition.replaceAll('+', ' ')}
-                  style={styles.composition}
-                />
-              ) : (
-                <></>
-              )}
             </View>
-          </TouchableWithoutFeedback>
-        </View>
+
+            <View style={{ ...styles.row, marginVertical: 4, alignItems: 'center' }}>
+              <Text style={styles.companyName}>{item.company.name}</Text>
+              <ItemPrices
+                price={item.price}
+                customerPrice={item.customer_price}
+                showCustomerPrice={user.type !== UserTypeConstants.GUEST}
+                showPrice={true}
+              />
+            </View>
+
+            {item.composition?.length > 0 ? (
+              <FilteredText
+                searchText={searchString}
+                value={item.composition.replaceAll('+', ' ')}
+                style={styles.composition}
+              />
+            ) : (
+              <></>
+            )}
+          </View>
+        </TouchableWithoutFeedback>
       </View>
-    </SwipeableRow>
-  ) : null;
+    </View>
+  ) : // </SwipeableRow>
+  null;
 };
 
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    // padding: 5,
-    margin: 5,
-    borderRadius: 12,
+    marginHorizontal: 5,
+    borderRadius: 6,
     borderWidth: 1,
     borderColor: Colors.LIGHT_GREY_COLOR,
+    marginVertical: 10,
   },
   row: {
     flexDirection: 'row',
@@ -402,8 +418,7 @@ const styles = StyleSheet.create({
   },
   composition: {
     flex: 1,
-    fontSize: 14,
-    fontWeight: 'bold',
+    fontSize: 12,
     color: Colors.BLUE_COLOR,
     alignItems: 'flex-start',
     textAlign: 'center',
@@ -415,13 +430,18 @@ const styles = StyleSheet.create({
   actionsView: {
     alignItems: 'center',
   },
-  gradient: {
+  offerHilightView: {
     position: 'absolute',
-    width: '100%',
-    height: '100%',
-
-    borderRadius: 6,
+    top: -10,
+    end: 10,
+    backgroundColor: '#E3FF00',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 3,
+    paddingHorizontal: 3,
+    paddingVertical: 1,
   },
+  higlightText: { color: Colors.DARK_COLOR, fontSize: 12 },
 });
 
 export default memo(ItemCard);

@@ -241,7 +241,7 @@ const OrdersScreen = () => {
 
           {user.type !== UserTypeConstants.WAREHOUSE && (
             <SearchInput
-              placeholder={i18n.t('search-by-warehouse-name')}
+              placeholder={i18n.t('search by warehouse name')}
               onTextChange={(val) => {
                 dispatch(setSearchWarehouseName(val));
               }}

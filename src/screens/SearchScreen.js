@@ -3,6 +3,8 @@ import axios from 'axios';
 import { View, StyleSheet, TouchableOpacity, Keyboard, FlatList, Text, RefreshControl } from 'react-native';
 import Voice from '@react-native-voice/voice';
 import i18n from '../i18n';
+// libraries
+import { BottomSheet } from 'react-native-btr';
 
 // components
 import PullDownToRefresh from '../components/PullDownToRefresh';
@@ -12,6 +14,8 @@ import LoadingData from '../components/LoadingData';
 import Scanner from '../components/Scanner';
 import ItemRow from '../components/ItemRow';
 import ScreenWrapper from './ScreenWrapper';
+import AddToCart from '../components/AddToCart';
+import ItemCard from '../components/ItemCard';
 
 // redux stuff
 import { useSelector } from 'react-redux';
@@ -19,7 +23,6 @@ import { selectUserData } from '../redux/auth/authSlice';
 
 // icons
 import { AntDesign } from '@expo/vector-icons';
-import { FontAwesome } from '@expo/vector-icons';
 
 // constants
 import { BASEURL, Colors } from '../utils/constants';
@@ -30,8 +33,9 @@ let source = null;
 const SearchScreen = () => {
   const { token } = useSelector(selectUserData);
 
-  const inputRef = useRef();
-
+  // const inputRef = useRef();
+  const [showAddToCartModal, setShowAddToCartModal] = useState(false);
+  const [itemToAddToCart, setItemToAddToCart] = useState(null);
   const [searchName, setSearchName] = useState('');
   const [showScanner, setShowScanner] = useState(false);
   const [voiceStarted, setVoiceStarted] = useState(false);
@@ -108,8 +112,10 @@ const SearchScreen = () => {
   };
 
   const moreDataHandler = () => {
-    setPage(page + 1);
-    searchHandler(searchName, false, page + 1);
+    if (!loading) {
+      setPage(page + 1);
+      searchHandler(searchName, false, page + 1);
+    }
   };
 
   const scannerDoneHandler = (val) => {
@@ -120,6 +126,11 @@ const SearchScreen = () => {
   const openScanner = () => {
     Keyboard.dismiss();
     setShowScanner(true);
+  };
+
+  const setTheItemToAddToCartHandler = (item) => {
+    setItemToAddToCart(item);
+    setShowAddToCartModal(true);
   };
 
   // useEffect(() => {
@@ -159,13 +170,13 @@ const SearchScreen = () => {
       <View style={styles.outerContainer}>
         <SearchContainer>
           <SearchInput
-            placeholder={i18n.t('search-home-placeholder')}
+            placeholder={i18n.t('search home placeholder')}
             onTextChange={(val) => {
               onTextChangeHandler(val);
             }}
             value={searchName}
-            focus={true}
-            refrence={inputRef}
+            // focus={true}
+            // refrence={inputRef}
           />
         </SearchContainer>
 
@@ -203,7 +214,7 @@ const SearchScreen = () => {
           </View>
         ) : undefined}
 
-        {searchName.length >= 3 && items.length === 0 && !loading ? (
+        {searchName.length >= 3 && searchName.length === 0 && !loading ? (
           <View style={styles.centerContainer}>
             <Text style={styles.text}>{i18n.t('search-empty')}</Text>
           </View>
@@ -223,10 +234,21 @@ const SearchScreen = () => {
             }
             contentContainerStyle={{ padding: 5 }}
             numColumns={1}
-            renderItem={({ item, index }) => <ItemRow key={index} item={item} searchString={searchName} />}
+            renderItem={({ item, index }) => (
+              <ItemCard
+                key={index}
+                item={item}
+                searchString={searchName}
+                addToCart={() => {
+                  setTheItemToAddToCartHandler(item);
+                }}
+              />
+            )}
           />
         )}
+
         {loading && <LoadingData />}
+
         {items?.length !== 0 && items?.length < count && !loading ? (
           <TouchableOpacity onPress={moreDataHandler} style={styles.moreBtn}>
             <Text style={styles.moreText}>
@@ -234,9 +256,19 @@ const SearchScreen = () => {
             </Text>
           </TouchableOpacity>
         ) : undefined}
+
         {items?.length !== 0 && items?.length === count ? (
           <Text style={styles.text}>{i18n.t('no-more')}</Text>
         ) : undefined}
+
+        <BottomSheet
+          visible={showAddToCartModal}
+          onBackButtonPress={() => setShowAddToCartModal(false)}
+          onBackdropPress={() => setShowAddToCartModal(false)}
+        >
+          <AddToCart item={itemToAddToCart} close={() => setShowAddToCartModal(false)} />
+        </BottomSheet>
+
         {showScanner && <Scanner onScannerDone={scannerDoneHandler} close={() => setShowScanner(false)} />}
       </View>
     </ScreenWrapper>

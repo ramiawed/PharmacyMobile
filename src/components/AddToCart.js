@@ -3,16 +3,15 @@ import React, { useState } from 'react';
 
 import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import 'react-native-get-random-values';
-import { v4 as uuidv4 } from 'uuid';
-import uuid from 'react-native-uuid';
 
 // icons
 import { Ionicons } from '@expo/vector-icons';
 
 // components
-import CheckBox from 'expo-checkbox';
+import CustomLinearGradient from './CustomLinearGradient';
 import OfferDetailsRow from './OfferDetailsRow';
 import PointDetailRow from './PointDetailRow';
+import CheckBox from 'expo-checkbox';
 
 // redux stuff
 import { useDispatch, useSelector } from 'react-redux';
@@ -23,8 +22,7 @@ import { selectMedicines } from '../redux/medicines/medicinesSlices';
 import { removeSavedItem } from '../redux/savedItems/savedItemsSlice';
 
 // constants
-import { Colors } from '../utils/constants';
-import { concat } from 'react-native-reanimated';
+import { Colors, LinearGradientColors } from '../utils/constants';
 
 const AddToCart = ({ item, close, fromSavedItems }) => {
   const dispatch = useDispatch();
@@ -130,6 +128,7 @@ const AddToCart = ({ item, close, fromSavedItems }) => {
     <View
       style={{
         backgroundColor: Colors.WHITE_COLOR,
+        zIndex: 100,
       }}
     >
       <Text style={styles.header}>{i18n.t('add-to-cart')}</Text>
@@ -182,15 +181,30 @@ const AddToCart = ({ item, close, fromSavedItems }) => {
             style={styles.selectedQty}
             keyboardType="number-pad"
             maxLength={3}
+            autoFocus={true}
           />
         </View>
       </View>
 
-      {offer?.offers.length > 0 &&
-        offer.offers.map((o, index) => <OfferDetailsRow key={index} offer={o} offerMode={offer.mode} />)}
+      {offer?.offers.length > 0 && (
+        <CustomLinearGradient colors={LinearGradientColors.OFFERS}>
+          <View style={{ backgroundColor: Colors.WHITE_COLOR }}>
+            {offer.offers.map((o, index) => (
+              <OfferDetailsRow key={index} offer={o} offerMode={offer.mode} />
+            ))}
+          </View>
+        </CustomLinearGradient>
+      )}
 
-      {selectedWarehouse?.points &&
-        selectedWarehouse.points.map((point, index) => <PointDetailRow key={index} point={point} />)}
+      {selectedWarehouse?.points.length > 0 && (
+        <CustomLinearGradient colors={LinearGradientColors.POINTS}>
+          <View style={{ backgroundColor: Colors.WHITE_COLOR }}>
+            {selectedWarehouse.points.map((point, index) => (
+              <PointDetailRow key={index} point={point} />
+            ))}
+          </View>
+        </CustomLinearGradient>
+      )}
 
       <View style={styles.actions}>
         <TouchableOpacity
@@ -212,7 +226,7 @@ const AddToCart = ({ item, close, fromSavedItems }) => {
             backgroundColor: Colors.FAILED_COLOR,
           }}
         >
-          <Text style={{ ...styles.actionText }}>{i18n.t('cancel-label')}</Text>
+          <Text style={{ ...styles.actionText }}>{i18n.t('cancel')}</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -299,6 +313,12 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     width: '100%',
     marginVertical: 5,
+  },
+  gradient: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    borderRadius: 6,
   },
 });
 

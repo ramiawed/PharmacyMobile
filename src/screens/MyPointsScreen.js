@@ -12,6 +12,7 @@ import { getMyPoints, selectUserData } from '../redux/auth/authSlice';
 // constants
 import { Colors } from '../utils/constants';
 import { unwrapResult } from '@reduxjs/toolkit';
+import MyPointsDescriptionAr from '../components/MyPointsDescriptionAr';
 
 const MyPointsScreen = () => {
   const dispatch = useDispatch();
@@ -41,6 +42,7 @@ const MyPointsScreen = () => {
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefreshing} />}
         >
           <Text style={styles.points}>{user.points}</Text>
+          <MyPointsDescriptionAr />
         </ScrollView>
       </View>
     </ScreenWrapper>

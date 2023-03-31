@@ -6,7 +6,6 @@ import { Ionicons } from '@expo/vector-icons';
 // components
 import PointDetailsRow from './PointDetailRow';
 import OfferDetailsRow from './OfferDetailsRow';
-import Separator from './Separator';
 
 // redux stuff
 import { addStatistics } from '../redux/statistics/statisticsSlice';
@@ -15,7 +14,8 @@ import { addItemToCart } from '../redux/cart/cartSlice';
 import { useDispatch, useSelector } from 'react-redux';
 
 // constants
-import { Colors } from '../utils/constants';
+import { Colors, LinearGradientColors } from '../utils/constants';
+import CustomLinearGradient from './CustomLinearGradient';
 
 const AddToCartOffer = ({ item, close }) => {
   const addToCartItem = {
@@ -128,15 +128,27 @@ const AddToCartOffer = ({ item, close }) => {
         </View>
       </View>
 
-      {addToCartItem.warehouses[0].offer.offers.map((o, index) => (
-        <OfferDetailsRow offerMode={addToCartItem.warehouses[0].offer.mode} key={index} offer={o} />
-      ))}
+      {addToCartItem.warehouses[0].offer.offers.length > 0 && (
+        <CustomLinearGradient colors={LinearGradientColors.OFFERS}>
+          <View style={{ backgroundColor: Colors.WHITE_COLOR }}>
+            {addToCartItem.warehouses[0].offer.offers.map((o, index) => (
+              <OfferDetailsRow offerMode={addToCartItem.warehouses[0].offer.mode} key={index} offer={o} />
+            ))}
+          </View>
+        </CustomLinearGradient>
+      )}
 
-      {addToCartItem.warehouses[0].points && <Separator />}
+      {/* {addToCartItem.warehouses[0].points && <Separator />} */}
 
-      {addToCartItem.warehouses[0].points?.map((o, index) => (
-        <PointDetailsRow key={index} point={o} />
-      ))}
+      {addToCartItem.warehouses[0].points?.length > 0 && (
+        <CustomLinearGradient colors={LinearGradientColors.POINTS}>
+          <View style={{ backgroundColor: Colors.WHITE_COLOR }}>
+            {addToCartItem.warehouses[0].points?.map((o, index) => (
+              <PointDetailsRow key={index} point={o} />
+            ))}
+          </View>
+        </CustomLinearGradient>
+      )}
 
       <View style={styles.actions}>
         <TouchableOpacity
@@ -158,7 +170,7 @@ const AddToCartOffer = ({ item, close }) => {
             backgroundColor: Colors.FAILED_COLOR,
           }}
         >
-          <Text style={{ ...styles.actionText }}>{i18n.t('cancel-label')}</Text>
+          <Text style={{ ...styles.actionText }}>{i18n.t('cancel')}</Text>
         </TouchableOpacity>
       </View>
     </View>

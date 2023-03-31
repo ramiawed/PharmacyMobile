@@ -126,7 +126,7 @@ const ChooseDateBottomSheet = ({ cancelAction, header, message, handler, withTim
           onPress={cancelAction}
           style={{ ...styles.actionView, flex: 1, backgroundColor: Colors.FAILED_COLOR }}
         >
-          <Text style={{ ...styles.actionText }}>{i18n.t('cancel-label')}</Text>
+          <Text style={{ ...styles.actionText }}>{i18n.t('cancel')}</Text>
         </TouchableOpacity>
       </View>
     </View>

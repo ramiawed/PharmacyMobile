@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
     color: Colors.BLUE_COLOR,
     paddingHorizontal: 10,
     borderRadius: 6,
-    width: 50,
+    width: 60,
     textAlign: 'center',
   },
   totalPrice: {

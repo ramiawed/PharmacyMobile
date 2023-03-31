@@ -64,7 +64,7 @@ const FavoriteScreen = ({}) => {
       <View style={styles.container}>
         <PullDownToRefresh />
         <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
-          <CollapseSection header="nav-items" favorites={favoritesItems} type="item" isOpen={true} />
+          <CollapseSection header="nav items" favorites={favoritesItems} type="item" isOpen={true} />
           <CollapseSection header="companies" favorites={favoritesCompanies} type="company" isOpen={false} />
           <CollapseSection header="warehouses" favorites={favoritesWarehouses} type="warehouse" isOpen={false} />
         </ScrollView>

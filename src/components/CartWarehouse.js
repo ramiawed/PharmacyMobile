@@ -225,7 +225,7 @@ const CartWarehouse = ({ warehouse, index }) => {
           header="send-order"
           message="confirm-save-order"
           okLabel="ok-label"
-          cancelLabel="cancel-label"
+          cancelLabel="cancel"
           okAction={sendOrderHandler}
           cancelAction={() => setShowConfirmSaveOrder(false)}
         />
@@ -242,7 +242,7 @@ const CartWarehouse = ({ warehouse, index }) => {
         <ConfirmBottomSheet
           header="minimum-invoice-cost"
           message="minimum-invoice-cost-error"
-          cancelLabel="cancel-label"
+          cancelLabel="cancel"
           cancelAction={() => setShowWarningMsg(false)}
         />
       </BottomSheet>

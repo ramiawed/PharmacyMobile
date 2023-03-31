@@ -22,7 +22,7 @@ const AboutScreen = () => {
   return (
     <View style={styles.container}>
       <Image source={require('../../assets/logo.png')} style={{ width: 150, height: 150, resizeMode: 'contain' }} />
-      <Text style={styles.appName}>{i18n.t('app-name')}</Text>
+      <Text style={styles.appName}>{i18n.t('app name')}</Text>
       <Text style={styles.version}>Version: 1.0.10</Text>
       <TouchableOpacity
         style={styles.checkBtn}

@@ -1,35 +1,30 @@
-import React, { useEffect, useState } from "react";
-import i18n from "i18n-js";
-import axios from "axios";
+import React, { useEffect, useState } from 'react';
+import i18n from 'i18n-js';
+import axios from 'axios';
 
-import { BottomSheet } from "react-native-btr";
-import Toast from "react-native-toast-message";
-import { View, Text, StyleSheet } from "react-native";
+import { BottomSheet } from 'react-native-btr';
+import Toast from 'react-native-toast-message';
+import { View, Text, StyleSheet } from 'react-native';
 
 // redux stuff
-import { updateBasketOrder } from "../redux/orders/ordersSlice";
-import { useDispatch, useSelector } from "react-redux";
-import { unwrapResult } from "@reduxjs/toolkit";
-import { selectUserData } from "../redux/auth/authSlice";
+import { updateBasketOrder } from '../redux/orders/ordersSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { unwrapResult } from '@reduxjs/toolkit';
+import { selectUserData } from '../redux/auth/authSlice';
 
 // icons
 
 // constants
-import {
-  BASEURL,
-  Colors,
-  OrdersStatusOptions,
-  UserTypeConstants,
-} from "../utils/constants";
+import { BASEURL, Colors, OrdersStatusOptions, UserTypeConstants } from '../utils/constants';
 
 // component
-import OrderDetailsInfoBottomSheet from "../components/OrderDetailsInfoBottomSheet";
-import ChooseDateBottomSheet from "../components/ChooseDateBottomSheet";
-import ConfirmBottomSheet from "../components/ConfirmBottomSheet";
-import Loader from "../components/Loader";
-import Basket from "../components/Basket";
-import Button from "../components/Button";
-import ScreenWrapper from "./ScreenWrapper";
+import OrderDetailsInfoBottomSheet from '../components/OrderDetailsInfoBottomSheet';
+import ChooseDateBottomSheet from '../components/ChooseDateBottomSheet';
+import ConfirmBottomSheet from '../components/ConfirmBottomSheet';
+import Loader from '../components/Loader';
+import Basket from '../components/Basket';
+import Button from '../components/Button';
+import ScreenWrapper from './ScreenWrapper';
 
 const BasketOrderDetailsScreen = ({ route }) => {
   let { orderId } = route.params;
@@ -40,19 +35,15 @@ const BasketOrderDetailsScreen = ({ route }) => {
 
   const [orderDetails, setOrderDetails] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [emptyMsg, setEmptyMsg] = useState("");
+  const [emptyMsg, setEmptyMsg] = useState('');
   const [showOrderDetailsInfo, setShowOrderDetailsInfo] = useState(false);
-  const [showConfirmDontServerModal, setShowConfirmDontServeModal] =
-    useState(false);
-  const [showConfirmDateBottomSheet, setShowConfirmDateBottomSheet] =
-    useState(false);
-  const [showDeliverDateBottomSheet, setShowDeliverDateBottomSheet] =
-    useState(false);
-  const [showShippedDateBottomSheet, setShowShippedDateBottomSheet] =
-    useState(false);
+  const [showConfirmDontServerModal, setShowConfirmDontServeModal] = useState(false);
+  const [showConfirmDateBottomSheet, setShowConfirmDateBottomSheet] = useState(false);
+  const [showDeliverDateBottomSheet, setShowDeliverDateBottomSheet] = useState(false);
+  const [showShippedDateBottomSheet, setShowShippedDateBottomSheet] = useState(false);
 
   const getBasketOrderDetails = async () => {
-    setEmptyMsg("");
+    setEmptyMsg('');
     setLoading(true);
     axios
       .get(`${BASEURL}/ordered-baskets/details?id=${orderId}`, {
@@ -62,13 +53,13 @@ const BasketOrderDetailsScreen = ({ route }) => {
       })
       .then((response) => {
         if (response.data.data.order === null) {
-          setEmptyMsg("order-deleted");
+          setEmptyMsg('order-deleted');
         } else {
           setOrderDetails(response.data.data.basketOrder);
         }
       })
       .catch((err) => {
-        setEmptyMsg("order-details-error");
+        setEmptyMsg('order-details-error');
       });
 
     setLoading(false);
@@ -77,7 +68,7 @@ const BasketOrderDetailsScreen = ({ route }) => {
   const showToast = (type, msg) => {
     Toast.show({
       type: type,
-      text1: i18n.t("edit-order-label"),
+      text1: i18n.t('edit-order-label'),
       text2: i18n.t(msg),
     });
   };
@@ -91,14 +82,14 @@ const BasketOrderDetailsScreen = ({ route }) => {
         },
         id: orderId,
         token,
-      })
+      }),
     )
       .then(unwrapResult)
       .then(() => {
-        showToast("success", "change-order-status-success");
+        showToast('success', 'change-order-status-success');
       })
       .catch(() => {
-        showToast("error", "change-order-status-failed");
+        showToast('error', 'change-order-status-failed');
       });
   };
 
@@ -113,20 +104,20 @@ const BasketOrderDetailsScreen = ({ route }) => {
         },
         id: orderId,
         token,
-      })
+      }),
     )
       .then(unwrapResult)
       .then(() => {
-        showToast("success", "change-order-status-success");
+        showToast('success', 'change-order-status-success');
       })
       .catch(() => {
-        showToast("error", "change-order-status-failed");
+        showToast('error', 'change-order-status-failed');
       });
   };
 
   const deliverHandler = (date, time) => {
     const deliverDate = date ? new Date(date) : new Date();
-    const deliverTime = time ? time : "";
+    const deliverTime = time ? time : '';
 
     dispatch(
       updateBasketOrder({
@@ -137,20 +128,20 @@ const BasketOrderDetailsScreen = ({ route }) => {
         },
         id: orderId,
         token,
-      })
+      }),
     )
       .then(unwrapResult)
       .then(() => {
-        showToast("success", "change-order-status-success");
+        showToast('success', 'change-order-status-success');
       })
       .catch(() => {
-        showToast("error", "change-order-status-failed");
+        showToast('error', 'change-order-status-failed');
       });
   };
 
   const shippedHandler = (date, time) => {
     const shippedDate = date ? new Date(date) : null;
-    const shippedTime = time ? time : "";
+    const shippedTime = time ? time : '';
 
     dispatch(
       updateBasketOrder({
@@ -161,14 +152,14 @@ const BasketOrderDetailsScreen = ({ route }) => {
         },
         id: orderId,
         token,
-      })
+      }),
     )
       .then(unwrapResult)
       .then(() => {
-        showToast("success", "change-order-status-success");
+        showToast('success', 'change-order-status-success');
       })
       .catch(() => {
-        showToast("error", "change-order-status-failed");
+        showToast('error', 'change-order-status-failed');
       });
   };
 
@@ -187,38 +178,37 @@ const BasketOrderDetailsScreen = ({ route }) => {
             pressHandler={() => {
               setShowOrderDetailsInfo(true);
             }}
-            text={i18n.t("order-details")}
+            text={i18n.t('order-details')}
           />
-          {(user.type === UserTypeConstants.ADMIN ||
-            user.type === UserTypeConstants.WAREHOUSE) && (
+          {(user.type === UserTypeConstants.ADMIN || user.type === UserTypeConstants.WAREHOUSE) && (
             <>
               <Button
                 color={Colors.LIGHT_COLOR}
                 pressHandler={() => {
                   setShowConfirmDontServeModal(true);
                 }}
-                text={i18n.t("will-dont-serve-label")}
+                text={i18n.t('will-dont-serve-label')}
               />
               <Button
                 color={Colors.LIGHT_COLOR}
                 pressHandler={() => {
                   setShowConfirmDateBottomSheet(true);
                 }}
-                text={i18n.t("confirm-order-label")}
+                text={i18n.t('confirm-order-label')}
               />
               <Button
                 color={Colors.LIGHT_COLOR}
                 pressHandler={() => {
                   setShowDeliverDateBottomSheet(true);
                 }}
-                text={i18n.t("deliver-order-label")}
+                text={i18n.t('deliver-order-label')}
               />
               <Button
                 color={Colors.LIGHT_COLOR}
                 pressHandler={() => {
                   setShowShippedDateBottomSheet(true);
                 }}
-                text={i18n.t("shipped-order-label")}
+                text={i18n.t('shipped-order-label')}
               />
             </>
           )}
@@ -252,7 +242,7 @@ const BasketOrderDetailsScreen = ({ route }) => {
             }}
             okLabel="ok-label"
             cancelAction={() => setShowConfirmDontServeModal(false)}
-            cancelLabel="cancel-label"
+            cancelLabel="cancel"
           />
         </BottomSheet>
 
@@ -308,13 +298,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.WHITE_COLOR,
-    width: "100%",
+    width: '100%',
   },
   actionsView: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    alignItems: "center",
-    justifyContent: "space-around",
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    justifyContent: 'space-around',
     padding: 5,
   },
 });

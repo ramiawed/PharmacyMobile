@@ -8,7 +8,7 @@ import { selectUserData } from '../redux/auth/authSlice';
 import { addStatistics } from '../redux/statistics/statisticsSlice';
 
 // constants
-import { Colors, UserTypeConstants } from '../utils/constants';
+import { Colors, LinearGradientColors, UserTypeConstants } from '../utils/constants';
 
 // icons
 import { AntDesign, Ionicons } from '@expo/vector-icons';
@@ -19,6 +19,7 @@ import PointDetailsRow from './PointDetailRow';
 import OfferDetailsRow from './OfferDetailsRow';
 import ItemNames from './ItemNames';
 import ItemPrices from './ItemPrices';
+import CustomLinearGradient from './CustomLinearGradient';
 
 const ItemOfferCard = ({ item, addToCart, type, searchString }) => {
   const navigation = useNavigation();
@@ -97,35 +98,27 @@ const ItemOfferCard = ({ item, addToCart, type, searchString }) => {
           </View>
         </TouchableWithoutFeedback>
 
-        <TouchableWithoutFeedback onPress={changeExpandedStatus}>
-          <View style={styles.row}>
-            {expanded ? (
-              <AntDesign name="caretup" size={16} color={Colors.BLUE_COLOR} />
-            ) : (
-              <AntDesign name="caretdown" size={16} color={Colors.BLUE_COLOR} />
-            )}
-            <Text style={styles.warehouseName}>{item.warehouses.warehouse[0].name}</Text>
-          </View>
-        </TouchableWithoutFeedback>
+        <CustomLinearGradient colors={type === 'offer' ? LinearGradientColors.OFFERS : LinearGradientColors.POINTS}>
+          <TouchableWithoutFeedback onPress={changeExpandedStatus}>
+            <View style={{ backgroundColor: Colors.WHITE_COLOR, borderRadius: 6, padding: 3 }}>
+              {/* {type === 'offer' && <CustomLinearGradient colors={LinearGradientColors.OFFERS} />} */}
 
-        {expanded && (
-          <>
-            <View style={styles.separator}></View>
-            {type === 'offer' ? (
-              item.warehouses.offer.offers.map((o, index) => (
-                <OfferDetailsRow key={index} offerMode={item.warehouses.offer.mode} offer={o} />
-              ))
-            ) : (
-              <></>
-            )}
+              {/* {type === 'point' && <CustomLinearGradient colors={LinearGradientColors.POINTS} />} */}
 
-            {type === 'point' ? (
-              item.warehouses.points.map((o, index) => <PointDetailsRow key={index} point={o} />)
-            ) : (
-              <></>
-            )}
-          </>
-        )}
+              <Text style={styles.warehouseName}>{item.warehouses.warehouse[0].name}</Text>
+
+              {expanded &&
+                type === 'offer' &&
+                item.warehouses.offer.offers.map((o, index) => (
+                  <OfferDetailsRow key={index} offerMode={item.warehouses.offer.mode} offer={o} />
+                ))}
+
+              {expanded &&
+                type === 'point' &&
+                item.warehouses.points.map((o, index) => <PointDetailsRow key={index} point={o} />)}
+            </View>
+          </TouchableWithoutFeedback>
+        </CustomLinearGradient>
       </View>
     </OfferSwipeableRow>
   ) : null;
@@ -158,10 +151,9 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.WHITE_COLOR,
   },
   warehouseName: {
-    flex: 1,
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: Colors.BLUE_COLOR,
+    fontSize: 14,
+    color: Colors.DARK_COLOR,
+    textAlign: 'center',
   },
 });
 

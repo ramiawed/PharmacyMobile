@@ -47,7 +47,7 @@ const OffersScreen = ({ navigation }) => {
 
   // selectors
   const { token, user } = useSelector(selectUserData);
-  const { medicines, status, pageState, count } = useSelector(selectOfferMedicines);
+  const { medicines, status, pageState, count, initialSearch } = useSelector(selectOfferMedicines);
 
   // own state
   const [showAddToCartModal, setShowAddToCartModal] = useState(false);
@@ -106,13 +106,15 @@ const OffersScreen = ({ navigation }) => {
   useFocusEffect(
     useCallback(() => {
       // Do something when the screen is focused
-      dispatch(resetOfferItemsArray());
-      handleSearch();
+      if (initialSearch) {
+        handleSearch();
+      }
+      // dispatch(resetOfferItemsArray());
 
       return () => {
         cancelOperation();
       };
-    }, []),
+    }, [initialSearch]),
   );
 
   return user ? (
@@ -121,7 +123,7 @@ const OffersScreen = ({ navigation }) => {
         <SearchContainer>
           <>
             <SearchInput
-              placeholder={i18n.t('search-by-name-composition-barcode')}
+              placeholder={i18n.t('search by name-composition-barcode')}
               onTextChange={(val) => {
                 dispatch(setSearchName(val));
               }}

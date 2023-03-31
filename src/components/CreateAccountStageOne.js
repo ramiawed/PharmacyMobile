@@ -22,7 +22,7 @@ const CreateAccountStageOne = ({ type, changeType, setStage, setPrevStage, reset
   return (
     <View style={styles.container}>
       <View>
-        <Text style={styles.title}>{i18n.t('choose-user-type')}</Text>
+        <Text style={styles.title}>{i18n.t('choose user type')}</Text>
         <Text
           style={[styles.option, type === UserTypeConstants.COMPANY ? styles.selected : null]}
           onPress={() => changeUserTypeHanlder(UserTypeConstants.COMPANY)}

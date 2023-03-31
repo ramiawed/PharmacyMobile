@@ -37,7 +37,7 @@ const DeleteMe = ({}) => {
 
   const checkPasswordEmpty = () => {
     if (passwordForDelete.length === 0) {
-      setPasswordForDeleteError('enter-password');
+      setPasswordForDeleteError('enter password');
       return;
     }
     setShowDeleteConfirmBts(true);
@@ -85,7 +85,7 @@ const DeleteMe = ({}) => {
         }}
       >
         <View style={styles.row}>
-          <Text style={styles.label}>{i18n.t('user-password')}</Text>
+          <Text style={styles.label}>{i18n.t('user password')}</Text>
           <TextInput
             value={passwordForDelete}
             onChangeText={(val) => {
@@ -118,7 +118,7 @@ const DeleteMe = ({}) => {
       >
         <ConfirmBottomSheet
           okLabel="ok-label"
-          cancelLabel="cancel-label"
+          cancelLabel="cancel"
           cancelAction={() => setShowDeleteConfirmBts(false)}
           okAction={handleDeleteMe}
           header="delete-account"

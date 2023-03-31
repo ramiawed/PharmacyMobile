@@ -1,28 +1,24 @@
-import React, { useDebugValue, useState } from "react";
-import i18n from "../i18n";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import Toast from "react-native-toast-message";
+import React, { useDebugValue, useState } from 'react';
+import i18n from '../i18n';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import Toast from 'react-native-toast-message';
 
 // libraries
-import CheckBox from "expo-checkbox";
-import { BottomSheet } from "react-native-btr";
+import CheckBox from 'expo-checkbox';
+import { BottomSheet } from 'react-native-btr';
 
 // components
-import ConfirmBottomSheet from "./ConfirmBottomSheet";
-import Loader from "./Loader";
+import ConfirmBottomSheet from './ConfirmBottomSheet';
+import Loader from './Loader';
 
 // constants and utils
-import {
-  Colors,
-  OrdersStatusOptions,
-  UserTypeConstants,
-} from "../utils/constants";
+import { Colors, OrdersStatusOptions, UserTypeConstants } from '../utils/constants';
 
 // redux stuff
-import { unwrapResult } from "@reduxjs/toolkit";
-import { useDispatch, useSelector } from "react-redux";
-import { selectUserData } from "../redux/auth/authSlice";
-import { saveBasketOrder } from "../redux/orders/ordersSlice";
+import { unwrapResult } from '@reduxjs/toolkit';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectUserData } from '../redux/auth/authSlice';
+import { saveBasketOrder } from '../redux/orders/ordersSlice';
 // import { saveOrder } from "../redux/basketOrdersSlice/basketOrdersSlice";
 
 const Basket = ({ basket }) => {
@@ -61,17 +57,17 @@ const Basket = ({ basket }) => {
       .then(() => {
         setShowLoadingModal(false);
         Toast.show({
-          type: "success",
-          text1: i18n.t("order-basket"),
-          text2: i18n.t("order-basket-succeeded"),
+          type: 'success',
+          text1: i18n.t('order-basket'),
+          text2: i18n.t('order-basket-succeeded'),
         });
       })
       .catch((err) => {
         setShowLoadingModal(false);
         Toast.show({
-          type: "error",
-          text1: i18n.t("order-basket"),
-          text2: i18n.t("order-basket-failed"),
+          type: 'error',
+          text1: i18n.t('order-basket'),
+          text2: i18n.t('order-basket-failed'),
         });
       });
   };
@@ -90,13 +86,11 @@ const Basket = ({ basket }) => {
             <Text style={styles.itemName}>{item.item.name}</Text>
             <View style={styles.itemDetails}>
               <View style={styles.itemDetailsCell}>
-                <Text style={styles.itemDetailsLabel}>
-                  {i18n.t("item-price")}
-                </Text>
+                <Text style={styles.itemDetailsLabel}>{i18n.t('item-price')}</Text>
                 <Text style={styles.itemDetailsValue}>{item.item.price}</Text>
               </View>
               <View style={styles.itemDetailsCell}>
-                <Text style={styles.itemDetailsLabel}>{i18n.t("free")}</Text>
+                <Text style={styles.itemDetailsLabel}>{i18n.t('free')}</Text>
                 <CheckBox
                   value={item.isFree}
                   style={{
@@ -106,73 +100,51 @@ const Basket = ({ basket }) => {
                 />
               </View>
               <View style={styles.itemDetailsCell}>
-                <Text style={styles.itemDetailsLabel}>
-                  {i18n.t("item-qty")}
-                </Text>
+                <Text style={styles.itemDetailsLabel}>{i18n.t('item-qty')}</Text>
                 <Text style={styles.itemDetailsValue}>{item.qty}</Text>
               </View>
               <View style={styles.itemDetailsCell}>
-                <Text style={styles.itemDetailsLabel}>{i18n.t("pieces")}</Text>
+                <Text style={styles.itemDetailsLabel}>{i18n.t('pieces')}</Text>
                 <Text style={styles.itemDetailsValue}>{item.bonus}</Text>
               </View>
               <View style={styles.itemDetailsCell}>
-                <Text style={styles.itemDetailsLabel}>
-                  {i18n.t("total-price")}
-                </Text>
-                <Text style={styles.itemDetailsValue}>
-                  {item.isFree ? 0 : item.qty * item.item.price}
-                </Text>
+                <Text style={styles.itemDetailsLabel}>{i18n.t('total-price')}</Text>
+                <Text style={styles.itemDetailsValue}>{item.isFree ? 0 : item.qty * item.item.price}</Text>
               </View>
             </View>
           </View>
         ))}
         <View style={styles.row}>
-          <Text style={[styles.label, styles.minWidth]}>
-            {i18n.t("basket-total-items")}
-          </Text>
+          <Text style={[styles.label, styles.minWidth]}>{i18n.t('basket-total-items')}</Text>
           <Text style={styles.value}>{basket.items.length}</Text>
         </View>
         <View style={styles.row}>
-          <Text style={[styles.label, styles.minWidth]}>
-            {i18n.t("basket-total-price")}
-          </Text>
+          <Text style={[styles.label, styles.minWidth]}>{i18n.t('basket-total-price')}</Text>
           <Text style={styles.value}>{calculateBasketTotalPrice()}</Text>
         </View>
         <View style={styles.row}>
-          <Text style={[styles.label, styles.minWidth]}>
-            {i18n.t("basket-total-discount")}
-          </Text>
+          <Text style={[styles.label, styles.minWidth]}>{i18n.t('basket-total-discount')}</Text>
           <Text style={styles.value}>{basket.discount}</Text>
         </View>
         <View style={styles.row}>
-          <Text style={[styles.label, styles.minWidth]}>
-            {i18n.t("basket-total-price-after-discount")}
-          </Text>
+          <Text style={[styles.label, styles.minWidth]}>{i18n.t('basket-total-price-after-discount')}</Text>
           <Text style={styles.value}>
             {basket.discount !== 0
-              ? calculateBasketTotalPrice() -
-                (calculateBasketTotalPrice() * basket.discount) / 100
+              ? calculateBasketTotalPrice() - (calculateBasketTotalPrice() * basket.discount) / 100
               : calculateBasketTotalPrice()}
           </Text>
         </View>
         <View style={styles.row}>
-          <Text style={[styles.label, styles.minWidth]}>
-            {i18n.t("basket-gift-label")}
-          </Text>
+          <Text style={[styles.label, styles.minWidth]}>{i18n.t('basket-gift-label')}</Text>
           <Text style={styles.value}>{basket.gift}</Text>
         </View>
         <View style={styles.row}>
-          <Text style={[styles.label, styles.minWidth]}>
-            {i18n.t("basket-note-label")}
-          </Text>
+          <Text style={[styles.label, styles.minWidth]}>{i18n.t('basket-note-label')}</Text>
           <Text style={styles.value}>{basket.note}</Text>
         </View>
         {user.type === UserTypeConstants.PHARMACY && (
-          <TouchableOpacity
-            style={styles.orderBtn}
-            onPress={() => setShowOrderBasketModal(true)}
-          >
-            <Text style={styles.orderText}>{i18n.t("order-basket")}</Text>
+          <TouchableOpacity style={styles.orderBtn} onPress={() => setShowOrderBasketModal(true)}>
+            <Text style={styles.orderText}>{i18n.t('order-basket')}</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -187,7 +159,7 @@ const Basket = ({ basket }) => {
           okAction={orderBasketHandler}
           cancelAction={() => setShowOrderBasketModal(false)}
           okLabel="ok-label"
-          cancelLabel="cancel-label"
+          cancelLabel="cancel"
         />
       </BottomSheet>
 
@@ -205,11 +177,11 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     marginVertical: 5,
     padding: 10,
-    overflow: "hidden",
+    overflow: 'hidden',
   },
   row: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 5,
   },
   label: {
@@ -219,17 +191,17 @@ const styles = StyleSheet.create({
   },
   value: {
     color: Colors.MAIN_COLOR,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     fontSize: 14,
     flex: 1,
-    justifyContent: "flex-start",
-    textAlign: "left",
+    justifyContent: 'flex-start',
+    textAlign: 'left',
   },
   minWidth: {
     minWidth: 150,
   },
   itemContainer: {
-    flexDirection: "column",
+    flexDirection: 'column',
     borderWidth: 1,
     borderColor: Colors.GREY_COLOR,
     paddingBottom: 5,
@@ -237,19 +209,19 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   itemDetails: {
-    flexDirection: "row",
-    justifyContent: "space-evenly",
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
   },
   itemName: {
-    justifyContent: "flex-start",
-    textAlign: "left",
+    justifyContent: 'flex-start',
+    textAlign: 'left',
     padding: 5,
     color: Colors.DARK_COLOR,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     fontSize: 16,
   },
   itemDetailsCell: {
-    alignItems: "center",
+    alignItems: 'center',
   },
   itemDetailsLabel: {
     color: Colors.SUCCEEDED_COLOR,
@@ -260,10 +232,10 @@ const styles = StyleSheet.create({
     color: Colors.MAIN_COLOR,
   },
   warehouseName: {
-    textAlign: "center",
+    textAlign: 'center',
     flex: 1,
     color: Colors.WHITE_COLOR,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     fontSize: 16,
     backgroundColor: Colors.DARK_COLOR,
     borderRadius: 6,
@@ -276,9 +248,9 @@ const styles = StyleSheet.create({
   },
   orderText: {
     color: Colors.WHITE_COLOR,
-    textAlign: "center",
+    textAlign: 'center',
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
 });
 

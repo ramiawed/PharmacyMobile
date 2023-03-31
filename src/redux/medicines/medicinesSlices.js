@@ -8,6 +8,7 @@ let source;
 const initialState = {
   status: 'idle',
   medicines: [],
+  initialSearch: true,
   count: 0,
   error: '',
   addToWarehouseStatus: 'idle',
@@ -227,6 +228,10 @@ export const medicinesSlice = createSlice({
       state.error = '';
     },
 
+    setInitialSearch: (state, action) => {
+      state.initialSearch = action.payload;
+    },
+
     resetAddToWarehouseStatus: (state) => {
       state.addToWarehouseStatus = 'idle';
       state.addToWarehouseError = '';
@@ -432,6 +437,7 @@ export const medicinesSlice = createSlice({
       state.status = 'idle';
       state.medicines = [];
       state.count = 0;
+      state.initialSearch = true;
       state.error = '';
       state.addToWarehouseStatus = 'idle';
       state.addToWarehouseError = '';
@@ -461,6 +467,7 @@ export const medicinesSlice = createSlice({
       state.medicines = [];
       state.count = 0;
       state.error = '';
+      state.initialSearch = true;
       state.addToWarehouseStatus = 'idle';
       state.addToWarehouseError = '';
       state.removeFromWarehouseStatus = 'idle';
@@ -492,6 +499,7 @@ export const medicinesSlice = createSlice({
       state.status = 'succeeded';
       state.medicines = [...state.medicines, ...action.payload.data.items];
       state.count = action.payload.count;
+      state.initialSearch = false;
       state.error = '';
       state.pageState = {
         ...state.pageState,
@@ -581,6 +589,7 @@ export const {
   setSearchHavePoint,
   setPage,
   setCity,
+  setInitialSearch,
   setDisplayType,
   resetMedicinesArray,
   resetMedicinesPageState,

@@ -72,7 +72,7 @@ const CreateAccountStageThree = ({ setStage, setPrevStage, obj, setObj }) => {
       hasError = true;
       errorObj = {
         ...errorObj,
-        addressDetails: 'enter-address-details',
+        addressDetails: 'enter address details',
       };
     }
 
@@ -123,10 +123,10 @@ const CreateAccountStageThree = ({ setStage, setPrevStage, obj, setObj }) => {
           onTextChange={(text) => {
             inputChangeHandler('email', text);
           }}
-          placeholder={i18n.t('user-email-optional')}
+          placeholder={i18n.t('user email-optional')}
           icon={<Entypo name="email" size={16} color={Colors.MAIN_COLOR} />}
           border={1}
-          label={i18n.t('user-email')}
+          label={i18n.t('user email')}
         />
 
         <Input
@@ -134,10 +134,10 @@ const CreateAccountStageThree = ({ setStage, setPrevStage, obj, setObj }) => {
           onTextChange={(text) => {
             inputChangeHandler('phone', text);
           }}
-          placeholder={i18n.t('user-phone-optional')}
+          placeholder={i18n.t('user phone-optional')}
           icon={<AntDesign name="phone" size={16} color={Colors.MAIN_COLOR} />}
           border={1}
-          label={i18n.t('user-phone')}
+          label={i18n.t('user phone')}
         />
 
         <Input
@@ -145,11 +145,11 @@ const CreateAccountStageThree = ({ setStage, setPrevStage, obj, setObj }) => {
           onTextChange={(text) => {
             inputChangeHandler('mobile', text);
           }}
-          placeholder={i18n.t('user-mobile')}
+          placeholder={i18n.t('user mobile')}
           icon={<Entypo name="mobile" size={16} color={Colors.MAIN_COLOR} />}
           border={1}
           error={error.mobile}
-          label={i18n.t('user-mobile')}
+          label={i18n.t('user mobile')}
         />
 
         <Input
@@ -157,11 +157,11 @@ const CreateAccountStageThree = ({ setStage, setPrevStage, obj, setObj }) => {
           onTextChange={(text) => {
             inputChangeHandler('addressDetails', text);
           }}
-          placeholder={i18n.t('user-address-details')}
+          placeholder={i18n.t('user address details')}
           icon={<Entypo name="address" size={16} color={Colors.MAIN_COLOR} />}
           border={1}
           error={error.addressDetails}
-          label={i18n.t('user-address-details')}
+          label={i18n.t('user address details')}
         />
       </View>
       <SignupStagesActions stage={3} prevHandler={prevStageHandler} nextHandler={nextStageHandler} />

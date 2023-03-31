@@ -8,8 +8,10 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState, useRef } from 'react';
 import * as Notifications from 'expo-notifications';
 import { I18nManager } from 'react-native';
+import ErrorBoundary from 'react-native-error-boundary';
 import axios from 'axios';
-
+import NetInfo from '@react-native-community/netinfo';
+import * as Network from 'expo-network';
 import './src/i18n/index';
 
 // redux stuff
@@ -45,6 +47,9 @@ let persistor = persistStore(store);
 // navigation's stuff
 import { NavigationContainer, createNavigationContainerRef } from '@react-navigation/native';
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
+import CustomFallback from './src/screens/CustomFallback';
+import FallbackComponent from 'react-native-error-boundary/lib/ErrorBoundary/FallbackComponent';
+
 const Stack = createStackNavigator();
 const navigationRef = createNavigationContainerRef();
 
@@ -67,61 +72,14 @@ const App = () => {
   const token = useSelector(selectToken);
 
   // own states
-  const [showSplashScreen, setShowSplashScreen] = useState(true);
-  const [showUpdateScreen, setShowUpdateScreen] = useState(false);
+  const [whichScreen, setWhichScreen] = useState({
+    splash: true,
+    update: false,
+    error: false,
+  });
 
-  useEffect(() => {
-    // This listener is fired whenever a notification is received while the app is foregrounded
-    notificationListener.current = Notifications.addNotificationReceivedListener((notification) => {
-      setNotification(notification);
-    });
-
-    // This listener is fired whenever a user taps on or interacts with a notification (works when app is foregrounded, backgrounded, or killed)
-    responseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
-      if (response.notification.request.content.data) {
-        const { screen, notificationId, orderId } = response.notification.request.content.data;
-        if (screen === 'notification') {
-          if (navigationRef.isReady()) {
-            navigationRef.navigate('Notifications', {
-              screen: 'Notification',
-              params: {
-                notificationId,
-              },
-            });
-          }
-        }
-
-        if (screen === 'order') {
-          if (navigationRef.isReady()) {
-            navigationRef.navigate('Orders', {
-              screen: 'orders',
-              params: {
-                screen: 'Order',
-                params: {
-                  orderId,
-                },
-              },
-            });
-          }
-        }
-
-        if (screen === 'basket order') {
-          if (navigationRef.isReady()) {
-            navigationRef.navigate('Orders', {
-              screen: 'baskets-orders',
-              params: {
-                screen: 'BasketOrder',
-                params: {
-                  orderId,
-                },
-              },
-            });
-          }
-        }
-      }
-    });
-
-    const timer = setTimeout(async () => {
+  const tryToSignInHanlder = async () => {
+    try {
       const response = await axios.get(`${BASEURL}/users/check-version/${VERSION}`);
       if (response.data.check) {
         if (token) {
@@ -137,26 +95,89 @@ const App = () => {
                   token: result.token,
                 }),
               );
+
               dispatch(getAllSettings({ token: result.token }));
               dispatch(getFavorites({ token: result.token }));
               dispatch(getAllAdvertisements({ token: result.token }));
               dispatch(getCompanies({ token: result.token }));
               dispatch(getWarehouses({ token: result.token }));
+
               if (user.type === UserTypeConstants.PHARMACY) {
                 dispatch(getSavedItems({ token }));
               }
-              setShowSplashScreen(false);
+              // setShowSplashScreen(false);
+              setWhichScreen({
+                splash: false,
+                update: false,
+                error: false,
+              });
             })
             .catch(() => {
-              setShowSplashScreen(false);
+              // setShowSplashScreen(false);
+              setWhichScreen({
+                splash: false,
+                update: false,
+                error: true,
+              });
             });
         } else {
-          setShowSplashScreen(false);
+          setWhichScreen({
+            splash: false,
+            update: false,
+            error: false,
+          });
         }
       } else {
-        setShowUpdateScreen(true);
+        setWhichScreen({
+          splash: false,
+          update: true,
+          error: false,
+        });
       }
-    }, 1000);
+    } catch (err) {
+      setWhichScreen({
+        splash: false,
+        update: false,
+        error: true,
+      });
+    }
+  };
+
+  useEffect(() => {
+    // This listener is fired whenever a notification is received while the app is foregrounded
+    notificationListener.current = Notifications.addNotificationReceivedListener((notification) => {
+      setNotification(notification);
+    });
+
+    // This listener is fired whenever a user taps on or interacts with a notification (works when app is foregrounded, backgrounded, or killed)
+    responseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
+      if (response.notification.request.content.data) {
+        const { screen, notificationId, orderId } = response.notification.request.content.data;
+        if (screen === 'notification') {
+          if (navigationRef.isReady()) {
+            navigationRef.navigate('NotificationDetails', { notificationId: notificationId });
+          }
+        }
+
+        if (screen === 'order') {
+          if (navigationRef.isReady()) {
+            navigationRef.navigate('OrderDetails', {
+              orderId: orderId,
+            });
+          }
+        }
+
+        if (screen === 'basket order') {
+          if (navigationRef.isReady()) {
+            navigationRef.navigate('BasketOrderDetails', {
+              orderId: orderId,
+            });
+          }
+        }
+      }
+    });
+
+    const timer = setTimeout(tryToSignInHanlder, 1000);
 
     return () => {
       clearTimeout(timer);
@@ -164,14 +185,6 @@ const App = () => {
       Notifications.removeNotificationSubscription(responseListener.current);
     };
   }, []);
-
-  if (showUpdateScreen) {
-    return <UpdateScreen />;
-  }
-
-  if (showSplashScreen) {
-    return <SplashScreen />;
-  }
 
   return (
     <SafeAreaProvider>
@@ -182,14 +195,16 @@ const App = () => {
             cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
           }}
         >
-          {user ? (
-            <>
-              <Stack.Screen name="MainStack" component={MainStack} />
-            </>
+          {whichScreen.splash ? (
+            <Stack.Screen name="Splash" component={SplashScreen} />
+          ) : whichScreen.update ? (
+            <Stack.Screen name="update" component={UpdateScreen} />
+          ) : whichScreen.error ? (
+            <Stack.Screen name="error">{() => <LogoutScreen loginHandler={tryToSignInHanlder} />}</Stack.Screen>
+          ) : user ? (
+            <Stack.Screen name="MainStack" component={MainStack} />
           ) : token ? (
-            <>
-              <Stack.Screen name="LogOut" component={LogoutScreen} />
-            </>
+            <Stack.Screen name="LogOut" component={LogoutScreen} />
           ) : (
             <>
               <Stack.Screen name="SignIn" component={SignInScreen} />
@@ -199,6 +214,7 @@ const App = () => {
           )}
         </Stack.Navigator>
       </NavigationContainer>
+
       <StatusBar style="light" backgroundColor={Colors.MAIN_COLOR} />
     </SafeAreaProvider>
   );
@@ -213,7 +229,9 @@ export default () => {
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <App />
+        <ErrorBoundary FallbackComponent={CustomFallback}>
+          <App />
+        </ErrorBoundary>
       </PersistGate>
       <Toast style={{ backgroundColor: Colors.SECONDARY_COLOR }} ref={(ref) => Toast.setRef(ref)} />
     </Provider>

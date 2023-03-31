@@ -45,7 +45,7 @@ const WarehousesSectionOne = () => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#B56576',
+    // backgroundColor: '#B56576',
     borderRadius: 6,
     marginVertical: 5,
     marginHorizontal: 10,

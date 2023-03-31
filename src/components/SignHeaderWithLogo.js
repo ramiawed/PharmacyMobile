@@ -6,7 +6,7 @@ import { Colors } from '../utils/constants';
 const SignHeaderWithLogo = ({ isSignIn }) => {
   return (
     <View style={styles.container}>
-      <Text style={[styles.title]}>{i18n.t(isSignIn ? 'sign-in' : 'sign-up')}</Text>
+      <Text style={[styles.title]}>{i18n.t(isSignIn ? 'sign in' : 'sign up')}</Text>
       <Image style={styles.logo} source={require('../../assets/small-logo.png')} />
     </View>
   );

@@ -16,12 +16,12 @@ import { BASEURL, Colors, UserTypeConstants } from '../utils/constants';
 const CreateAccountStageTwo = ({ type, obj, setObj, setStage, setPrevStage }) => {
   const placeholder =
     type === UserTypeConstants.COMPANY
-      ? 'enter-company-name'
+      ? 'enter company name'
       : type === UserTypeConstants.WAREHOUSE
-      ? 'enter-warehouse-name'
+      ? 'enter warehouse name'
       : type === UserTypeConstants.PHARMACY
-      ? 'enter-pharmacy-name'
-      : 'enter-guest-name';
+      ? 'enter pharmacy name'
+      : 'enter guest name';
 
   const [checking, setChecking] = useState(false);
 
@@ -57,7 +57,7 @@ const CreateAccountStageTwo = ({ type, obj, setObj, setStage, setPrevStage }) =>
       hasError = true;
       errorObj = {
         ...errorObj,
-        name: 'enter-name',
+        name: 'enter name',
       };
     }
 
@@ -66,7 +66,7 @@ const CreateAccountStageTwo = ({ type, obj, setObj, setStage, setPrevStage }) =>
 
       errorObj = {
         ...errorObj,
-        username: 'enter-username',
+        username: 'enter username',
       };
     }
 
@@ -75,7 +75,7 @@ const CreateAccountStageTwo = ({ type, obj, setObj, setStage, setPrevStage }) =>
 
       errorObj = {
         ...errorObj,
-        password: 'enter-password',
+        password: 'enter password',
       };
     } else if (obj.password.length < 5) {
       // password must be greater than or equals to 5 characters
@@ -83,7 +83,7 @@ const CreateAccountStageTwo = ({ type, obj, setObj, setStage, setPrevStage }) =>
 
       errorObj = {
         ...errorObj,
-        password: 'password-length',
+        password: 'password length',
       };
     }
 
@@ -92,7 +92,7 @@ const CreateAccountStageTwo = ({ type, obj, setObj, setStage, setPrevStage }) =>
 
       errorObj = {
         ...errorObj,
-        passwordConfirm: 'enter-password-confirm',
+        passwordConfirm: 'enter password confirm',
       };
     } else if (obj.passwordConfirm.length < 5) {
       // password confirm must be greater than or equals to 5 characters
@@ -100,7 +100,7 @@ const CreateAccountStageTwo = ({ type, obj, setObj, setStage, setPrevStage }) =>
 
       errorObj = {
         ...errorObj,
-        passwordConfirm: 'confirm-password-length',
+        passwordConfirm: 'confirm password length',
       };
     }
 
@@ -110,8 +110,8 @@ const CreateAccountStageTwo = ({ type, obj, setObj, setStage, setPrevStage }) =>
 
       errorObj = {
         ...errorObj,
-        password: 'unequal-passwords',
-        passwordConfirm: 'unequal-passwords',
+        password: 'unequal passwords',
+        passwordConfirm: 'unequal passwords',
       };
     }
 
@@ -154,7 +154,7 @@ const CreateAccountStageTwo = ({ type, obj, setObj, setStage, setPrevStage }) =>
           icon={<AntDesign name="user" size={16} color={Colors.MAIN_COLOR} />}
           border={1}
           error={error.name}
-          label={i18n.t('user-name')}
+          label={i18n.t('user name')}
         />
 
         <Input
@@ -162,35 +162,35 @@ const CreateAccountStageTwo = ({ type, obj, setObj, setStage, setPrevStage }) =>
           onTextChange={(text) => {
             inputChangeHandler('username', text);
           }}
-          placeholder={i18n.t('user-username')}
+          placeholder={i18n.t('user username')}
           icon={<AntDesign name="user" size={16} color={Colors.MAIN_COLOR} />}
           border={1}
           error={error.username}
-          label={i18n.t('user-username')}
+          label={i18n.t('user username')}
         />
         <Input
           value={obj.password}
           onTextChange={(text) => {
             inputChangeHandler('password', text);
           }}
-          placeholder={i18n.t('enter-password')}
+          placeholder={i18n.t('enter password')}
           password={true}
           icon={<FontAwesome name="lock" size={16} color={Colors.MAIN_COLOR} />}
           border={1}
           error={error.password}
-          label={i18n.t('user-password')}
+          label={i18n.t('user password')}
         />
         <Input
           value={obj.passwordConfirm}
           onTextChange={(text) => {
             inputChangeHandler('passwordConfirm', text);
           }}
-          placeholder={i18n.t('enter-password-confirm')}
+          placeholder={i18n.t('enter password confirm')}
           password={true}
           icon={<FontAwesome name="lock" size={16} color={Colors.MAIN_COLOR} />}
           border={1}
           error={error.passwordConfirm}
-          label={i18n.t('user-password-confirm')}
+          label={i18n.t('user password confirm')}
         />
       </View>
       {checking ? (

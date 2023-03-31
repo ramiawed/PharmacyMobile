@@ -21,15 +21,14 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     padding: 4,
-    backgroundColor: Colors.POINTS_OFFER_COLOR,
     margin: 4,
     borderRadius: 6,
     justifyContent: 'center',
+    alignItems: 'center',
   },
   value: {
     fontSize: 16,
     borderRadius: 4,
-    backgroundColor: Colors.WHITE_COLOR,
     color: Colors.FAILED_COLOR,
     marginHorizontal: 4,
     paddingHorizontal: 4,

@@ -81,7 +81,7 @@ const WarehousesScreen = ({}) => {
       <View style={styles.container}>
         <SearchContainer>
           <SearchInput
-            placeholder={i18n.t('search-by-warehouse-name')}
+            placeholder={i18n.t('search by warehouse name')}
             onTextChange={(val) => {
               dispatch(changeSearchName(val));
             }}

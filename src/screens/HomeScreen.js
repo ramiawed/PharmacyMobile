@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import i18n from '../i18n';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 
 // navigation stuff
 
@@ -12,7 +13,6 @@ import Advertisements from '../components/Advertisements';
 import GuestIntroduce from '../components/GuestIntroduce';
 import Communication from '../components/Communication';
 import IntroduceUs from '../components/IntroduceUs';
-import SearchHome from '../components/SearchHome';
 import ScreenWrapper from './ScreenWrapper';
 import CompaniesSectionOne from '../components/CompaniesSectionOne';
 import CompaniesSectionTwo from '../components/CompaniesSectionTwo';
@@ -25,22 +25,27 @@ import ItemsSectionThree from '../components/ItemsSectionThree';
 import { Colors } from '../utils/constants';
 
 const HomeScreen = ({}) => {
-  const [showScanner, setShowScanner] = useState(false);
-
   return (
     <ScreenWrapper>
       <View style={styles.container}>
+        {/* <LinearGradient
+          colors={['#566092', '#E5EEB5']}
+          // locations={[0.2, 0.8]}
+          // start={{ x: 0, y: 0 }}
+          // end={{ x: 1, y: 1 }}
+          style={styles.gradient}
+        /> */}
+
         <SocketObserver />
-        {/* <SearchHome showScanner={showScanner} setShowScanner={setShowScanner} /> */}
         <ScrollView>
           <Advertisements />
           <ItemsSectionOne />
           <ItemsSectionTwo />
           <ItemsSectionThree />
-          <IntroduceUs />
           <CompaniesSectionOne />
           <CompaniesSectionTwo />
           <WarehousesSectionOne />
+          <IntroduceUs />
           <Text style={styles.specification}>{i18n.t('smart-pharma-specification')}</Text>
           <PharmacyIntroduce />
           <WarehouseIntroduce />
@@ -65,6 +70,11 @@ const styles = StyleSheet.create({
     color: Colors.MAIN_COLOR,
     fontSize: 24,
     fontWeight: 'bold',
+  },
+  gradient: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
   },
 });
 

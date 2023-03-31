@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     padding: 4,
-    backgroundColor: Colors.OFFER_COLOR,
+    // backgroundColor: Colors.OFFER_COLOR,
     margin: 4,
     borderRadius: 6,
     justifyContent: 'center',
@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
   value: {
     fontSize: 16,
     borderRadius: 4,
-    backgroundColor: Colors.WHITE_COLOR,
+    // backgroundColor: Colors.WHITE_COLOR,
     color: Colors.FAILED_COLOR,
     marginHorizontal: 4,
     paddingHorizontal: 4,

@@ -1,7 +1,7 @@
-export const BASEURL = 'http://192.168.43.211:8000/api/v1';
-// export const BASEURL = 'https://api.smartpharmasy.com/api/v1';
-// export const SERVER_URL = 'https://api.smartpharmasy.com/';
-export const SERVER_URL = 'http://192.168.43.211:8000/';
+// export const BASEURL = 'http://192.168.43.211:8000/api/v1';
+export const BASEURL = 'https://api.smartpharmasy.com/api/v1';
+export const SERVER_URL = 'https://api.smartpharmasy.com/';
+// export const SERVER_URL = 'http://192.168.43.211:8000/';
 
 export const VERSION = '2.0.0';
 
@@ -36,7 +36,7 @@ export const GuestJob = {
   STUDENT: 'student',
   PHARMACIST: 'pharmacist',
   EMPLOYEE: 'employee',
-  NONE: 'user-job',
+  NONE: 'user job',
 };
 
 export const WarehouseOrderStatus = {
@@ -108,6 +108,12 @@ export const DateOptions = {
   TWO_MONTH: '2M',
   SIX_MONTH: '6M',
   ONE_YEAR: '1Y',
+};
+
+export const LinearGradientColors = {
+  OFFERS: ['#f7e9e8', '#b9dcf2'],
+  POINTS: ['#caefd7', '#96d4ca'],
+  OFFERS_POINTS: ['#F2FFDA', '#ECFFC8'],
 };
 
 export const AdditionalColors = ['#1a535c', '#6D597A', '#0B86B2', '#3D5A80', '#E56B6F', '#baa437'];

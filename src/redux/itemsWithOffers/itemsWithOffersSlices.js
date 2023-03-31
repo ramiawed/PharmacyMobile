@@ -8,6 +8,7 @@ let source;
 const initialState = {
   status: 'idle',
   medicines: [],
+  initialSearch: true,
   count: 0,
   error: '',
   pageState: {
@@ -145,6 +146,7 @@ export const itemsWithOffersSlice = createSlice({
 
     resetOfferItemsArray: (state) => {
       state.medicines = [];
+      state.initialSearch = true;
       state.count = 0;
       state.pageState = {
         ...state.pageState,
@@ -164,6 +166,7 @@ export const itemsWithOffersSlice = createSlice({
     offersSliceSignOut: (state) => {
       state.status = 'idle';
       state.medicines = [];
+      state.initialSearch = true;
       state.count = 0;
       state.error = '';
       state.pageState = {
@@ -181,6 +184,7 @@ export const itemsWithOffersSlice = createSlice({
     [getOffers.fulfilled]: (state, action) => {
       state.status = 'succeeded';
       state.medicines = [...state.medicines, ...action.payload.data.data];
+      state.initialSearch = false;
       state.count = action.payload.count;
       state.error = '';
       state.pageState = {

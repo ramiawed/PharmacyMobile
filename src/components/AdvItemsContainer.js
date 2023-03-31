@@ -1,6 +1,7 @@
 import React, { memo } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { LinearGradient } from 'expo-linear-gradient';
 
 // redux stuff
 import { useDispatch, useSelector } from 'react-redux';
@@ -39,6 +40,13 @@ const AdvItemsContainer = ({ item }) => {
 
   return (
     <TouchableOpacity style={styles.container} onPress={() => selectItem(item)}>
+      <LinearGradient
+        colors={['#D3DBFF', '#FAFFDD']}
+        // locations={[0.2, 0.8]}
+        // start={{ x: 0, y: 0 }}
+        // end={{ x: 1, y: 1 }}
+        style={styles.gradient}
+      />
       <View style={styles.logoContainer}>
         {item.logo_url && item.logo_url.length !== 0 ? (
           <Image source={{ uri: `${SERVER_URL}/items/${item.logo_url}` }} style={{ ...styles.logo }} />
@@ -67,9 +75,11 @@ const styles = StyleSheet.create({
   container: {
     // width: 250,
     borderRadius: 10,
-    backgroundColor: Colors.WHITE_COLOR,
+    // backgroundColor: Colors.WHITE_COLOR,
     overflow: 'hidden',
     margin: 5,
+    borderWidth: 1,
+    borderColor: Colors.LIGHT_GREY_COLOR,
   },
   logoContainer: {
     width: 250,
@@ -104,6 +114,11 @@ const styles = StyleSheet.create({
   company: {
     fontSize: 12,
     color: Colors.SUCCEEDED_COLOR,
+  },
+  gradient: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
   },
 });
 

@@ -5,7 +5,13 @@ import i18n from '../i18n';
 // redux stuff
 import { useDispatch, useSelector } from 'react-redux';
 import { selectMenuSettings, toggleOpenMenu } from '../redux/menu/menuSlice';
-import { setSearchCompanyId, setSearchWarehouseId } from '../redux/medicines/medicinesSlices';
+import {
+  resetMedicines,
+  resetMedicinesArray,
+  setInitialSearch,
+  setSearchCompanyId,
+  setSearchWarehouseId,
+} from '../redux/medicines/medicinesSlices';
 import { selectUserData } from '../redux/auth/authSlice';
 
 // icons
@@ -18,6 +24,8 @@ import { Colors, UserTypeConstants } from '../utils/constants';
 import { useNavigation } from '@react-navigation/native';
 
 import { signoutHandler } from '../utils/functions';
+import { resetOfferItemsArray } from '../redux/itemsWithOffers/itemsWithOffersSlices';
+import { resetItemsWithPointsArray } from '../redux/itemsWithPoints/itemsWithPointsSlices';
 
 const FloatingButton = ({ style, animation, toggleMenu }) => {
   const navigator = useNavigation();
@@ -78,13 +86,15 @@ const FloatingButton = ({ style, animation, toggleMenu }) => {
       <View style={[styles.container, style]}>
         {/* medicines */}
         <TouchableWithoutFeedback
-          onPress={() =>
+          onPress={() => {
+            dispatch(resetMedicines());
+            // dispatch(setInitialSearch(true));
             goTo('Items', {
               companyId: null,
               warehouseId: null,
               myCompanies: [],
-            })
-          }
+            });
+          }}
         >
           <Animated.View style={[styles.button, styles.mainly, getStyle(), opacityStyle]}>
             <AntDesign color={Colors.WHITE_COLOR} size={24} name="medicinebox" />
@@ -112,14 +122,24 @@ const FloatingButton = ({ style, animation, toggleMenu }) => {
 
         {(user.type === UserTypeConstants.ADMIN || user.type === UserTypeConstants.PHARMACY) && (
           <>
-            <TouchableWithoutFeedback onPress={() => goTo('Offers')}>
+            <TouchableWithoutFeedback
+              onPress={() => {
+                dispatch(resetOfferItemsArray());
+                goTo('Offers');
+              }}
+            >
               <Animated.View style={[styles.button, styles.secondary, getStyle(), opacityStyle]}>
                 <MaterialIcons name="local-offer" size={24} color={Colors.WHITE_COLOR} />
                 <Text style={styles.optionText}>{i18n.t('offers')}</Text>
               </Animated.View>
             </TouchableWithoutFeedback>
 
-            <TouchableWithoutFeedback onPress={() => goTo('ItemsWithPoints')}>
+            <TouchableWithoutFeedback
+              onPress={() => {
+                dispatch(resetItemsWithPointsArray());
+                goTo('ItemsWithPoints');
+              }}
+            >
               <Animated.View style={[styles.button, styles.secondary, getStyle(), opacityStyle]}>
                 <MaterialIcons name="local-offer" size={24} color={Colors.WHITE_COLOR} />
                 <Text style={styles.optionText}>{i18n.t('itemswithpoints')}</Text>
@@ -182,7 +202,7 @@ const FloatingButton = ({ style, animation, toggleMenu }) => {
         >
           <Animated.View style={[styles.button, styles.secondary, getStyle(), opacityStyle]}>
             <Ionicons name="exit" size={24} color={Colors.WHITE_COLOR} />
-            <Text style={styles.optionText}>{i18n.t('nav-sign-out')}</Text>
+            <Text style={styles.optionText}>{i18n.t('nav sign out')}</Text>
           </Animated.View>
         </TouchableWithoutFeedback>
 

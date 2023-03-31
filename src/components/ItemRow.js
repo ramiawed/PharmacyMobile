@@ -1,10 +1,6 @@
 import React, { memo, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { View, Text, StyleSheet, TouchableWithoutFeedback, ActivityIndicator } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-
-// libraries
-import { BottomSheet } from 'react-native-btr';
 
 // redux stuff
 import { unwrapResult } from '@reduxjs/toolkit';
@@ -15,18 +11,25 @@ import { addStatistics } from '../redux/statistics/statisticsSlice';
 import { addItemToWarehouse, removeItemFromWarehouse } from '../redux/medicines/medicinesSlices';
 
 // constants
-import { Colors, UserTypeConstants, checkItemExistsInWarehouse, checkOffer, checkPoints } from '../utils/constants';
+import {
+  Colors,
+  UserTypeConstants,
+  checkItemExistsInWarehouse,
+  checkOffer,
+  checkPoints,
+  LinearGradientColors,
+} from '../utils/constants';
 
 // icons
 import { AntDesign, Ionicons } from '@expo/vector-icons';
 
 // components
-import ItemPrices from './ItemPrices';
-import AddToCart from './AddToCart';
-import ItemNames from './ItemNames';
+import CustomLinearGradient from './CustomLinearGradient';
 import FilteredText from './FilteredText';
+import ItemPrices from './ItemPrices';
+import ItemNames from './ItemNames';
 
-const ItemRow = ({ item, searchString }) => {
+const ItemRow = ({ item, searchString, addToCart }) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
@@ -37,7 +40,6 @@ const ItemRow = ({ item, searchString }) => {
   // own state
   const [changeFavoriteLoading, setChangeFavoriteLoading] = useState(false);
   const [changeAddToWarehouseLoading, setChangeAddToWarehouseLoading] = useState(false);
-  const [showAddToCartModal, setShowAddToCartModal] = useState(false);
 
   const canAddToCart = user?.type === UserTypeConstants.PHARMACY && checkItemExistsInWarehouse(item, user);
 
@@ -142,24 +144,6 @@ const ItemRow = ({ item, searchString }) => {
     }
   };
 
-  const itemNameArraySplit = searchString
-    ? item.name.toLowerCase().includes(searchString.toLowerCase())
-      ? item.name.toLowerCase().split(searchString.toLowerCase())
-      : []
-    : [];
-
-  const itemNameArArraySplit = searchString
-    ? item.nameAr.toLowerCase().includes(searchString.toLowerCase())
-      ? item.nameAr.toLowerCase().split(searchString.toLowerCase())
-      : []
-    : [];
-
-  const itemCompositionArraySplit = searchString
-    ? item.composition.toLowerCase().includes(searchString.toLowerCase())
-      ? item.composition.toLowerCase().split(searchString.toLowerCase())
-      : []
-    : [];
-
   const hasOffer = checkOffer(item, user);
   const hasPoint = checkPoints(item, user);
 
@@ -171,12 +155,13 @@ const ItemRow = ({ item, searchString }) => {
         }}
       >
         {hasOffer && hasPoint ? (
-          <LinearGradient colors={['#a4bfb4f1', '#DCEEFF']} style={styles.gradient} />
+          <CustomLinearGradient colors={LinearGradientColors.OFFERS_POINTS} />
         ) : hasOffer ? (
-          <LinearGradient colors={['#DCEEFF', '#DCEEFF']} style={styles.gradient} />
+          <CustomLinearGradient colors={LinearGradientColors.OFFERS} />
         ) : hasPoint ? (
-          <LinearGradient colors={['#a4bfb4f1', '#a4bfb4f1']} style={styles.gradient} />
+          <CustomLinearGradient colors={LinearGradientColors.POINTS} />
         ) : undefined}
+
         <View style={{ padding: 5 }}>
           <View style={styles.header}>
             <TouchableWithoutFeedback
@@ -196,7 +181,7 @@ const ItemRow = ({ item, searchString }) => {
                 size={28}
                 color={Colors.SUCCEEDED_COLOR}
                 style={{ paddingHorizontal: 2 }}
-                onPress={() => setShowAddToCartModal(true)}
+                onPress={() => addToCart(item)}
               />
             )}
 
@@ -269,13 +254,6 @@ const ItemRow = ({ item, searchString }) => {
           </View>
         </View>
       </View>
-      <BottomSheet
-        visible={showAddToCartModal}
-        onBackButtonPress={() => setShowAddToCartModal(false)}
-        onBackdropPress={() => setShowAddToCartModal(false)}
-      >
-        <AddToCart item={item} close={() => setShowAddToCartModal(false)} />
-      </BottomSheet>
     </>
   ) : null;
 };
@@ -333,13 +311,6 @@ const styles = StyleSheet.create({
     color: '#FF0000',
     borderRadius: 4,
     fontWeight: 'bold',
-  },
-  gradient: {
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
-
-    borderRadius: 6,
   },
 });
 

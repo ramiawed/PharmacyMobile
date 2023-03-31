@@ -30,6 +30,8 @@ import HomeScreen from '../screens/HomeScreen';
 import CartScreen from '../screens/CartScreen';
 import Loader from '../components/Loader';
 import MyPointsScreen from '../screens/MyPointsScreen';
+import SavedItemsScreen from '../screens/SavedItemsScreen';
+import SearchScreen from '../screens/SearchScreen';
 
 // icons
 import { AntDesign, Ionicons } from '@expo/vector-icons';
@@ -45,9 +47,7 @@ import { selectSettings } from '../redux/settings/settingsSlice';
 import { resetFavorites, selectFavorites } from '../redux/favorites/favoritesSlice';
 import { selectAdvertisements } from '../redux/advertisements/advertisementsSlice';
 import { resetCompanies } from '../redux/company/companySlice';
-import SavedItemsScreen from '../screens/SavedItemsScreen';
 import { selectMenuSettings } from '../redux/menu/menuSlice';
-import SearchScreen from '../screens/SearchScreen';
 
 const mainStack = createStackNavigator();
 

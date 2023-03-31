@@ -15,17 +15,17 @@ const ApproveScreen = ({ navigation }) => {
       <View style={styles.approveView}>
         <Image style={styles.logo} source={require('../../assets/logo.png')} />
         <View style={styles.textView}>
-          <Text style={styles.header}>{i18n.t('believed-partner')}</Text>
-          <Text style={styles.text}>{i18n.t('thank-message')}</Text>
-          <Text style={styles.text}>{i18n.t('approve-message')}</Text>
-          <Text style={{ ...styles.text, marginVertical: 10 }}>{i18n.t('hour-serving')}</Text>
+          <Text style={styles.header}>{i18n.t('believed partner')}</Text>
+          <Text style={styles.text}>{i18n.t('thank message')}</Text>
+          <Text style={styles.text}>{i18n.t('approve message')}</Text>
+          <Text style={{ ...styles.text, marginVertical: 10 }}>{i18n.t('hour serving')}</Text>
           <TouchableOpacity
             style={styles.button}
             onPress={() => {
               navigation.navigate('SignIn');
             }}
           >
-            <Text style={styles.buttonText}>{i18n.t('sign-in')}</Text>
+            <Text style={styles.buttonText}>{i18n.t('sign in')}</Text>
           </TouchableOpacity>
         </View>
       </View>

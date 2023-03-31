@@ -24,8 +24,8 @@ const SearchInput = ({ value, onTextChange, placeholder, onSubmitEditing, onKeyP
         onChangeText={onTextChange}
         onSubmitEditing={onSubmitEditing}
         onKeyPress={onKeyPress}
-        autoFocus={focus}
-        ref={refrence}
+        // autoFocus={focus}
+        // ref={refrence}
       />
       {placeholder?.length && value.trim().length === 0 && (
         <View

@@ -69,7 +69,7 @@ const SearchPartnerContainer = ({ label, partners, addId, removeId, partnerType,
             dispatch(addId({ value: data._id, label: data.name }));
             if (action) action();
           }}
-          placeholder={`${partnerType === UserTypeConstants.WAREHOUSE ? 'enter-warehouse-name' : 'enter-company-name'}`}
+          placeholder={`${partnerType === UserTypeConstants.WAREHOUSE ? 'enter warehouse name' : 'enter company name'}`}
           data={partnerType === UserTypeConstants.WAREHOUSE ? warehouses : companies}
         />
       </BottomSheet>

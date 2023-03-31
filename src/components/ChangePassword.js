@@ -42,42 +42,42 @@ const ChangePassword = () => {
     if (passwordObj.oldPassword.length === 0) {
       errorObj = {
         ...errorObj,
-        oldPassword: 'enter-old-password',
+        oldPassword: 'enter old password',
       };
     }
 
     if (passwordObj.newPassword.length < 5) {
       errorObj = {
         ...errorObj,
-        newPassword: 'password-length',
+        newPassword: 'password length',
       };
     }
 
     if (passwordObj.newPassword.length === 0) {
       errorObj = {
         ...errorObj,
-        newPassword: 'enter-password',
+        newPassword: 'enter password',
       };
     }
 
     if (passwordObj.newPassword !== passwordObj.newPasswordConfirm) {
       errorObj = {
         ...errorObj,
-        newPasswordConfirm: 'unequal-passwords',
+        newPasswordConfirm: 'unequal passwords',
       };
     }
 
     if (passwordObj.newPasswordConfirm.length < 5) {
       errorObj = {
         ...errorObj,
-        newPasswordConfirm: 'confirm-password-length',
+        newPasswordConfirm: 'confirm password length',
       };
     }
 
     if (passwordObj.newPasswordConfirm.length === 0) {
       errorObj = {
         ...errorObj,
-        newPasswordConfirm: 'enter-password-confirm',
+        newPasswordConfirm: 'enter password confirm',
       };
     }
 
@@ -105,14 +105,14 @@ const ChangePassword = () => {
         Toast.show({
           type: 'success',
           text1: i18n.t('change-password'),
-          text2: i18n.t('password-change-succeeded'),
+          text2: i18n.t('password change succeeded'),
         });
       })
       .catch((err) => {
         Toast.show({
           type: 'error',
           text1: i18n.t('change-password'),
-          text2: i18n.t('password-change-failed'),
+          text2: i18n.t('password change failed'),
         });
       });
   };
@@ -228,7 +228,7 @@ const ChangePassword = () => {
       >
         <ConfirmBottomSheet
           okLabel="ok-label"
-          cancelLabel="cancel-label"
+          cancelLabel="cancel"
           cancelAction={() => setShowChangePasswordConfirmBts(false)}
           okAction={changePasswordHandler}
           header="change-password"

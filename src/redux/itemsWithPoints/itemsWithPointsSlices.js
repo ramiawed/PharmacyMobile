@@ -1,17 +1,18 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
-import { BASEURL } from "../../utils/constants";
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import axios from 'axios';
+import { BASEURL } from '../../utils/constants';
 
 let CancelToken;
 let source;
 
 const initialState = {
-  status: "idle",
+  status: 'idle',
   medicines: [],
+  initialSearch: true,
   count: 0,
-  error: "",
+  error: '',
   pageState: {
-    searchName: "",
+    searchName: '',
     searchCompaniesIds: [],
     searchWarehousesIds: [],
     page: 1,
@@ -20,7 +21,7 @@ const initialState = {
 
 export const cancelOperation = () => {
   if (source) {
-    source.cancel("operation canceled by user");
+    source.cancel('operation canceled by user');
   }
 };
 
@@ -30,7 +31,7 @@ const resetCancelAndSource = () => {
 };
 
 export const getItemsWithPoints = createAsyncThunk(
-  "itemsWithPoints/getItemsWithPoints",
+  'itemsWithPoints/getItemsWithPoints',
   async ({ token }, { rejectWithValue, getState }) => {
     try {
       const {
@@ -41,18 +42,14 @@ export const getItemsWithPoints = createAsyncThunk(
 
       let buildUrl = `${BASEURL}/items/items-with-points?page=${pageState.page}&limit=15`;
 
-      if (pageState.searchName.trim() !== "") {
+      if (pageState.searchName.trim() !== '') {
         buildUrl = buildUrl + `&itemName=${pageState.searchName}`;
       }
 
       const response = await axios.get(buildUrl, {
         params: {
-          searchCompaniesIds: pageState.searchCompaniesIds.map(
-            (company) => company.value
-          ),
-          searchWarehousesIds: pageState.searchWarehousesIds.map(
-            (warehouse) => warehouse.value
-          ),
+          searchCompaniesIds: pageState.searchCompaniesIds.map((company) => company.value),
+          searchWarehousesIds: pageState.searchWarehousesIds.map((warehouse) => warehouse.value),
         },
         cancelToken: source.token,
         headers: {
@@ -66,33 +63,33 @@ export const getItemsWithPoints = createAsyncThunk(
     } catch (err) {
       resetCancelAndSource();
 
-      if (err.code === "ECONNABORTED" && err.message.startsWith("timeout")) {
-        return rejectWithValue("timeout");
+      if (err.code === 'ECONNABORTED' && err.message.startsWith('timeout')) {
+        return rejectWithValue('timeout');
       }
       if (axios.isCancel(err)) {
-        return rejectWithValue("cancel");
+        return rejectWithValue('cancel');
       }
 
       if (!err.response) {
-        return rejectWithValue("network failed");
+        return rejectWithValue('network failed');
       }
 
       return rejectWithValue(err.response.data);
     }
-  }
+  },
 );
 
 export const itemsWithPointsSlice = createSlice({
-  name: "itemsWithPointsSlice",
+  name: 'itemsWithPointsSlice',
   initialState,
   reducers: {
     resetStatus: (state) => {
-      state.status = "idle";
-      state.error = "";
+      state.status = 'idle';
+      state.error = '';
     },
 
     resetError: (state) => {
-      state.error = "";
+      state.error = '';
     },
 
     setSearchName: (state, action) => {
@@ -111,26 +108,17 @@ export const itemsWithPointsSlice = createSlice({
 
     addIdToCompaniesIds: (state, action) => {
       const { value } = action.payload;
-      if (
-        state.pageState.searchCompaniesIds.filter(
-          (company) => company.value === value
-        ).length === 0
-      ) {
+      if (state.pageState.searchCompaniesIds.filter((company) => company.value === value).length === 0) {
         state.pageState = {
           ...state.pageState,
-          searchCompaniesIds: [
-            ...state.pageState.searchCompaniesIds,
-            action.payload,
-          ],
+          searchCompaniesIds: [...state.pageState.searchCompaniesIds, action.payload],
         };
       }
     },
 
     removeIdFromCompaniesId: (state, action) => {
       const id = action.payload;
-      const filteredArray = state.pageState.searchCompaniesIds.filter(
-        (i) => i.value !== id
-      );
+      const filteredArray = state.pageState.searchCompaniesIds.filter((i) => i.value !== id);
       state.pageState = {
         ...state.pageState,
         searchCompaniesIds: [...filteredArray],
@@ -139,26 +127,17 @@ export const itemsWithPointsSlice = createSlice({
 
     addIdToWarehousesIds: (state, action) => {
       const { value } = action.payload;
-      if (
-        state.pageState.searchWarehousesIds.filter(
-          (warehouse) => warehouse.value === value
-        ).length === 0
-      ) {
+      if (state.pageState.searchWarehousesIds.filter((warehouse) => warehouse.value === value).length === 0) {
         state.pageState = {
           ...state.pageState,
-          searchWarehousesIds: [
-            ...state.pageState.searchWarehousesIds,
-            action.payload,
-          ],
+          searchWarehousesIds: [...state.pageState.searchWarehousesIds, action.payload],
         };
       }
     },
 
     removeIdFromWarehousesId: (state, action) => {
       const id = action.payload;
-      const filteredArray = state.pageState.searchWarehousesIds.filter(
-        (i) => i.value !== id
-      );
+      const filteredArray = state.pageState.searchWarehousesIds.filter((i) => i.value !== id);
       state.pageState = {
         ...state.pageState,
         searchWarehousesIds: [...filteredArray],
@@ -167,6 +146,7 @@ export const itemsWithPointsSlice = createSlice({
 
     resetItemsWithPointsArray: (state) => {
       state.medicines = [];
+      state.initialSearch = true;
       state.count = 0;
       state.pageState = {
         ...state.pageState,
@@ -176,7 +156,7 @@ export const itemsWithPointsSlice = createSlice({
 
     resetItemsWithPointsPageState: (state) => {
       state.pageState = {
-        searchName: "",
+        searchName: '',
         searchCompaniesIds: [],
         searchWarehousesIds: [],
         page: 1,
@@ -184,12 +164,13 @@ export const itemsWithPointsSlice = createSlice({
     },
 
     itemsWithPointsSliceSignOut: (state) => {
-      state.status = "idle";
+      state.status = 'idle';
       state.medicines = [];
+      state.initialSearch = true;
       state.count = 0;
-      state.error = "";
+      state.error = '';
       state.pageState = {
-        searchName: "",
+        searchName: '',
         searchCompaniesIds: [],
         searchWarehousesIds: [],
         page: 1,
@@ -198,27 +179,28 @@ export const itemsWithPointsSlice = createSlice({
   },
   extraReducers: {
     [getItemsWithPoints.pending]: (state) => {
-      state.status = "loading";
+      state.status = 'loading';
     },
     [getItemsWithPoints.fulfilled]: (state, action) => {
-      state.status = "succeeded";
+      state.status = 'succeeded';
       state.medicines = [...state.medicines, ...action.payload.data.data];
+      state.initialSearch = false;
       state.count = action.payload.count;
-      state.error = "";
+      state.error = '';
       state.pageState = {
         ...state.pageState,
         page: Math.ceil(state.medicines.length / 15) + 1,
       };
     },
     [getItemsWithPoints.rejected]: (state, { error, meta, payload }) => {
-      state.status = "failed";
+      state.status = 'failed';
 
-      if (payload === "timeout") {
+      if (payload === 'timeout') {
         state.error = payload;
-      } else if (payload === "cancel") {
-        state.error = "cancel-operation-msg";
-      } else if (payload === "network failed") {
-        state.error = "network failed";
+      } else if (payload === 'cancel') {
+        state.error = 'cancel-operation-msg';
+      } else if (payload === 'network failed') {
+        state.error = 'network failed';
       } else state.error = payload.message;
     },
   },

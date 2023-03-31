@@ -179,19 +179,19 @@ const ProfileScreen = () => {
             {/* personal information */}
             <ExpandedView title={i18n.t('personal-info')}>
               <UserInfoRow
-                label={i18n.t('user-name')}
+                label={i18n.t('user name')}
                 value={userObj.name}
                 editable={true}
-                action={() => actionHandler('user-name', 'name')}
+                action={() => actionHandler('user name', 'name')}
               />
               <UserInfoRow
-                label={i18n.t('user-username')}
+                label={i18n.t('user username')}
                 value={userObj.username}
                 editable={true}
-                action={() => actionHandler('user-username', 'username')}
+                action={() => actionHandler('user username', 'username')}
               />
               <UserInfoRow
-                label={i18n.t('user-type')}
+                label={i18n.t('user type')}
                 value={i18n.t(userObj.type)}
                 editable={false}
                 withoutBottomBorder={true}
@@ -200,22 +200,22 @@ const ProfileScreen = () => {
 
             <ExpandedView title={i18n.t('communication-info')}>
               <UserInfoRow
-                label={i18n.t('user-phone')}
+                label={i18n.t('user phone')}
                 value={userObj.phone}
                 editable={true}
-                action={() => actionHandler('user-phone', 'phone')}
+                action={() => actionHandler('user phone', 'phone')}
               />
               <UserInfoRow
-                label={i18n.t('user-mobile')}
+                label={i18n.t('user mobile')}
                 value={userObj.mobile}
                 editable={true}
-                action={() => actionHandler('user-mobile', 'mobile')}
+                action={() => actionHandler('user mobile', 'mobile')}
               />
               <UserInfoRow
-                label={i18n.t('user-email')}
+                label={i18n.t('user email')}
                 value={userObj.email}
                 editable={true}
-                action={() => actionHandler('user-email', 'email')}
+                action={() => actionHandler('user email', 'email')}
                 withoutBottomBorder={true}
               />
             </ExpandedView>
@@ -223,10 +223,10 @@ const ProfileScreen = () => {
             <ExpandedView title={i18n.t('address-info')}>
               <UserInfoRow label={i18n.t('user-city')} value={i18n.t(userObj.city)} editable={false} />
               <UserInfoRow
-                label={i18n.t('user-address-details')}
+                label={i18n.t('user address details')}
                 value={userObj.addressDetails}
                 editable={true}
-                action={() => actionHandler('user-address-details', 'addressDetails')}
+                action={() => actionHandler('user address details', 'addressDetails')}
                 withoutBottomBorder={true}
               />
             </ExpandedView>
@@ -234,16 +234,16 @@ const ProfileScreen = () => {
             {(user.type === UserTypeConstants.PHARMACY || user.type === UserTypeConstants.WAREHOUSE) && (
               <ExpandedView title={i18n.t('additional-info')}>
                 <UserInfoRow
-                  label={i18n.t('user-employee-name')}
+                  label={i18n.t('user employee name')}
                   value={userObj.employeeName}
                   editable={true}
-                  action={() => actionHandler('user-employee-name', 'employeeName')}
+                  action={() => actionHandler('user employee name', 'employeeName')}
                 />
                 <UserInfoRow
-                  label={i18n.t('user-certificate-name')}
+                  label={i18n.t('user certificate name')}
                   value={userObj.certificateName}
                   editable={true}
-                  action={() => actionHandler('user-certificate-name', 'certificateName')}
+                  action={() => actionHandler('user certificate name', 'certificateName')}
                   withoutBottomBorder={true}
                 />
               </ExpandedView>
@@ -252,9 +252,9 @@ const ProfileScreen = () => {
             {user.type === UserTypeConstants.GUEST && (
               <ExpandedView title={i18n.t('additional-info')}>
                 <UserInfoRow
-                  label={i18n.t('user-job')}
+                  label={i18n.t('user job')}
                   value={i18n.t(userObj.guestDetails?.job)}
-                  action={() => actionHandler('user-job', 'guestDetails.job')}
+                  action={() => actionHandler('user job', 'guestDetails.job')}
                 />
                 <UserInfoRow
                   label={i18n.t('user-company-name')}
@@ -276,7 +276,7 @@ const ProfileScreen = () => {
 
             {/* sign out section */}
             <TouchableOpacity style={styles.button} onPress={() => signoutHandler(dispatch, token)}>
-              <Text style={styles.buttonText}>{i18n.t('nav-sign-out')}</Text>
+              <Text style={styles.buttonText}>{i18n.t('nav sign out')}</Text>
             </TouchableOpacity>
           </ScrollView>
 

@@ -61,7 +61,7 @@ const ItemsScreen = ({ navigation, route }) => {
 
   // selectors
   const { token, user } = useSelector(selectUserData);
-  const { medicines, status, pageState, count } = useSelector(selectMedicines);
+  const { medicines, status, pageState, count, initialSearch } = useSelector(selectMedicines);
 
   // own state
   const [showAddToCartModal, setShowAddToCartModal] = useState(false);
@@ -162,13 +162,14 @@ const ItemsScreen = ({ navigation, route }) => {
   useFocusEffect(
     useCallback(() => {
       // Do something when the screen is focused
-      dispatch(resetMedicinesArray());
-      handleSearch();
+      if (initialSearch) {
+        handleSearch();
+      }
 
       return () => {
         cancelOperation();
       };
-    }, []),
+    }, [initialSearch]),
   );
 
   return user ? (
@@ -177,7 +178,7 @@ const ItemsScreen = ({ navigation, route }) => {
         <SearchContainer>
           <>
             <SearchInput
-              placeholder={i18n.t('search-by-name-composition-barcode')}
+              placeholder={i18n.t('search by name-composition-barcode')}
               onTextChange={(val) => {
                 dispatch(setSearchName(val));
               }}
@@ -260,6 +261,7 @@ const ItemsScreen = ({ navigation, route }) => {
         </SearchContainer>
 
         {status !== 'loading' && <PullDownToRefresh />}
+        {/* <ColorsHint /> */}
         {medicines?.length === 0 && status !== 'loading' && (
           <NoContent refreshing={refreshing} onRefreshing={onRefreshing} msg="no-medicines" />
         )}

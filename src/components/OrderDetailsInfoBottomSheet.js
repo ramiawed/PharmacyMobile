@@ -12,9 +12,9 @@ const OrderDetailsInfoBottomSheet = ({ orderDetails, computeTotalPrice, cancelAc
       <Text style={styles.header}>{i18n.t(header)}</Text>
       <View style={styles.body}>
         <LabelValueRow label={i18n.t('pharmacy-name')} value={orderDetails.pharmacy.name} />
-        <LabelValueRow label={i18n.t('user-certificate-name')} value={orderDetails.pharmacy.certificateName} />
-        <LabelValueRow label={i18n.t('user-address-details')} value={orderDetails.pharmacy.addressDetails} />
-        <LabelValueRow label={i18n.t('user-mobile')} value={orderDetails.pharmacy.mobile} />
+        <LabelValueRow label={i18n.t('user certificate name')} value={orderDetails.pharmacy.certificateName} />
+        <LabelValueRow label={i18n.t('user address details')} value={orderDetails.pharmacy.addressDetails} />
+        <LabelValueRow label={i18n.t('user mobile')} value={orderDetails.pharmacy.mobile} />
         <LabelValueRow label={i18n.t('warehouse-name')} value={orderDetails.warehouse.name} />
         <LabelValueRow label={i18n.t('date-label')} value={new Date(orderDetails.createdAt).toLocaleDateString()} />
         {computeTotalPrice && (

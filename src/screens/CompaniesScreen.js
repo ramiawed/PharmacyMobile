@@ -73,7 +73,7 @@ const CompaniesScreen = () => {
       <View style={styles.container}>
         <SearchContainer>
           <SearchInput
-            placeholder={i18n.t('search-by-company-name')}
+            placeholder={i18n.t('search by company name')}
             onTextChange={(val) => {
               dispatch(changeSearchName(val));
             }}

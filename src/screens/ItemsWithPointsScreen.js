@@ -47,7 +47,7 @@ const ItemsWithPointsScreen = ({ navigation }) => {
 
   // selectors
   const { token, user } = useSelector(selectUserData);
-  const { medicines, status, pageState, count } = useSelector(selectItemsWithPointsMedicines);
+  const { medicines, status, pageState, count, initialSearch } = useSelector(selectItemsWithPointsMedicines);
 
   // own state
   const [showAddToCartModal, setShowAddToCartModal] = useState(false);
@@ -106,13 +106,15 @@ const ItemsWithPointsScreen = ({ navigation }) => {
   useFocusEffect(
     useCallback(() => {
       // Do something when the screen is focused
-      dispatch(resetItemsWithPointsArray());
-      handleSearch();
+      if (initialSearch) {
+        // dispatch(resetItemsWithPointsArray());
+        handleSearch();
+      }
 
       return () => {
         cancelOperation();
       };
-    }, []),
+    }, [initialSearch]),
   );
 
   return user ? (
@@ -121,7 +123,7 @@ const ItemsWithPointsScreen = ({ navigation }) => {
         <SearchContainer>
           <>
             <SearchInput
-              placeholder={i18n.t('search-by-name-composition-barcode')}
+              placeholder={i18n.t('search by name-composition-barcode')}
               onTextChange={(val) => {
                 dispatch(setSearchName(val));
               }}
