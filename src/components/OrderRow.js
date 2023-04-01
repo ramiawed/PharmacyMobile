@@ -141,6 +141,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     alignItems: 'center',
+
     flex: 1,
     paddingVertical: 5,
   },
@@ -149,6 +150,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     flex: 1,
     fontSize: 16,
+    textAlign: 'left',
   },
   address: {
     color: Colors.SUCCEEDED_COLOR,

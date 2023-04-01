@@ -26,6 +26,7 @@ import { AntDesign } from '@expo/vector-icons';
 
 // constants
 import { BASEURL, Colors } from '../utils/constants';
+import NoContent from '../components/NoContent';
 
 let CancelToken = null;
 let source = null;
@@ -120,6 +121,7 @@ const SearchScreen = () => {
 
   const scannerDoneHandler = (val) => {
     setSearchName(val);
+    searchHandler(val, true, 1);
     setShowScanner(false);
   };
 
@@ -214,9 +216,9 @@ const SearchScreen = () => {
           </View>
         ) : undefined}
 
-        {searchName.length >= 3 && searchName.length === 0 && !loading ? (
+        {searchName.length >= 3 && items?.length === 0 && !loading ? (
           <View style={styles.centerContainer}>
-            <Text style={styles.text}>{i18n.t('search-empty')}</Text>
+            <NoContent msg="search-empty" />
           </View>
         ) : undefined}
 
@@ -344,7 +346,7 @@ const styles = StyleSheet.create({
   text: {
     color: Colors.MAIN_COLOR,
     fontWeight: 'bold',
-    fontSize: 14,
+    fontSize: 18,
     marginVertical: 5,
     textAlign: 'center',
   },

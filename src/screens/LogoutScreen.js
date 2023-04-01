@@ -66,14 +66,20 @@ const LogoutScreen = ({ loginHandler }) => {
 
   return (
     <View style={styles.container}>
-      <Image source={require('../../assets/logo.png')} style={{ width: 150, height: 150, resizeMode: 'contain' }} />
-      <Text style={styles.warningMsg}>{i18n.t(errorMsg)}</Text>
-      <TouchableOpacity style={styles.checkBtn} onPress={loginHandler}>
-        <Text style={styles.checkBtnText}>{i18n.t('try-again-label')}</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.checkBtn} onPress={signout}>
-        <Text style={styles.checkBtnText}>{i18n.t('nav sign out')}</Text>
-      </TouchableOpacity>
+      <View style={styles.approveView}>
+        <Image
+          source={require('../../assets/small-logo.png')}
+          style={{ width: 75, height: 75, resizeMode: 'contain' }}
+        />
+        <Text style={styles.warningMsg}>{i18n.t(errorMsg)}</Text>
+        <TouchableOpacity style={styles.checkBtn} onPress={loginHandler}>
+          <Text style={styles.checkBtnText}>{i18n.t('try-again-label')}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.checkBtn} onPress={signout}>
+          <Text style={styles.checkBtnText}>{i18n.t('nav sign out')}</Text>
+        </TouchableOpacity>
+      </View>
+
       {loading && <Loader />}
     </View>
   );
@@ -82,14 +88,14 @@ const LogoutScreen = ({ loginHandler }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.WHITE_COLOR,
+    backgroundColor: '#6872A6',
     justifyContent: 'center',
     alignItems: 'center',
   },
   warningMsg: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: Colors.MAIN_COLOR,
+    color: Colors.WHITE_COLOR,
     marginVertical: 10,
     textAlign: 'center',
   },
@@ -102,10 +108,19 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.SUCCEEDED_COLOR,
     padding: 10,
     borderRadius: 6,
-    marginVertical: 10,
+    marginVertical: 5,
   },
   checkBtnText: {
     color: Colors.WHITE_COLOR,
+  },
+  approveView: {
+    borderRadius: 15,
+    width: '80%',
+    height: '60%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: Colors.MAIN_COLOR,
+    paddingHorizontal: 5,
   },
 });
 

@@ -61,12 +61,12 @@ const OrderDetailsScreen = ({ route }) => {
         } else {
           setOrderDetails(response.data.data.order);
         }
+        setLoading(false);
       })
       .catch((err) => {
         setEmptyMsg('order-details-error');
+        setLoading(false);
       });
-
-    setLoading(false);
   };
 
   // const computeTotalPrice = () => {

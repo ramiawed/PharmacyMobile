@@ -84,26 +84,34 @@ export const getMedicines = createAsyncThunk(
         buildUrl = buildUrl + `&havePoint=true`;
       }
 
+      if (pageState.searchInWarehouse) {
+        buildUrl = buildUrl + `&searchInWarehouses=true`;
+      }
+
+      if (pageState.searchOutWarehouse) {
+        buildUrl = buildUrl + `&searchOutWarehouses=true`;
+      }
+
       const response = await axios.get(buildUrl, {
         params: {
           searchCompaniesIds: pageState.searchCompaniesIds.map((company) => company.value),
           searchWarehousesIds: pageState.searchWarehousesIds.map((warehouse) => warehouse.value),
-          searchInWarehouses: pageState.searchInWarehouse
-            ? user.type === UserTypeConstants.WAREHOUSE
-              ? user._id
-              : pageState.searchInWarehouse
-              ? warehouses.map((w) => w._id)
-              : null
-            : null,
-          searchOutWarehouses: pageState.searchOutWarehouse
-            ? user.type === UserTypeConstants.WAREHOUSE
-              ? user._id
-              : pageState.searchOutWarehouse
-              ? warehouses.map((w) => w._id)
-              : null
-            : null,
-          userWarehouses:
-            user.type === UserTypeConstants.WAREHOUSE ? user._id : warehouses ? warehouses.map((w) => w._id) : [],
+          // searchInWarehouses: pageState.searchInWarehouse
+          //   ? user.type === UserTypeConstants.WAREHOUSE
+          //     ? user._id
+          //     : pageState.searchInWarehouse
+          //     ? warehouses.map((w) => w._id)
+          //     : null
+          //   : null,
+          // searchOutWarehouses: pageState.searchOutWarehouse
+          //   ? user.type === UserTypeConstants.WAREHOUSE
+          //     ? user._id
+          //     : pageState.searchOutWarehouse
+          //     ? warehouses.map((w) => w._id)
+          //     : null
+          //   : null,
+          // userWarehouses:
+          //   user.type === UserTypeConstants.WAREHOUSE ? user._id : warehouses ? warehouses.map((w) => w._id) : [],
         },
         cancelToken: source.token,
         headers: {

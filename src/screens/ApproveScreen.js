@@ -1,19 +1,13 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Colors } from '../utils/constants';
 import i18n from '../i18n/index';
 
 const ApproveScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
-      <LinearGradient
-        // Background Linear Gradient
-        colors={[Colors.MAIN_COLOR, Colors.WHITE_COLOR]}
-        style={styles.background}
-      />
       <View style={styles.approveView}>
-        <Image style={styles.logo} source={require('../../assets/logo.png')} />
+        <Image style={styles.logo} source={require('../../assets/small-logo.png')} />
         <View style={styles.textView}>
           <Text style={styles.header}>{i18n.t('believed partner')}</Text>
           <Text style={styles.text}>{i18n.t('thank message')}</Text>
@@ -38,33 +32,28 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  background: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
+    backgroundColor: '#6872A6',
   },
   approveView: {
     borderRadius: 15,
     width: '80%',
-    height: 300,
+    height: '60%',
     alignItems: 'center',
-    justifyContent: 'space-around',
+    justifyContent: 'center',
+    backgroundColor: Colors.MAIN_COLOR,
+    paddingHorizontal: 5,
   },
   textView: {
-    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
   logo: {
-    width: 150,
-    height: 100,
+    width: 50,
+    height: 50,
   },
   header: {
-    fontSize: 30,
-    color: Colors.MAIN_COLOR,
+    fontSize: 24,
+    color: Colors.WHITE_COLOR,
     fontWeight: 'bold',
     marginVertical: 20,
   },

@@ -59,11 +59,11 @@ const NotificationsScreen = () => {
   return user ? (
     <ScreenWrapper>
       <View style={styles.container}>
+        {status !== 'loading' && <PullDownToRefresh />}
+
         {userNotifications?.length === 0 && status !== 'loading' && (
           <NoContent refreshing={refreshing} onRefreshing={onRefreshing} msg="no-notifications" />
         )}
-
-        {status !== 'loading' && <PullDownToRefresh />}
 
         {userNotifications?.length > 0 && (
           <FlatList

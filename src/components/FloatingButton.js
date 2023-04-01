@@ -48,7 +48,13 @@ const FloatingButton = ({ style, animation, toggleMenu }) => {
         {
           translateY: animation.interpolate({
             inputRange: [0, 1],
-            outputRange: [0, -index.current * 55],
+            outputRange: [0, index.current % 2 === 0 ? -index.current * 40 : (-index.current - 1) * 40],
+          }),
+        },
+        {
+          translateX: animation.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0, index.current % 2 === 0 ? -190 : 0],
           }),
         },
       ],
@@ -229,6 +235,7 @@ const FloatingButton = ({ style, animation, toggleMenu }) => {
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
+    width: '100%',
   },
   button: {
     position: 'absolute',
@@ -250,8 +257,8 @@ const styles = StyleSheet.create({
   },
   secondary: {
     flexDirection: 'row',
-    width: 200,
-    height: 48,
+    width: '45%',
+    // minHeight: 60,
     borderRadius: 12,
     backgroundColor: Colors.DARK_COLOR,
     paddingStart: 10,
@@ -263,8 +270,8 @@ const styles = StyleSheet.create({
   },
   mainly: {
     flexDirection: 'row',
-    width: 200,
-    height: 48,
+    width: '45%',
+    // minHeight: 60,
     borderRadius: 12,
     backgroundColor: '#E56B6F',
     paddingStart: 10,
@@ -276,8 +283,7 @@ const styles = StyleSheet.create({
   },
   optionText: {
     color: Colors.WHITE_COLOR,
-    fontSize: 16,
-    fontWeight: 'bold',
+    fontSize: 14,
     flex: 1,
     textAlign: 'center',
   },

@@ -79,9 +79,9 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   text: {
-    position: 'absolute',
-    left: 30,
-    right: 30,
+    // position: 'absolute',
+    // left: 30,
+    // right: 30,
     color: Colors.WHITE_COLOR,
     textAlign: 'center',
     fontWeight: 'bold',
