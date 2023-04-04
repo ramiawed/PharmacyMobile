@@ -1,9 +1,9 @@
 // export const BASEURL = 'http://192.168.43.211:8000/api/v1';
+// export const SERVER_URL = 'http://192.168.43.211:8000/';
 export const BASEURL = 'https://api.smartpharmasy.com/api/v1';
 export const SERVER_URL = 'https://api.smartpharmasy.com/';
-// export const SERVER_URL = 'http://192.168.43.211:8000/';
 
-export const VERSION = '2.0.0';
+export const VERSION = '2.0.1';
 
 export const UserTypeConstants = {
   COMPANY: 'company',

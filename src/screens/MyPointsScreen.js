@@ -13,6 +13,7 @@ import { getMyPoints, selectUserData } from '../redux/auth/authSlice';
 import { Colors } from '../utils/constants';
 import { unwrapResult } from '@reduxjs/toolkit';
 import MyPointsDescriptionAr from '../components/MyPointsDescriptionAr';
+import i18n from '../i18n';
 
 const MyPointsScreen = () => {
   const dispatch = useDispatch();
@@ -41,7 +42,9 @@ const MyPointsScreen = () => {
           style={styles.container}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefreshing} />}
         >
-          <Text style={styles.points}>{user.points}</Text>
+          <Text style={styles.points}>
+            {i18n.t('number of points in your account')} {user.points}
+          </Text>
           <MyPointsDescriptionAr />
         </ScrollView>
       </View>
@@ -62,9 +65,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     paddingVertical: 30,
     borderRadius: 8,
-    width: '50%',
+    width: '80%',
     alignSelf: 'center',
     marginTop: 10,
+    flexWrap: 'wrap',
   },
 });
 

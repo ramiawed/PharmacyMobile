@@ -376,8 +376,8 @@ const ItemCard = ({ item, addToCart, searchString }) => {
               <ItemPrices
                 price={item.price}
                 customerPrice={item.customer_price}
-                showCustomerPrice={user.type !== UserTypeConstants.GUEST}
-                showPrice={true}
+                showCustomerPrice={true}
+                showPrice={user.type !== UserTypeConstants.GUEST}
               />
             </View>
 

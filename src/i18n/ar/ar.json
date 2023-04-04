@@ -97,7 +97,7 @@
   "nav items": "المنتجات",
   "search": "بحث",
   "search by company name": "بحث من خلال اسم الشركة",
-  "search home placeholder": "اسم المنتج - الاسم التجاري - الباركود، ٣ حروف على الاقل",
+  "search home placeholder": "الاسم التجاري - التركيب - الباركود.....",
   "search by warehouse name": "بحث من خلال اسم المستودع",
   "search-by-pharmacy-name": "بحث من خلال اسم الصيدلية",
   "cancel": "إلغاء",
@@ -569,5 +569,7 @@
   "you have": "لديك",
   "equals to": "ما يعادل",
   "you can replace your points after sending the order by contact us": "يمكنك استبدال نقاطك بعد ارسال الطلب من خلال الاتصال مع خدمة العملاء لدى سمارت فارما",
-  "error fallback": "حدث خطأ أثناء القيام بأخر عملية، الرجاء في حال تكرار الخطأ التواصل مع قسم العملاء لدى سمارت فارما"
+  "error fallback": "حدث خطأ أثناء القيام بأخر عملية، الرجاء في حال تكرار الخطأ التواصل مع قسم العملاء لدى سمارت فارما",
+  "number of points in your account": "عدد النقاط في حسابك",
+  "press to open camera": "اضغط لفتح الكاميرا لقراءة الباركود"
 }

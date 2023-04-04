@@ -80,12 +80,7 @@ const CartItem = ({ cartItem, inOrderDetails }) => {
 
         <Text style={styles.point}>{cartItem.point ? `${cartItem.point} ${i18n.t('point')}` : '-'}</Text>
 
-        <Text style={styles.totalPrice}>
-          {cartItem.qty * (inOrderDetails ? cartItem.price : cartItem.item.price) -
-            (cartItem.bonus && cartItem.bonusType === OfferTypes.PERCENTAGE
-              ? (cartItem.qty * (inOrderDetails ? cartItem.price : cartItem.item.price) * cartItem.bonus) / 100
-              : 0)}
-        </Text>
+        <Text style={styles.totalPrice}>{cartItem.item.price}</Text>
       </View>
 
       <View style={styles.row}>
@@ -93,7 +88,12 @@ const CartItem = ({ cartItem, inOrderDetails }) => {
         <ItemPrices
           showCustomerPrice={false}
           showPrice={true}
-          price={cartItem.item.price}
+          price={
+            cartItem.qty * (inOrderDetails ? cartItem.price : cartItem.item.price) -
+            (cartItem.bonus && cartItem.bonusType === OfferTypes.PERCENTAGE
+              ? (cartItem.qty * (inOrderDetails ? cartItem.price : cartItem.item.price) * cartItem.bonus) / 100
+              : 0)
+          }
           customerPrice={cartItem.item.custmer_price}
         />
       </View>

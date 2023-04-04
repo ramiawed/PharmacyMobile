@@ -189,7 +189,10 @@ const SearchScreen = () => {
             }}
             onPress={openScanner}
           >
-            <AntDesign name="barcode" size={28} color={Colors.WHITE_COLOR} onPress={openScanner} />
+            <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+              <Text style={{ color: Colors.WHITE_COLOR }}>{i18n.t('press to open camera')}</Text>
+              <AntDesign name="barcode" size={28} color={Colors.WHITE_COLOR} onPress={openScanner} />
+            </View>
           </TouchableOpacity>
 
           {/* <TouchableOpacity
